@@ -1,0 +1,13 @@
+{
+  "appTitle": "Pago mis servicios",
+  "flags.secure.text": "Modo seguro",
+  "flags.secure.label": "Oculta o no información sensible",
+  "flags.headless.text": "Abrir navegador",
+  "flags.headless.label": "Abre el navegador interno",
+  "root.page.home.title": "Inicio",
+  "root.page.settings.title": "Configuración",
+  "root.page.about.title": "Acerca",
+  "page.home.tab.pay.title": "Pagar",
+  "page.home.tab.payMethods.title": "Metodos de pago",
+  "page.home.tab.services.title": "Servicios"
+}
