@@ -7,7 +7,10 @@
   "root.page.home.title": "Inicio",
   "root.page.settings.title": "Configuración",
   "root.page.about.title": "Acerca",
-  "page.home.tab.pay.title": "Pagar",
+  "page.home.tab.verify.title": "Verificación",
+  "page.home.tab.verify.init": "Iniciar verificación",
   "page.home.tab.payMethods.title": "Metodos de pago",
-  "page.home.tab.services.title": "Servicios"
+  "page.home.tab.services.title": "Servicios",
+  "page.home.tab.toBePaid.title": "Paso a pagar",
+  "page.home.tab.toBePaid.bill.text": "Monto a pagar"
 }

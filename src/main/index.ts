@@ -10,9 +10,11 @@ function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 500,
-    height: 500,
+    height: 400,
+    resizable: false,
     frame: false,
     show: false,
+    transparent: true,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
