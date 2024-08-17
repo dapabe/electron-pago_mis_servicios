@@ -1,47 +1,85 @@
-import { PropsWithChildren, useMemo } from 'react'
-import { twJoin } from 'tailwind-merge'
+import { PropsWithChildren, useId } from 'react'
+import { twJoin, twMerge } from 'tailwind-merge'
 
-type MenuItemProps = PropsWithChildren & {
-  isDisabled?: boolean
-  hasMenu?: boolean
-  isDivider?: boolean
-  items?: MenuItemProps[]
-}
-
-type Props = {
-  items: MenuItemProps[]
+type Props = PropsWithChildren<{
+  /** role="menubar" */
+  isBar?: boolean | null
   isHidden?: boolean
-}
-export function Menu({ items, isHidden }: Props) {
-  const someSubMenu = useMemo(() => items.some((x) => Boolean(x.items)), [items])
+  className?: string
+}>
+export function Menu({ children, isHidden, isBar, className }: Props) {
   return (
-    <ul role="menu" className={twJoin('w-max', someSubMenu && 'can-hover')} hidden={isHidden}>
-      {items.map(({ items, children, ...others }, idx) => {
-        if (items)
-          return (
-            <Menu.Item key={idx} {...others}>
-              {children}
-              <Menu items={items} />
-            </Menu.Item>
-          )
-        return (
-          <Menu.Item key={idx} {...others}>
-            {children}
-          </Menu.Item>
-        )
-      })}
+    <ul
+      {...(isBar === null ? undefined : { role: isBar ? 'menubar' : 'menu' })}
+      className={twMerge('select-none', className)}
+      hidden={isHidden}
+    >
+      {children}
     </ul>
   )
 }
 
-const MenuItem = ({ children, isDisabled, hasMenu, isDivider }: MenuItemProps) => {
+type MinimalItemProps = PropsWithChildren<{
+  isDisabled?: boolean
+  isDivider?: boolean
+}>
+
+type IMenuItemProps =
+  | (MinimalItemProps & {
+      type: 'option' | 'menu'
+      onClick?: () => void
+    })
+  | (MinimalItemProps & {
+      type: 'checkbox'
+      /** @default "checkbox" */
+      inputType?: 'radio' | 'checkbox'
+      isChecked: boolean
+      onChange: (value: boolean) => void
+    })
+
+const MenuItem = ({ children, ...props }: IMenuItemProps) => {
+  if (props.type === 'checkbox') {
+    const id = useId() + 'li'
+    return (
+      <li
+        role="menuitem"
+        tabIndex={0}
+        // aria-disabled={props.isDisabled ? 'true' : 'false'}
+        className={twJoin('cursor-pointer', props.isDivider && 'has-divider')}
+      >
+        <input
+          id={id}
+          type={props.inputType ?? 'checkbox'}
+          {...(props.inputType === 'radio' ? { name: 'icon-size' } : undefined)}
+          checked={props.isChecked}
+          onChange={(evt) => props.onChange(evt.currentTarget.checked)}
+        />
+        <label htmlFor={id}>{children}</label>
+      </li>
+    )
+  }
+  if (props.type === 'option') {
+    return (
+      <li
+        role="menuitem"
+        tabIndex={0}
+        className={twJoin(props.isDivider && 'has-divider')}
+        onClick={props.onClick}
+        {...(props.isDisabled ? { 'aria-disabled': 'true' } : undefined)}
+      >
+        {children}
+      </li>
+    )
+  }
+
   return (
     <li
       role="menuitem"
       tabIndex={0}
-      aria-haspopup={hasMenu ? 'true' : 'false'}
-      aria-disabled={isDisabled ? 'true' : 'false'}
-      className={twJoin(isDivider && 'has-divider', !hasMenu && 'pl-8 w-max after:-ml-7')}
+      aria-haspopup={'true'}
+      className={twJoin(props.isDivider && 'has-divider')}
+      onClick={props.onClick}
+      {...(props.isDisabled ? { 'aria-disabled': 'true' } : undefined)}
     >
       {children}
     </li>

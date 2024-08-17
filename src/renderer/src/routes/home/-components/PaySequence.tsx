@@ -2,7 +2,7 @@ import { FormattedMessage } from 'react-intl'
 
 export const PaySequence = () => {
   const d = () => {
-    window.electron.ipcRenderer.send('appVersion')
+    window.electron.ipcRenderer.send('startSequence')
   }
 
   return (
