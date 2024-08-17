@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { IValidVersions, SchemaUtilities, ZodSchemaManager } from '../ZodSchemaManager'
+import { IValidVersions, SchemaUtilities, ZodSchemaManager } from './ZodSchemaManager'
 
 type LastV = '0.0.0'
 

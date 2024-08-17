@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { FlagConfigManager } from './flags.schema.js'
-import { IValidVersions, SchemaUtilities, ZodSchemaManager } from '../ZodSchemaManager.js'
+import { IValidVersions, SchemaUtilities, ZodSchemaManager } from './ZodSchemaManager.js'
 
 type LastV = '0.0.0'
 

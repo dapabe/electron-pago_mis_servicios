@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import style from '@renderer/assets/WindowBody.module.css'
+import style from '#renderer/assets/WindowBody.module.css'
 import { FormattedMessage } from 'react-intl'
 
 type Props = PropsWithChildren

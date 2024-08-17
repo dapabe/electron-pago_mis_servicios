@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { ServiceLoginFieldsManager } from './serviceLoginField.schema'
-import { IValidVersions, SchemaUtilities, ZodSchemaManager } from '../ZodSchemaManager'
+import { IValidVersions, SchemaUtilities, ZodSchemaManager } from './ZodSchemaManager'
 
 function createDynamicServiceField() {
   const dynamic: Record<

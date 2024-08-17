@@ -5,12 +5,11 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { HomeRoute } from './routes/home/Home.route'
-import { SettingsRoute } from './routes/settings/Settings.route'
 import { RootRoute } from './routes/root.route'
-import { NotFoundRoute } from './routes/notFound.route'
-import { AboutRoute } from './routes/about/About.route'
+import { HelpRoute } from './routes/help/Help.route'
 import { IntlProvider } from 'react-intl'
 import msgs from '../../../resources/intl/es.json'
+import { OnAppStart } from './routes/-components/other/OnAppStart'
 
 const router = createBrowserRouter([
   {
@@ -21,17 +20,17 @@ const router = createBrowserRouter([
         index: true,
         element: <HomeRoute />
       },
+      // {
+      //   path: '/settings',
+      //   element: <SettingsRoute />
+      // },
       {
-        path: '/settings',
-        element: <SettingsRoute />
-      },
-      {
-        path: '/about',
-        element: <AboutRoute />
+        path: '/help',
+        element: <HelpRoute />
       },
       {
         path: '*',
-        element: <NotFoundRoute />
+        element: <HomeRoute />
       }
     ]
   }
@@ -40,6 +39,7 @@ const router = createBrowserRouter([
 function App() {
   return (
     <IntlProvider locale="es" messages={msgs}>
+      <OnAppStart />
       <RouterProvider router={router} />
     </IntlProvider>
   )

@@ -1,5 +1,6 @@
 {
   "appTitle": "Pago mis servicios",
+  "language": "Español",
   "flags.secure.text": "Modo seguro",
   "flags.secure.label": "Oculta o no información sensible",
   "flags.headless.text": "Abrir navegador",

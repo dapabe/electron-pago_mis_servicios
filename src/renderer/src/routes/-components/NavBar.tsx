@@ -1,8 +1,8 @@
 import { FormattedMessage } from 'react-intl'
 import { useNavigate } from 'react-router-dom'
 import { Menu } from './Menu'
-import { useUserDataStore } from '@renderer/stores/user-data.store'
-import { IFlagConfig } from '@renderer/common/schemas/flags.schema'
+import { useUserDataStore } from '#renderer/stores/user-data.store'
+import { IFlagConfig } from '#shared/schemas/flags.schema'
 
 export const NavBar = (): JSX.Element => {
   const { flags, toggleFlag } = useUserDataStore()

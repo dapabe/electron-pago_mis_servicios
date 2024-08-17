@@ -2,7 +2,7 @@ import { useIntl } from 'react-intl'
 import { TabPanel } from '../-components/TabPanel'
 import { PayMethods } from './-components/PayMethods'
 import { ServiceAccounts } from './-components/ServiceAccounts'
-import { PaySequence } from './-components/PaySequence'
+import { VerificationPhase } from './-components/VerificationPhase'
 import { ToBePaidStep } from './-components/ToBePaidStep'
 
 export const HomeRoute = (): JSX.Element => {
@@ -14,7 +14,7 @@ export const HomeRoute = (): JSX.Element => {
       tabs={[
         {
           title: intl.formatMessage({ id: 'page.home.tab.verify.title' }),
-          body: <PaySequence />
+          body: <VerificationPhase />
         },
         {
           title: intl.formatMessage({ id: 'page.home.tab.services.title' }),

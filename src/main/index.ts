@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { loadBrowserEvents } from './load-events'
+import { loadBrowserEvents } from './src/load-events'
 
 let mainWindow: BrowserWindow
 
@@ -39,6 +39,8 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  loadBrowserEvents(mainWindow)
 }
 
 // This method will be called when Electron has finished
@@ -62,8 +64,6 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-
-  loadBrowserEvents(mainWindow)
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
