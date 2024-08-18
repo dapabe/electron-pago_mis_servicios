@@ -1,13 +1,22 @@
 import { BrowserWindow } from 'electron'
-import { BrowserContext } from 'playwright-core'
+import { Browser, BrowserContext, chromium } from 'playwright-core'
 
 export class Sequence {
   #BrWindow: BrowserWindow
-  #CTX: BrowserContext
+  /** Internal browser */
+  BRO: Browser | null = null
+  /** Incognito context */
+  CTX: BrowserContext | null = null
 
   constructor(browser: BrowserWindow) {
     this.#BrWindow = browser
   }
 
-  public initialize() {}
+  public async initialize() {
+    this.BRO = await chromium.launch({ headless: false })
+    this.CTX = await this.BRO.newContext()
+    const page = await this.CTX.newPage()
+    await page.goto('https://www.youtube.com', { waitUntil: 'domcontentloaded' })
+    console.log(this.#BrWindow)
+  }
 }

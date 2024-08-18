@@ -1,5 +1,5 @@
 import { useAppDataStore } from '#renderer/stores/app-data.store'
-import { IpcEvent } from '#shared/ipc-events'
+import { IpcEvent } from '#shared/constants/ipc-events'
 import { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 

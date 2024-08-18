@@ -1,6 +1,6 @@
-import { IpcEvent } from '#shared/ipc-events'
+import { IpcEvent } from '#shared/constants/ipc-events'
 import { app, BrowserWindow, ipcMain } from 'electron'
-import { DataStore } from './data-store'
+import { Sequence } from './sequence/Sequence'
 
 export function loadBrowserEvents(browser: BrowserWindow) {
   ipcMain.on(IpcEvent.ToggleMaximize, () => {
@@ -12,11 +12,14 @@ export function loadBrowserEvents(browser: BrowserWindow) {
     browser.webContents.send(IpcEvent.AppVersion, app.getVersion())
   })
 
-  ipcMain.on(IpcEvent.CloseApp, () => {
-    browser.close()
+  const sequence = new Sequence(browser)
+  ipcMain.on(IpcEvent.StartSequence, async () => {
+    await sequence.initialize()
   })
 
-  ipcMain.on(IpcEvent.StartSequence, async () => {
-    console.log(DataStore().dataFilePath)
+  ipcMain.on(IpcEvent.CloseApp, () => {
+    sequence.CTX?.close()
+    sequence.BRO?.close()
+    browser.close()
   })
 }

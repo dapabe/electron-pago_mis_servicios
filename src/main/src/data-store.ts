@@ -1,9 +1,12 @@
 import { create } from 'zustand'
 import fs from 'node:fs/promises'
 import { IUserData, UserDataManager } from '#shared/schemas/userData.schema'
-import { getDefaultsForSchema } from 'zod-defaults'
 import path from 'node:path'
 import { app } from 'electron'
+import { z } from 'zod'
+
+const getDefaultsForSchema = <T extends z.ZodType>(obj: T): z.TypeOf<T> =>
+  import('zod-defaults').then((x) => x.default.getDefaultsForSchema(obj as any))
 
 type IDataStore = {
   dataFilePath: string
