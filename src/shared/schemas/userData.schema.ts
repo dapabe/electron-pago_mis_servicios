@@ -12,7 +12,7 @@ class UserDataSchema
   implements SchemaUtilities
 {
   static '0.0.0' = z.object({
-    flags: FlagConfigManager.getLastSchema()
+    flags: FlagConfigManager.getLastSchema().default({})
     // serviceFields: UserServiceManager.getLastSchema().default({}),
     // paymentMethods: StoredPaymentMethodManager.getLastSchema().optional().array().default([])
   })

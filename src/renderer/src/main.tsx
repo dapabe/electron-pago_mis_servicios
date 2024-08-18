@@ -3,22 +3,28 @@ import '7.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { HomeRoute } from './routes/home/Home.route'
 import { RootRoute } from './routes/root.route'
 import { HelpRoute } from './routes/help/Help.route'
 import { IntlProvider } from 'react-intl'
 import msgs from '../../../resources/intl/es.json'
 import { OnAppStart } from './routes/-components/other/OnAppStart'
+import { AppSequenceProvider } from './contexts/app-sequence.ctx'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <RootRoute />,
+    errorElement: <Navigate to={'/'} />,
     children: [
       {
         index: true,
-        element: <HomeRoute />
+        element: (
+          <AppSequenceProvider>
+            <HomeRoute />
+          </AppSequenceProvider>
+        )
       },
       // {
       //   path: '/settings',
@@ -30,7 +36,7 @@ const router = createBrowserRouter([
       },
       {
         path: '*',
-        element: <HomeRoute />
+        element: <Navigate to={'/'} />
       }
     ]
   }

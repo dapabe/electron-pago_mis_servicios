@@ -7,6 +7,7 @@ import { IFlagConfig } from '#shared/schemas/flags.schema'
 export const NavBar = (): JSX.Element => {
   const { flags, toggleFlag } = useUserDataStore()
   const nav = useNavigate()
+
   return (
     <Menu isBar className={'can-hover border-b-[1px] border-b-black'}>
       <Menu.Item type="option" onClick={() => nav('/')}>
@@ -35,7 +36,7 @@ export const NavBar = (): JSX.Element => {
           ))}
         </Menu>
       </Menu.Item>
-      <Menu.Item type="option" onClick={() => nav('/about')}>
+      <Menu.Item type="option" onClick={() => nav('/help')}>
         <FormattedMessage id="root.navBar.help.title" />
       </Menu.Item>
     </Menu>

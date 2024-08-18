@@ -4,8 +4,10 @@ import { PayMethods } from './-components/PayMethods'
 import { ServiceAccounts } from './-components/ServiceAccounts'
 import { VerificationPhase } from './-components/VerificationPhase'
 import { ToBePaidStep } from './-components/ToBePaidStep'
+import { useAppSequence } from '#renderer/hooks/useAppSequence.hook'
 
 export const HomeRoute = (): JSX.Element => {
+  const { sequenceDisabled } = useAppSequence()
   const intl = useIntl()
 
   return (
@@ -26,7 +28,7 @@ export const HomeRoute = (): JSX.Element => {
         },
         {
           title: intl.formatMessage({ id: 'page.home.tab.toBePaid.title' }),
-          isDisabled: true,
+          isDisabled: sequenceDisabled,
           body: <ToBePaidStep />
         }
       ]}

@@ -1,17 +1,19 @@
-import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
+import { IpcEvent } from '#shared/constants/ipc-events'
+import { IFlagConfig } from '#shared/schemas/flags.schema'
 import { create } from 'zustand'
-import { getDefaultsForSchema } from 'zod-defaults'
 
 type UserDataStore = {
-  flags: IFlagConfig
-
+  flags: IFlagConfig | null
+  setFlags: (config: IFlagConfig) => void
   toggleFlag: (flag: keyof IFlagConfig) => void
 }
 
 export const useUserDataStore = create<UserDataStore>((set) => ({
-  flags: getDefaultsForSchema(FlagConfigManager.getLastSchema()),
+  flags: null,
+
+  setFlags: (flags) => set({ flags }),
 
   toggleFlag: (flag) => {
-    set((x) => ({ flags: { ...x.flags, [flag]: !x.flags[flag] } }))
+    window.electron.ipcRenderer.send(IpcEvent.Config.Flags(flag))
   }
 }))
