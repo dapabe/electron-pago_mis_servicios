@@ -20,11 +20,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <AppSequenceProvider>
-            <HomeRoute />
-          </AppSequenceProvider>
-        )
+        element: <HomeRoute />
       },
       // {
       //   path: '/settings',
@@ -46,7 +42,9 @@ function App() {
   return (
     <IntlProvider locale="es" messages={msgs}>
       <OnAppStart />
-      <RouterProvider router={router} />
+      <AppSequenceProvider>
+        <RouterProvider router={router} />
+      </AppSequenceProvider>
     </IntlProvider>
   )
 }

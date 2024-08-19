@@ -1,9 +1,9 @@
 import { useIntl } from 'react-intl'
 import { TabPanel } from '../-components/TabPanel'
-import { PayMethods } from './-components/PayMethods'
-import { ServiceAccounts } from './-components/ServiceAccounts'
-import { VerificationPhase } from './-components/VerificationPhase'
-import { ToBePaidStep } from './-components/ToBePaidStep'
+import { PayMethods } from './-components/sequence/PayMethods'
+import { ServiceAccounts } from './-components/sequence/ServiceAccounts'
+import { VerificationPhase } from './-components/sequence/VerificationPhase'
+import { ToBePaidStep } from './-components/sequence/ToBePaidStep'
 import { useAppSequence } from '#renderer/hooks/useAppSequence.hook'
 
 export const HomeRoute = (): JSX.Element => {

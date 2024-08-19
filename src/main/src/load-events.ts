@@ -4,36 +4,50 @@ import { Sequence } from './sequence/Sequence'
 import { AppStore } from './app-store'
 import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
 
-const appState = AppStore.getState()
-
-export function loadBrowserEvents(browser: BrowserWindow) {
+export async function loadBrowserEvents(browser: BrowserWindow) {
+  /**
+   *  Custom application behaviour
+   */
   ipcMain.on(IpcEvent.ToggleMaximize, () => {
     if (browser.isMinimized()) browser.maximize()
     else browser.minimize()
   })
 
+  /**
+   *  Initial application ipc events
+   */
   browser.webContents.once('did-finish-load', () => {
     browser.webContents.send(IpcEvent.AppVersion, app.getVersion())
-    browser.webContents.send(IpcEvent.Config.SendInitialConfig, appState.fileData.flags)
+    browser.webContents.send(IpcEvent.Config.SendInitialConfig, AppStore.getState().fileData)
   })
 
+  /**
+   *  Application config flags
+   */
   for (const flag of Object.keys(
     FlagConfigManager.getLastSchema().shape
   ) as (keyof IFlagConfig)[]) {
     const ipcFlag = IpcEvent.Config.Flags(flag)
-    ipcMain.on(ipcFlag, () => {
-      appState.toggleFlag(flag)
-      browser.webContents.send(ipcFlag, appState.fileData.flags)
+    ipcMain.handle(ipcFlag, async () => {
+      await AppStore.getState().toggleFlag(flag)
+      browser.webContents.send(ipcFlag, AppStore.getState().fileData.flags[flag])
     })
   }
 
+  /**
+   *  Main application sequence
+   */
   const sequence = new Sequence(browser)
-  ipcMain.on(IpcEvent.Sequence.Started, sequence.initialize)
+  const seqInit = async () => {
+    await sequence.initialize()
+  }
+
+  ipcMain.handle(IpcEvent.Sequence.Started, seqInit)
 
   ipcMain.on(IpcEvent.CloseApp, () => {
     sequence.CTX?.close()
     sequence.BRO?.close()
-    ipcMain.removeListener(IpcEvent.Sequence.Started, sequence.initialize)
+    ipcMain.removeListener(IpcEvent.Sequence.Started, seqInit)
 
     browser.close()
   })

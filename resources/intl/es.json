@@ -1,13 +1,16 @@
 {
   "appTitle": "Pago mis servicios",
   "language": "Español",
+
   "flags.secure.text": "Modo seguro",
-  "flags.secure.label": "Oculta o no información sensible",
+  "flags.secure.label": "Oculta mi información sensible",
   "flags.headless.text": "Abrir navegador",
-  "flags.headless.label": "Abre el navegador interno",
+  "flags.headless.label": "Precaución: Ver, pero no tocar",
+
   "root.navBar.home.title": "Inicio",
   "root.navBar.settings.title": "Configuración",
   "root.navBar.help.title": "Ayuda",
+
   "page.home.tab.verify.title": "Verificación",
   "page.home.tab.verify.init": "Iniciar verificación",
   "page.home.tab.payMethods.title": "Metodos de pago",

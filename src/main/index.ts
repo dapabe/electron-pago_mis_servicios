@@ -23,6 +23,8 @@ function createWindow(): void {
     }
   })
 
+  mainWindow.setMenu(null)
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
@@ -41,6 +43,7 @@ function createWindow(): void {
   }
 
   loadBrowserEvents(mainWindow)
+  mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished

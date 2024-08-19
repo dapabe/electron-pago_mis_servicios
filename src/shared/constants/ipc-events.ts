@@ -9,10 +9,10 @@ export const IpcEvent = {
   ToggleMaximize: 'toggle-maximize',
   Config: {
     SendInitialConfig: 'config.send-initial',
-    Flags: (flag: keyof IFlagConfig) => `config.${flag}`
+    Flags: (flag: keyof IFlagConfig) => `config.flag.${flag}` as const
   },
   Sequence: {
     Started: 'sequence.started',
-    ToggleInternal: 'sequence.toggle-nit'
+    ToggleInternal: 'sequence.toggle-init'
   }
 } as const

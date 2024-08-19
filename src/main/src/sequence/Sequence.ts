@@ -1,31 +1,28 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { BrowserWindow } from 'electron'
-import { Browser, BrowserContext, chromium } from 'playwright-core'
+import { chromium } from 'playwright-core'
 import { AppStore } from '../app-store'
+import { SequenceUtilities } from './Sequence-utils'
 
-const appState = AppStore.getState()
-
-export class Sequence {
-  #BrWindow: BrowserWindow
-  /** Internal browser */
-  BRO: Browser | null = null
-  /** Incognito context */
-  CTX: BrowserContext | null = null
-
+export class Sequence extends SequenceUtilities {
   constructor(browser: BrowserWindow) {
-    this.#BrWindow = browser
+    super(browser)
   }
 
   public async initialize() {
-    this.BRO = await chromium.launch({ headless: appState.fileData.flags.headless })
-    this.CTX = await this.BRO.newContext()
-    this.#BrWindow.webContents.send(IpcEvent.Sequence.ToggleInternal, false)
+    try {
+      this.BRO = await chromium.launch({ headless: AppStore.getState().fileData.flags.headless })
+      this.CTX = await this.BRO.newContext()
+      this.BrWindow.webContents.send(IpcEvent.Sequence.ToggleInternal, false)
 
-    this.BRO.on('disconnected', () =>
-      this.#BrWindow.webContents.send(IpcEvent.Sequence.ToggleInternal, true)
-    )
+      // this.CTX.on('close', () => this.closePlaywright())
 
-    const page = await this.CTX.newPage()
-    await page.goto('https://www.youtube.com', { waitUntil: 'domcontentloaded' })
+      const page = await this.CTX.newPage()
+      await page.goto('https://www.youtube.com', { waitUntil: 'domcontentloaded' })
+      // await this.BRO.close()
+    } catch (error) {
+      console.log(error)
+      this.closePlaywright()
+    }
   }
 }

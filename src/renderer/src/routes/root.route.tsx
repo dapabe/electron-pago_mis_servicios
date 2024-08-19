@@ -1,5 +1,5 @@
 import { WindowBody } from './-components/WindowBody'
-import { NavBar } from './-components/NavBar'
+import { NavBar } from './home/-components/NavBar'
 import { Outlet } from 'react-router-dom'
 import { WindowStatus } from './-components/WindowStatus'
 

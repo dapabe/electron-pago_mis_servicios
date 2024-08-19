@@ -44,8 +44,8 @@ const MenuItem = ({ children, ...props }: IMenuItemProps) => {
       <li
         role="menuitem"
         tabIndex={0}
-        // aria-disabled={props.isDisabled ? 'true' : 'false'}
         className={twJoin('cursor-pointer', props.isDivider && 'has-divider')}
+        {...(props.isDisabled ? { 'aria-disabled': 'true' } : undefined)}
       >
         <input
           id={id}

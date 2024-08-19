@@ -5,8 +5,8 @@ import { useAppSequence } from '#renderer/hooks/useAppSequence.hook'
 export const VerificationPhase = () => {
   const { sequenceDisabled } = useAppSequence()
 
-  const handleSequence = () => {
-    window.electron.ipcRenderer.send(IpcEvent.Sequence.Started)
+  const handleSequence = async () => {
+    await window.electron.ipcRenderer.invoke(IpcEvent.Sequence.Started)
   }
 
   return (

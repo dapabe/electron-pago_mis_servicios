@@ -14,7 +14,7 @@ type IAppStore = {
   doesFileExists: () => Promise<boolean>
   createFile: () => Promise<void>
 
-  toggleFlag: (flag: keyof IFlagConfig) => void
+  toggleFlag: (flag: keyof IFlagConfig) => Promise<void>
 }
 
 export const AppStore = create<IAppStore>()(
@@ -28,12 +28,10 @@ export const AppStore = create<IAppStore>()(
         .then(() => true)
         .catch(() => false)
     },
-
     createFile: async () => {
       const stringified = JSON.stringify(get().fileData)
       await fs.writeFile(get().dataFilePath, stringified, 'utf8')
     },
-
     loadFilePath: async () => {
       const exists = await get().doesFileExists()
       if (exists) {
@@ -43,9 +41,10 @@ export const AppStore = create<IAppStore>()(
       }
     },
 
-    toggleFlag: (flag) => {
+    toggleFlag: async (flag) => {
       set((x) => {
         x.fileData.flags[flag] = !x.fileData.flags[flag]
+        return x
       })
     }
   }))
