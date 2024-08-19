@@ -1,37 +1,24 @@
 import { ISupportedServices } from '#shared/constants/supported-services'
-import { UserServiceManager } from '#shared/schemas/userServiceField.schema'
-import { ChangeEvent, PropsWithChildren, useId, useState } from 'react'
+import { ChangeEvent, PropsWithChildren, useId } from 'react'
 import { FormattedMessage } from 'react-intl'
-
-const createDefaultValues = () => {
-  const temp = {} as Record<ISupportedServices, boolean>
-
-  for (const service of Object.keys(UserServiceManager.getLastSchema().shape)) {
-    temp[service] = null
-  }
-
-  return temp
-}
 
 type IVerifTableProps = {
   hasSequenceStarted: boolean
+
+  invalidateValues: Record<ISupportedServices, boolean>
+  handleInvalidation: (evt: ChangeEvent<HTMLInputElement>) => void
+
+  toBePaidValues: Record<ISupportedServices, boolean>
+  handleToBePaid: (evt: ChangeEvent<HTMLInputElement>) => void
 }
 
-export const VerificationTable = ({ hasSequenceStarted }: IVerifTableProps) => {
-  const [toBePaid, setToBePaid] = useState(createDefaultValues())
-  const [toInvalidate, setInvalidation] = useState(createDefaultValues())
-
-  const handleToBePaid = (evt: ChangeEvent<HTMLInputElement>) => {
-    const service = evt.currentTarget.name
-    const value = evt.currentTarget.checked
-    setToBePaid((x) => ({ ...x, [service as keyof ISupportedServices]: value }))
-  }
-  const handleInvalidation = (evt: ChangeEvent<HTMLInputElement>) => {
-    const service = evt.currentTarget.name
-    const value = evt.currentTarget.checked
-    setInvalidation((x) => ({ ...x, [service as keyof ISupportedServices]: value }))
-  }
-
+export const VerificationTable = ({
+  hasSequenceStarted,
+  handleInvalidation,
+  handleToBePaid,
+  invalidateValues,
+  toBePaidValues
+}: IVerifTableProps) => {
   return (
     <table className="table-fixed w-full">
       <thead>
@@ -54,24 +41,24 @@ export const VerificationTable = ({ hasSequenceStarted }: IVerifTableProps) => {
         </tr>
       </thead>
       <tbody>
-        {Object.entries(toBePaid).map(([service, value]) => (
+        {Object.entries(toBePaidValues).map(([service, value]) => (
           <tr key={service} className="space-y-1">
             <td>{service}</td>
             <td>
               <VerificationTable.CheckMethod
                 name={service}
-                isChecked={toInvalidate[service]}
+                isChecked={invalidateValues[service]}
                 isDisabled={hasSequenceStarted}
                 onChange={handleInvalidation}
               >
-                <FormattedMessage id={toInvalidate[service] ? 'common.no' : 'common.yes'} />
+                <FormattedMessage id={invalidateValues[service] ? 'common.no' : 'common.yes'} />
               </VerificationTable.CheckMethod>
             </td>
             <td>
               <VerificationTable.CheckMethod
                 name={service}
                 isChecked={value}
-                isDisabled={hasSequenceStarted || toInvalidate[service]}
+                isDisabled={hasSequenceStarted || invalidateValues[service]}
                 onChange={handleToBePaid}
               >
                 <FormattedMessage

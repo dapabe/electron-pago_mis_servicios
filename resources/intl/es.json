@@ -16,6 +16,7 @@
 
   "page.home.tab.verify.title": "Verificación",
   "page.home.tab.verify.description": "Verifica qué y como quieres pagar tus servicios.",
+  "page.home.tab.verify.no-services": "No tienes servicios ni metodos de pago asociados, por favor, crea uno en",
   "page.home.tab.verify.init": "Iniciar",
   "page.home.tab.verify.table.col-1": "Servicio",
   "page.home.tab.verify.table.col-2": "¿Validar?",
