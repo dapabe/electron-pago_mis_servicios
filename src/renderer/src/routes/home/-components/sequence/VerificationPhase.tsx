@@ -1,5 +1,4 @@
 import { FormattedMessage } from 'react-intl'
-import { IpcEvent } from '#shared/constants/ipc-events'
 import { useAppSequence } from '#renderer/hooks/useAppSequence.hook'
 import { VerificationTable } from './Verification.table'
 import { ChangeEvent, useMemo, useState } from 'react'
@@ -7,11 +6,12 @@ import { ISupportedServices } from '#shared/constants/supported-services'
 import { twJoin } from 'tailwind-merge'
 import { useTabPanel } from '#renderer/hooks/useTabPanel.hook'
 import { useUserDataStore } from '#renderer/stores/user-data.store'
+import { IpcEvent } from '#shared/constants/ipc-events'
 
 const createDefaultValues = <T extends object | undefined>(obj: T, defaultValue: boolean) => {
   const temp = {} as Record<ISupportedServices, boolean>
 
-  if (obj === undefined) return temp
+  if (!obj || !Object.keys(obj).length) return temp
 
   for (const service of Object.keys(obj)) {
     temp[service] = defaultValue
@@ -22,16 +22,19 @@ const createDefaultValues = <T extends object | undefined>(obj: T, defaultValue:
 
 export const VerificationPhase = () => {
   const { data } = useUserDataStore()
-
   const { hasSequenceStarted } = useAppSequence()
+  const { goToTab } = useTabPanel()
 
   const [valuesToBePaid, setToBePaid] = useState(createDefaultValues(data?.serviceFields, false))
   const [valuesToInvalidate, setInvalidation] = useState(
-    createDefaultValues(data?.serviceFields, true)
+    createDefaultValues(data?.serviceFields, false)
   )
-  const { goToTab } = useTabPanel()
 
   const hasServices = useMemo(() => Object.keys(valuesToBePaid).length > 0, [data?.serviceFields])
+  const noSelectedServices = useMemo(
+    () => Object.values(valuesToInvalidate).every(Boolean),
+    [valuesToInvalidate]
+  )
 
   const handleToBePaid = (evt: ChangeEvent<HTMLInputElement>) => {
     const service = evt.currentTarget.name
@@ -45,9 +48,14 @@ export const VerificationPhase = () => {
   }
 
   const handleSequence = async () => {
-    await window.electron.ipcRenderer.invoke(IpcEvent.Sequence.Started)
-  }
+    const strippedServices = {}
 
+    for (const [service, value] of Object.entries(valuesToBePaid)) {
+      if (valuesToInvalidate[service]) continue
+      strippedServices[service] = value
+    }
+    await window.electron.ipcRenderer.invoke(IpcEvent.Sequence.Started, strippedServices)
+  }
   return (
     <section className="space-y-2">
       <p>
@@ -57,8 +65,8 @@ export const VerificationPhase = () => {
         <legend>
           <button
             onClick={handleSequence}
-            className={twJoin(hasServices && 'default', 'ml-auto')}
-            disabled={hasSequenceStarted || !hasServices}
+            className={twJoin(!noSelectedServices && 'default', 'ml-auto')}
+            disabled={hasSequenceStarted || !hasServices || noSelectedServices}
           >
             <FormattedMessage id="page.home.tab.verify.init" />
           </button>

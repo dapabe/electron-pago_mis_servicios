@@ -6,7 +6,7 @@
   "common.no": "No",
 
   "flags.secure.text": "Modo seguro",
-  "flags.secure.label": "Oculta mi información sensible",
+  "flags.secure.label": "Oculta información sensible",
   "flags.headless.text": "Abrir navegador",
   "flags.headless.label": "Precaución: Ver, pero no tocar",
 

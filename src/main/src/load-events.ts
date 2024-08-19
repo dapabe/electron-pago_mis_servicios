@@ -42,8 +42,8 @@ export async function loadBrowserEvents(browser: BrowserWindow) {
    *  Main application sequence
    */
   const sequence = new Sequence(browser)
-  const seqInit = async () => {
-    await sequence.initialize()
+  const seqInit = async (_: any, ...values: any[]) => {
+    await sequence.initialize(values[0])
   }
 
   ipcMain.handle(IpcEvent.Sequence.Started, seqInit)
