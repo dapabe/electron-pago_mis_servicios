@@ -14,6 +14,6 @@ export class SequenceUtilities {
   }
 
   protected closePlaywright() {
-    this.BrWindow.webContents.send(IpcEvent.Sequence.ToggleInternal, true)
+    this.BrWindow.webContents.send(IpcEvent.Sequence.ToggleInternal)
   }
 }

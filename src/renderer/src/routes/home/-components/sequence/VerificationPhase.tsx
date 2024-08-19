@@ -4,7 +4,7 @@ import { useAppSequence } from '#renderer/hooks/useAppSequence.hook'
 import { VerificationTable } from './Verification.table'
 
 export const VerificationPhase = () => {
-  const { sequenceDisabled } = useAppSequence()
+  const { hasSequenceStarted } = useAppSequence()
 
   const handleSequence = async () => {
     await window.electron.ipcRenderer.invoke(IpcEvent.Sequence.Started)
@@ -12,14 +12,16 @@ export const VerificationPhase = () => {
 
   return (
     <section className="space-y-2">
-      <p>Verifica que servicios que hayas seleccionado pagaras</p>
+      <p>
+        <FormattedMessage id="page.home.tab.verify.description" />
+      </p>
       <fieldset>
         <legend>
-          <button onClick={handleSequence} className="ml-auto" disabled={!sequenceDisabled}>
+          <button onClick={handleSequence} className="ml-auto" disabled={hasSequenceStarted}>
             <FormattedMessage id="page.home.tab.verify.init" />
           </button>
         </legend>
-        <VerificationTable />
+        <VerificationTable hasSequenceStarted={hasSequenceStarted} />
       </fieldset>
     </section>
   )

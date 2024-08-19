@@ -8,7 +8,7 @@ export const RootRoute = (): JSX.Element => {
     <WindowBody>
       <div className="window-body flex flex-col min-h-80">
         <NavBar />
-        <div className="p-2">
+        <div className="p-2 overflow-y-auto">
           <Outlet />
         </div>
       </div>

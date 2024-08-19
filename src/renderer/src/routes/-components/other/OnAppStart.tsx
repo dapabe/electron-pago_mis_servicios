@@ -7,8 +7,8 @@ import { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 
 export const OnAppStart = () => {
-  const { setVersion } = useAppDataStore()
   const { setConfig, setFlag } = useUserDataStore()
+  const { setVersion } = useAppDataStore()
   const intl = useIntl()
 
   useEffect(() => {

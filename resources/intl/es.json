@@ -2,6 +2,9 @@
   "appTitle": "Pago mis servicios",
   "language": "Español",
 
+  "common.yes": "Si",
+  "common.no": "No",
+
   "flags.secure.text": "Modo seguro",
   "flags.secure.label": "Oculta mi información sensible",
   "flags.headless.text": "Abrir navegador",
@@ -12,9 +15,16 @@
   "root.navBar.help.title": "Ayuda",
 
   "page.home.tab.verify.title": "Verificación",
-  "page.home.tab.verify.init": "Iniciar verificación",
+  "page.home.tab.verify.description": "Verifica qué y como quieres pagar tus servicios.",
+  "page.home.tab.verify.init": "Iniciar",
+  "page.home.tab.verify.table.col-1": "Servicio",
+  "page.home.tab.verify.table.col-2": "¿Validar?",
+  "page.home.tab.verify.table.col-3": "Metodo de pago",
+  "page.home.tab.verify.table.with-account": "Con cuenta",
+  "page.home.tab.verify.table.no-account": "Sin cuenta",
   "page.home.tab.payMethods.title": "Metodos de pago",
   "page.home.tab.services.title": "Servicios",
-  "page.home.tab.toBePaid.title": "Paso a pagar",
-  "page.home.tab.toBePaid.bill.text": "Monto a pagar"
+
+  "errors.service.unavailable": "No disponible",
+  "errors.service.not-found": "No encontrado"
 }

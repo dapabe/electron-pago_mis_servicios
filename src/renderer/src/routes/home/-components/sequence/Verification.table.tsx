@@ -1,48 +1,86 @@
 import { ISupportedServices } from '#shared/constants/supported-services'
 import { UserServiceManager } from '#shared/schemas/userServiceField.schema'
-import { ChangeEvent, PropsWithChildren, useId } from 'react'
-import { useForm } from 'react-hook-form'
+import { ChangeEvent, PropsWithChildren, useId, useState } from 'react'
+import { FormattedMessage } from 'react-intl'
 
-export const VerificationTable = () => {
-  const createDefaultValues = () => {
-    const temp = {} as Record<keyof ISupportedServices, null | boolean>
+const createDefaultValues = () => {
+  const temp = {} as Record<ISupportedServices, boolean>
 
-    for (const service of Object.keys(UserServiceManager.getLastSchema().shape)) {
-      temp[service] = false
-    }
-
-    return temp
+  for (const service of Object.keys(UserServiceManager.getLastSchema().shape)) {
+    temp[service] = null
   }
 
-  const { getValues, setValue } = useForm({
-    values: createDefaultValues()
-  })
+  return temp
+}
 
-  const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    console.log(evt.currentTarget.name as any, evt.currentTarget.checked)
-    setValue(evt.currentTarget.name as any, evt.currentTarget.checked)
+type IVerifTableProps = {
+  hasSequenceStarted: boolean
+}
+
+export const VerificationTable = ({ hasSequenceStarted }: IVerifTableProps) => {
+  const [toBePaid, setToBePaid] = useState(createDefaultValues())
+  const [toInvalidate, setInvalidation] = useState(createDefaultValues())
+
+  const handleToBePaid = (evt: ChangeEvent<HTMLInputElement>) => {
+    const service = evt.currentTarget.name
+    const value = evt.currentTarget.checked
+    setToBePaid((x) => ({ ...x, [service as keyof ISupportedServices]: value }))
+  }
+  const handleInvalidation = (evt: ChangeEvent<HTMLInputElement>) => {
+    const service = evt.currentTarget.name
+    const value = evt.currentTarget.checked
+    setInvalidation((x) => ({ ...x, [service as keyof ISupportedServices]: value }))
   }
 
   return (
     <table className="table-fixed w-full">
       <thead>
         <tr>
-          <th>Service</th>
-          <th>Metodo de pago</th>
-          {/* <th></th> */}
+          <th>
+            <div className="w-max mr-auto underline">
+              <FormattedMessage id="page.home.tab.verify.table.col-1" />
+            </div>
+          </th>
+          <th>
+            <div className="w-max mr-auto underline">
+              <FormattedMessage id="page.home.tab.verify.table.col-2" />
+            </div>
+          </th>
+          <th>
+            <div className="w-max mr-auto underline">
+              <FormattedMessage id="page.home.tab.verify.table.col-3" />
+            </div>
+          </th>
         </tr>
       </thead>
       <tbody>
-        {Object.keys(UserServiceManager.getLastSchema().shape).map((service) => (
+        {Object.entries(toBePaid).map(([service, value]) => (
           <tr key={service} className="space-y-1">
             <td>{service}</td>
-            <td className="flex justify-center gap-0 border py-1 border-gray-300">
+            <td>
               <VerificationTable.CheckMethod
                 name={service}
-                isChecked={getValues()[service]}
-                onChange={handleChange}
+                isChecked={toInvalidate[service]}
+                isDisabled={hasSequenceStarted}
+                onChange={handleInvalidation}
               >
-                {getValues()[service] ? 'Con cuenta' : 'Sin cuenta'}
+                <FormattedMessage id={toInvalidate[service] ? 'common.no' : 'common.yes'} />
+              </VerificationTable.CheckMethod>
+            </td>
+            <td>
+              <VerificationTable.CheckMethod
+                name={service}
+                isChecked={value}
+                isDisabled={hasSequenceStarted || toInvalidate[service]}
+                onChange={handleToBePaid}
+              >
+                <FormattedMessage
+                  id={
+                    value
+                      ? 'page.home.tab.verify.table.with-account'
+                      : 'page.home.tab.verify.table.no-account'
+                  }
+                />
               </VerificationTable.CheckMethod>
             </td>
           </tr>
@@ -54,15 +92,23 @@ export const VerificationTable = () => {
 
 type ICheckMethodProps = PropsWithChildren & {
   isChecked?: boolean
+  isDisabled?: boolean
   name: string
   onChange: (evt: ChangeEvent<HTMLInputElement>) => void
 }
 
-const CheckMethod = ({ children, isChecked, name, onChange }: ICheckMethodProps) => {
+const CheckMethod = ({ children, isChecked, name, isDisabled, onChange }: ICheckMethodProps) => {
   const id = useId() + 'cm'
   return (
-    <div>
-      <input id={id} type="radio" name={name} checked={isChecked} onChange={onChange} />
+    <div className="w-max mr-auto">
+      <input
+        id={id}
+        type="checkbox"
+        name={name}
+        checked={isChecked}
+        onChange={onChange}
+        disabled={isDisabled}
+      />
       <label htmlFor={id}>{children}</label>
     </div>
   )

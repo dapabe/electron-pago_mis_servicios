@@ -28,7 +28,6 @@
     "electron-updater": "^6.1.7",
     "immer": "10.1.1",
     "playwright-core": "^1.46.0",
-    "react-hook-form": "7.52.2",
     "react-intl": "6.6.8",
     "react-router-dom": "6.26.0",
     "semver": "7.6.3",

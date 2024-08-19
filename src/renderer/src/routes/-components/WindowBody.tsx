@@ -8,7 +8,7 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
   const handleClose = () => window.electron.ipcRenderer.send('closeApp')
 
   return (
-    <div className="window active min-h-[100vh]">
+    <div className="window active min-h-[100vh] max-h-[100vh]">
       <div className={`title-bar ${style.draggable}`}>
         <div className="title-bar-text">
           <FormattedMessage id="appTitle" />

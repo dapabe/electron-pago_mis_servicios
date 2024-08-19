@@ -1,23 +1,23 @@
+import { useImplicitToggle } from '#renderer/hooks/useImplicitToggle.hook'
 import { useIpcListener } from '#renderer/hooks/useIpcListener.hook'
 import { IpcEvent } from '#shared/constants/ipc-events'
-import { useToggle } from '@uidotdev/usehooks'
 import { createContext, PropsWithChildren } from 'react'
 
 type IAppSequence = {
-  sequenceDisabled: boolean
+  hasSequenceStarted: boolean
 }
 
 const SequenceContext = createContext<IAppSequence | null>(null)
 
 export const AppSequenceProvider = ({ children }: PropsWithChildren) => {
-  const [sequenceDisabled, toggleSeqDisabled] = useToggle(true)
+  const [hasSequenceStarted, toggleSeqDisabled] = useImplicitToggle(false)
 
-  useIpcListener(IpcEvent.Sequence.ToggleInternal, (_, v) => toggleSeqDisabled(v))
+  useIpcListener(IpcEvent.Sequence.ToggleInternal, () => toggleSeqDisabled())
 
   return (
     <AppSequenceProvider.CTX.Provider
       value={{
-        sequenceDisabled
+        hasSequenceStarted
       }}
     >
       {children}
