@@ -16,7 +16,10 @@ export const OnAppStart = () => {
   }, [intl.locale])
 
   useIpcListener(IpcEvent.AppVersion, (_, v) => setVersion(v))
-  useIpcListener(IpcEvent.Config.SendInitialConfig, (_, v) => setConfig(v))
+  useIpcListener(IpcEvent.Config.SendInitialConfig, (_, v) => {
+    setConfig(v)
+    console.log(v)
+  })
 
   for (const flag of Object.keys(
     FlagConfigManager.getLastSchema().shape

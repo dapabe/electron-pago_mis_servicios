@@ -1,5 +1,5 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, globalShortcut, ipcMain } from 'electron'
 import { Sequence } from './sequence/Sequence'
 import { AppStore } from './app-store'
 import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
@@ -18,6 +18,10 @@ export async function loadBrowserEvents(browser: BrowserWindow) {
    */
   browser.webContents.once('did-finish-load', () => {
     browser.webContents.send(IpcEvent.AppVersion, app.getVersion())
+    browser.webContents.send(IpcEvent.Config.SendInitialConfig, AppStore.getState().fileData)
+  })
+
+  globalShortcut.register('F5', () => {
     browser.webContents.send(IpcEvent.Config.SendInitialConfig, AppStore.getState().fileData)
   })
 
