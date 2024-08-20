@@ -22,8 +22,8 @@ export class Sequence extends SequenceUtilities {
 
       const page = await this.CTX.newPage()
       await page.goto('https://www.youtube.com', { waitUntil: 'domcontentloaded' })
-      await page.close()
-      this.closePlaywright()
+
+      // this.closePlaywright()
       // await this.BRO.close()
     } catch (error) {
       console.log(error)
