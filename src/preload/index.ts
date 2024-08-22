@@ -1,25 +1,6 @@
-import { contextBridge as bridge, ipcRenderer } from 'electron'
+import { contextBridge as bridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { IpcEvent } from '#shared/constants/ipc-events'
-import { StatusCodes } from 'http-status-codes'
-import { IpcIntegrityLoginSchema } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
-import { IpcResponse } from '#shared/utilities/IpcResponse'
-
-// Custom APIs for renderer
-export const preloadApi = {
-  integrityInitialize: async () => await ipcRenderer.invoke(IpcEvent.Integrity.Initialize),
-  integrityLogin: async (data: unknown): Promise<IpcResponse> => {
-    const validated = IpcIntegrityLoginSchema.safeParse(data)
-    if (!validated.success) {
-      return new IpcResponse(StatusCodes.BAD_REQUEST)
-    }
-    //todo check pass ok
-
-    await ipcRenderer.invoke(IpcEvent.Integrity.Login, validated.data)
-
-    return new IpcResponse(StatusCodes.OK)
-  }
-} as const
+import { preloadApi } from './preloadApi'
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

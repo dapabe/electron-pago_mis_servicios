@@ -1,16 +1,24 @@
-import { useAppDataStore } from '#renderer/stores/app-data.store'
-import { useUserDataStore } from '#renderer/stores/user-data.store'
-import { IpcEventReturnType } from '#shared/types/ipc-returnTypes'
-import { useState } from 'react'
+import { IpcEvent } from '#shared/constants/ipc-events'
+import { useQuery } from '@tanstack/react-query'
 import { IntlProvider } from 'react-intl'
-import { LoaderFunction, Navigate } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
+import { WindowBody } from './-components/WindowBody'
 
-export const RootRoute = (): JSX.Element => {
-  const appStore = useAppDataStore()
-  const userStore = useUserDataStore()
+export const RootRoute = () => {
+  const { data: appInfo, isSuccess: isSuc1 } = useQuery({
+    queryKey: [IpcEvent.Integrity.Initialize],
+    queryFn: window.api.integrityInitialize
+  })
+  const { data: translations, isSuccess: isSuc2 } = useQuery({
+    queryKey: [IpcEvent.Language.Messages],
+    queryFn: window.api.getTranslation,
+    enabled: !!appInfo
+  })
+  // const appStore = useAppDataStore()
+  // const userStore = useUserDataStore()
 
-  const [languageMessages, setMessages] = useState<IpcEventReturnType['LanguageChange']>({})
-  const [preferredLocale, setPreferred] = useState<string>('es')
+  // const [languageMessages, setMessages] = useState<IpcEventReturnType['LanguageChange']>({})
+  // const [preferredLocale, setPreferred] = useState<string>('es')
 
   // useIpcListener(
   //   IpcEvent.Config.InitialConfig,
@@ -29,22 +37,19 @@ export const RootRoute = (): JSX.Element => {
   //   }
   // )
 
+  if (!isSuc1 || !isSuc2) return null
+
   return (
     <IntlProvider
-      locale={preferredLocale}
+      // locale={preferredLocale}
+      locale={appInfo[1].preferredLocale}
       defaultLocale="es"
-      messages={languageMessages}
-      onError={undefined}
+      messages={translations[1]}
+      onError={() => undefined}
     >
-      <Navigate to={'/app'} />
+      <WindowBody>
+        <Outlet />
+      </WindowBody>
     </IntlProvider>
   )
 }
-
-const loader: LoaderFunction = async () => {
-  // window.electron.ipcRenderer.send(IpcEvent.Config.InitialConfig)
-  // window.electron.ipcRenderer.send(IpcEvent.LanguageChange.Send)
-  return null
-}
-
-RootRoute.loader = loader

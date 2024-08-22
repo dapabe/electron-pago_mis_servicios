@@ -6,20 +6,19 @@ import { FileIntegrity } from './FileIntegrity'
 
 export async function* verifyFileIntegrity() {
   const appStore = AppStore.getState()
+
   const settingsIntegrity = new FileIntegrity({
     filePath: AppStore.getState().settingsFilePath,
     defaultData: AppSettingsManager.getLastSchema().parse({}),
     zodSchema: AppSettingsManager.getLastSchema(),
-    onError: () => yield IpcEvent.Integrity.Verify.Settings.NotFound
+    onError: () => IpcEvent.Integrity.Verify.Settings.NotFound,
+    onSuccess: () => IpcEvent.Integrity.Verify.Settings.Found
   })
-  const storedSettings = await settingsIntegrity.isFileOk()
-  yield IpcEvent.Integrity.Verify.Settings.Found
+  const { onFinal, data } = await settingsIntegrity.isFileOk()
 
-  appStore.setSettings(storedSettings as IAppSettingsManager)
+  yield onFinal
+  appStore.setSettings(data as IAppSettingsManager)
 
-  // console.log(storedSettings, AppStore.getState().settingsFilePath)
-
-  // let databasePath = settingsIntegrity.config.defaultData.databaseFilePath
   const dbExists = await doesFileExists(appStore.settingsData.databaseFilePath ?? '')
   if (!dbExists) yield IpcEvent.Integrity.Verify.Db.NotFound
   else yield IpcEvent.Integrity.Verify.Db.Found

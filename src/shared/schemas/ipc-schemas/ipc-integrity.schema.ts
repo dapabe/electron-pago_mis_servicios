@@ -1,11 +1,19 @@
 import { z } from 'zod'
+import { AppSettingsManager } from '../settings.schema'
 
-export const IpcIntegrityInitializeSchema = z.object({
-  dbFilePath: z.string().trim().min(1),
-  skipServer: z.boolean()
-})
+export const IpcIntegrityInitializeSchema = AppSettingsManager.getLastSchema()
+  .omit({
+    flags: true
+  })
+  .merge(
+    z.object({
+      databaseFilePath: z.string().trim().min(1),
+      hasDB: z.boolean(),
+      skipServer: z.boolean()
+    })
+  )
 
-export const IpcIntegrityLoginSchema = IpcIntegrityInitializeSchema.extend({
+export const IpcIntegrityLoginSchema = IpcIntegrityInitializeSchema.omit({ hasDB: true }).extend({
   password: z.string().trim().min(1)
 })
 

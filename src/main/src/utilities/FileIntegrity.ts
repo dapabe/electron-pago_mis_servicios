@@ -2,27 +2,20 @@ import { PromisedValue } from '#shared/utilities/promised-value'
 import fs from 'node:fs/promises'
 import { z } from 'zod'
 
-type IFileIntegrityConfig<DataType> = {
+type IFileIntegrityConfig<DataType, T> = {
   filePath: string
   defaultData: DataType
   zodSchema: z.ZodType<DataType>
   // parseFn?: ParseFn
-  onError?: (error: Error) => void
+  onError?: (error: Error) => T
+  onSuccess?: () => T
 }
-
-type NonNullableKeys<T extends object> = {
-  [K in keyof T]: T[K] extends NonNullable<T[K]> ? K : never
-}[keyof T]
-type NonOptionalKeys<T extends object> = {
-  [K in keyof T]-?: {} extends Pick<T, K> ? never : K
-}[keyof T]
-type OnlyDefinedFields<T extends object> = Pick<T, NonNullableKeys<T>>
 
 /**
  *  Assumes files are .json / utf-8 encoding
  */
-export class FileIntegrity<DataType extends object> {
-  constructor(public config: IFileIntegrityConfig<DataType>) {}
+export class FileIntegrity<DataType extends object, onFinal> {
+  constructor(public config: IFileIntegrityConfig<DataType, NonNullable<onFinal>>) {}
 
   async isFileOk() {
     let [fileError, fileData] = await PromisedValue(
@@ -32,8 +25,9 @@ export class FileIntegrity<DataType extends object> {
     fileData ??= JSON.stringify(this.config.defaultData)
 
     if (fileError instanceof Error) {
-      this.config.onError?.(fileError)
+      const onFinal = this.config.onError?.(fileError)
       await fs.writeFile(this.config.filePath, fileData)
+      return { onFinal, data: this.config.defaultData }
     }
 
     const parsedData = JSON.parse(fileData)
@@ -42,7 +36,7 @@ export class FileIntegrity<DataType extends object> {
     if (!verifiedData.success) {
       await fs.writeFile(this.config.filePath, fileData)
     }
-
-    return verifiedData.data!
+    const onFinal = this.config.onSuccess?.()
+    return { onFinal, data: verifiedData.data! }
   }
 }

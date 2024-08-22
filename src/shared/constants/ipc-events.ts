@@ -28,13 +28,12 @@ export const IpcEvent = {
   },
   Db: {
     Password: {
-      Create: 'db.password.create',
+      // Create: 'db.password.create',
       Update: 'db.password.update'
     }
   },
-  LanguageChange: {
-    Req: 'req.language-change',
-    Res: 'res.language-change'
+  Language: {
+    Messages: 'language.messages'
   },
   Settings: {
     Request: 'settings.req',
