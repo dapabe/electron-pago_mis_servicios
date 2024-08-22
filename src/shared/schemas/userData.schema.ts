@@ -1,6 +1,10 @@
 import { z } from 'zod'
-import { FlagConfigManager } from './flags.schema.js'
-import { IValidVersions, SchemaUtilities, ZodSchemaManager } from './ZodSchemaManager.js'
+import {
+  ExtractSchemaManagerType,
+  IValidVersions,
+  SchemaUtilities,
+  ZodSchemaManager
+} from './ZodSchemaManager.js'
 import { UserServiceManager } from './userServiceField.schema.js'
 
 type LastV = '0.0.0'
@@ -13,7 +17,7 @@ class UserDataSchema
   implements SchemaUtilities
 {
   static '0.0.0' = z.object({
-    flags: FlagConfigManager.getLastSchema().default({}),
+    // flags: FlagConfigManager.getLastSchema().default({}),
     serviceFields: UserServiceManager.getLastSchema().default({})
     // paymentMethods: StoredPaymentMethodManager.getLastSchema().optional().array().default([])
   })
@@ -29,6 +33,5 @@ class UserDataSchema
 
 export const UserDataManager = new UserDataSchema()
 
-export type IUserData<V extends IValidVersions<typeof UserDataSchema> = LastV> = z.TypeOf<
-  (typeof UserDataSchema)[V]
->
+export type IUserData<V extends IValidVersions<typeof UserDataSchema> = LastV> =
+  ExtractSchemaManagerType<typeof UserDataSchema, V>

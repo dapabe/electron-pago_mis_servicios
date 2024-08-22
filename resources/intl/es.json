@@ -25,6 +25,9 @@
   "page.home.tab.verify.table.no-account": "Sin cuenta",
   "page.home.tab.payMethods.title": "Metodos de pago",
   "page.home.tab.services.title": "Servicios",
+  "page.home.tab.services.description": "Puedes optar por añadir servicios por el número de cuenta o cuenta personal.",
+  "page.home.tab.services.tab.add": "Añadir",
+  "page.home.tab.services.tab.edit": "Editar ({amount})",
 
   "errors.service.unavailable": "No disponible",
   "errors.service.not-found": "No encontrado"

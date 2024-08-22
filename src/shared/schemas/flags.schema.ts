@@ -9,7 +9,7 @@ class FlagConfigSchema
 {
   static '0.0.0' = z.object({
     secure: z.boolean().default(true),
-    headless: z.boolean().default(true)
+    skipServer: z.boolean().default(false)
   })
 
   constructor() {

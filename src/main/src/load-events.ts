@@ -1,28 +1,71 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
-import { app, BrowserWindow, globalShortcut, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { Sequence } from './sequence/Sequence'
-import { AppStore } from './app-store'
+import { AppStore } from './stores/app-store'
 import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
+import path from 'path'
+import fs from 'node:fs/promises'
+import { IpcEventReturnType } from '#shared/types/ipc-returnTypes'
+import { PromisedValue } from '#shared/utilities/promised-value'
+import { StatusCodes } from 'http-status-codes'
+import { ISupportedServices } from '#shared/constants/supported-services'
 
-export async function loadBrowserEvents(browser: BrowserWindow) {
+export async function loadBrowserEvents() {
   /**
    *  Custom application behaviour
    */
-  ipcMain.on(IpcEvent.ToggleMaximize, () => {
-    if (browser.isMinimized()) browser.maximize()
-    else browser.minimize()
+  ipcMain.on(IpcEvent.ToggleMaximize, (evt) => {
+    if (BrowserWindow.fromWebContents(evt.sender)!.isMinimized())
+      BrowserWindow.fromWebContents(evt.sender)!.maximize()
+    else BrowserWindow.fromWebContents(evt.sender)!.minimize()
   })
 
-  /**
-   *  Initial application ipc events
-   */
-  browser.webContents.once('did-finish-load', () => {
-    browser.webContents.send(IpcEvent.AppVersion, app.getVersion())
-    browser.webContents.send(IpcEvent.Config.SendInitialConfig, AppStore.getState().fileData)
+  ipcMain.handle(IpcEvent.Config.InitialConfig, async () => {
+    const [intlListErr, intlList] = await PromisedValue(
+      async () => await fs.readdir(path.resolve('resources', 'intl'))
+    )
+
+    if (intlListErr) {
+      return [
+        {
+          message: intlListErr.message,
+          status: StatusCodes.INTERNAL_SERVER_ERROR
+        } satisfies IpcEventReturnType['Error'],
+        null
+      ]
+    }
+
+    return [
+      null,
+      {
+        appVersion: app.getVersion(),
+        preferredLocale: 'es',
+        locales: intlList!.map((x) => x.split('.')[0]),
+        config: AppStore.getState().fileData
+      } satisfies IpcEventReturnType['Config']['InitialConfig']
+    ]
   })
 
-  globalShortcut.register('F5', () => {
-    browser.webContents.send(IpcEvent.Config.SendInitialConfig, AppStore.getState().fileData)
+  ipcMain.handle(IpcEvent.LanguageChange.Res, async () => {
+    const [intlErr, intlMessage] = await PromisedValue(
+      async () =>
+        await fs.readFile(
+          path.resolve('resources', 'intl', `${AppStore.getState().preferredLocale}.json`),
+          'utf8'
+        )
+    )
+
+    if (intlErr) {
+      return [
+        {
+          message: intlErr.message,
+          status: StatusCodes.NOT_FOUND
+        } satisfies IpcEventReturnType['Error'],
+        null
+      ]
+    }
+
+    return [null, JSON.parse(intlMessage)]
   })
 
   /**
@@ -34,25 +77,27 @@ export async function loadBrowserEvents(browser: BrowserWindow) {
     const ipcFlag = IpcEvent.Config.Flags(flag)
     ipcMain.handle(ipcFlag, async () => {
       await AppStore.getState().toggleFlag(flag)
-      browser.webContents.send(ipcFlag, AppStore.getState().fileData.flags[flag])
+      return AppStore.getState().fileData.flags[flag]
     })
   }
 
   /**
    *  Main application sequence
    */
-  const sequence = new Sequence(browser)
-  const seqInit = async (_: any, ...values: any[]) => {
-    await sequence.initialize(values[0])
+  const seqInit = async (
+    evt: Electron.IpcMainInvokeEvent,
+    value: Record<ISupportedServices, boolean>
+  ) => {
+    const sequence = new Sequence(BrowserWindow.fromWebContents(evt.sender)!)
+    await sequence.initialize(value)
   }
 
   ipcMain.handle(IpcEvent.Sequence.Started, seqInit)
 
-  ipcMain.on(IpcEvent.CloseApp, () => {
-    sequence.CTX?.close()
-    sequence.BRO?.close()
-    ipcMain.removeListener(IpcEvent.Sequence.Started, seqInit)
+  ipcMain.on(IpcEvent.CloseApp, (evt) => {
+    ipcMain.removeHandler(IpcEvent.Sequence.Started)
+    // ipcMain.removeListener(IpcEvent.Sequence.Started, seqInit)
 
-    browser.close()
+    BrowserWindow.fromWebContents(evt.sender)?.close()
   })
 }

@@ -2,38 +2,8 @@ import { useUserDataStore } from '#renderer/stores/user-data.store'
 import { SupportedServices } from '#shared/constants/supported-services'
 import { ChangeEvent, KeyboardEvent, useId, useMemo, useState } from 'react'
 
-export const ServiceAccounts = () => {
-  // const { data } = useUserDataStore()
-  return (
-    <section className="space-y-2">
-      <p>desc</p>
-      <fieldset>
-        <legend>
-          <button type="button" className="default">
-            Añadir
-          </button>
-        </legend>
-        <form action="" className="flex">
-          <ServiceAccounts.LoginFieldsForm />
-          <ServiceAccounts.AddServiceForm />
-        </form>
-      </fieldset>
-    </section>
-  )
-}
-const LoginFields = () => {
-  return (
-    <div className="flex">
-      <div className="w-min">
-        <label htmlFor="username">Nombre de usuario</label>
-        <input type="text" name="username" id="username" />
-      </div>
-    </div>
-  )
-}
-
 type IAddServiceProps = {}
-const AddService = ({}: IAddServiceProps) => {
+export const ServiceListForm = ({}: IAddServiceProps) => {
   const { data } = useUserDataStore()
   const [current, setCurrent] = useState('')
   const id = useId() + 'list'
@@ -84,6 +54,3 @@ const AddService = ({}: IAddServiceProps) => {
     </div>
   )
 }
-
-ServiceAccounts.AddServiceForm = AddService
-ServiceAccounts.LoginFieldsForm = LoginFields

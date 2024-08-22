@@ -3,6 +3,8 @@ import type { z } from 'zod'
 import type { ZodSemverUnbranded } from 'zod-semver'
 
 export type IValidVersions<V> = Extract<keyof V, `${number}.${number}.${number}`>
+export type ExtractSchemaManagerType<O, K extends keyof O> =
+  O[K] extends z.ZodType<any, any, any> ? z.TypeOf<O[K]> : never
 
 export interface SchemaUtilities {
   getLastSchema(): z.ZodType

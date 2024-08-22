@@ -1,4 +1,3 @@
-import pkg from 'package.json'
 import { z } from 'zod'
 import { ZodSemverUnbranded } from 'zod-semver'
 import { IValidVersions, SchemaUtilities, ZodSchemaManager } from './ZodSchemaManager'
@@ -13,8 +12,9 @@ class EncryptedDataSchema
   implements SchemaUtilities
 {
   static '0.0.0' = z.object({
-    version: ZodSemverUnbranded.default(pkg.version),
-    salt: z.string(),
+    preferredLocale: z.string().trim().default('es'),
+    version: ZodSemverUnbranded,
+    salt: z.string().trim(),
     encryptedData: z.string()
   })
 

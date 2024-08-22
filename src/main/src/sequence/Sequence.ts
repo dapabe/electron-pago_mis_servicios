@@ -3,6 +3,7 @@ import { BrowserWindow } from 'electron'
 import { chromium } from 'playwright-core'
 import { SequenceUtilities } from './Sequence-utils'
 import { ISupportedServices } from '#shared/constants/supported-services'
+import { is } from '@electron-toolkit/utils'
 
 export class Sequence extends SequenceUtilities {
   constructor(browser: BrowserWindow) {
@@ -14,7 +15,7 @@ export class Sequence extends SequenceUtilities {
    */
   public async initialize(servicesToCheck: Record<ISupportedServices, boolean>) {
     try {
-      this.BRO = await chromium.launch({ headless: process.env.NODE_ENV === 'production' })
+      this.BRO = await chromium.launch({ headless: is.dev })
       this.CTX = await this.BRO.newContext()
       this.BrWindow.webContents.send(IpcEvent.Sequence.ToggleInternal)
 

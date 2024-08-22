@@ -1,24 +1,30 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 import style from '#renderer/assets/WindowBody.module.css'
-import { FormattedMessage } from 'react-intl'
+import { NavBar } from '../home/-components/NavBar'
+import { WindowStatus } from './WindowStatus'
+import { twJoin } from 'tailwind-merge'
 
-type Props = PropsWithChildren
-export const WindowBody = ({ children }: Props): JSX.Element => {
+type Props = PropsWithChildren<{
+  title: ReactNode
+}>
+export const WindowBody = ({ children, title }: Props): JSX.Element => {
   const handleMinMax = () => window.electron.ipcRenderer.send('toggle-maximize')
   const handleClose = () => window.electron.ipcRenderer.send('closeApp')
 
   return (
-    <div className="window active min-h-[100vh] max-h-[100vh]">
-      <div className={`title-bar ${style.draggable}`}>
-        <div className="title-bar-text">
-          <FormattedMessage id="appTitle" />
-        </div>
+    <div className="window active max-h-[100vh]">
+      <div className={twJoin(`title-bar ${style.draggable}`, 'flex flex-row')}>
+        <div className="title-bar-text">{title}</div>
         <div className={`title-bar-controls ${style.noDraggable}`}>
           <button aria-label="Minimize" onClick={handleMinMax}></button>
           <button aria-label="Close" onClick={handleClose}></button>
         </div>
       </div>
-      {children}
+      <div className="window-body flex flex-col h-80">
+        <NavBar />
+        <div className="p-2 overflow-y-auto">{children}</div>
+      </div>
+      <WindowStatus />
     </div>
   )
 }

@@ -2,13 +2,13 @@ import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { loadBrowserEvents } from './src/load-events'
+import { onStartUp } from './src/on-startup'
 
 let mainWindow: BrowserWindow
 
-function createWindow(): void {
+function createWindow(): BrowserWindow {
   // Create the browser window.
-  mainWindow = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     width: 500,
     height: 400,
     resizable: false,
@@ -42,8 +42,7 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  loadBrowserEvents(mainWindow)
-  mainWindow.webContents.openDevTools()
+  return mainWindow
 }
 
 // This method will be called when Electron has finished
@@ -60,13 +59,17 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  createWindow()
+  mainWindow = createWindow()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  if (is.dev) mainWindow.webContents.openDevTools()
+
+  onStartUp(mainWindow)
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -80,3 +83,5 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+
+// loadBrowserEvents()

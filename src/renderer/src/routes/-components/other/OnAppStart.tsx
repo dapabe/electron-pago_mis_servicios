@@ -5,6 +5,8 @@ import { IpcEvent } from '#shared/constants/ipc-events'
 import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
 import { useEffect } from 'react'
 import { useIntl } from 'react-intl'
+import { WindowBody } from '../WindowBody'
+import { Outlet } from 'react-router-dom'
 
 export const OnAppStart = () => {
   const { setConfig, setFlag } = useUserDataStore()
@@ -15,17 +17,15 @@ export const OnAppStart = () => {
     document.title = intl.formatMessage({ id: 'appTitle' })
   }, [intl.locale])
 
-  useIpcListener(IpcEvent.AppVersion, (_, v) => setVersion(v))
-  useIpcListener(IpcEvent.Config.SendInitialConfig, (_, v) => {
-    setConfig(v)
-    console.log(v)
-  })
-
   for (const flag of Object.keys(
     FlagConfigManager.getLastSchema().shape
   ) as (keyof IFlagConfig)[]) {
-    useIpcListener(IpcEvent.Config.Flags(flag), (_, v) => setFlag(flag, v))
+    useIpcListener(IpcEvent.Settings.Flag(flag), (_, v) => setFlag(flag, v))
   }
-
-  return null
+  console.log('first')
+  return (
+    <WindowBody title={intl.formatMessage({ id: 'appTitle' })}>
+      <Outlet />
+    </WindowBody>
+  )
 }

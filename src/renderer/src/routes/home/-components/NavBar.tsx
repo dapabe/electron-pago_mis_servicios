@@ -16,7 +16,7 @@ export const NavBar = (): JSX.Element => {
       <Menu.Item type="menu">
         <FormattedMessage id="root.navBar.settings.title" />
         <Menu className="w-max">
-          <Menu.Item
+          {/* <Menu.Item
             type="checkbox"
             isChecked={data?.flags.secure ?? true}
             onChange={async () => await toggleFlag('secure')}
@@ -29,7 +29,7 @@ export const NavBar = (): JSX.Element => {
                 <FormattedMessage id={`flags.secure.label`} />
               </div>
             </div>
-          </Menu.Item>
+          </Menu.Item> */}
           {/* {Object.entries(data?.flags ?? {}).map(([name, value], idx) => (
             <Menu.Item
               key={name}
