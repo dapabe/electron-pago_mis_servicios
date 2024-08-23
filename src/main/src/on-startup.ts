@@ -6,7 +6,7 @@ import { AppStore } from './stores/app-store'
 import path from 'path'
 import {
   IIpcIntegrityInitialize,
-  IIpcIntegrityLogin
+  IIpcIntegrityRegister
 } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
 import { LocalDatabase } from './database/LocalDatabase'
 import { PromisedValue } from '#shared/utilities/promised-value'
@@ -43,7 +43,7 @@ export async function onStartUp(mainWin: BrowserWindow) {
     })
   })
 
-  ipcMain.handle(IpcEvent.Integrity.Login, (_, data: IIpcIntegrityLogin) => {
+  ipcMain.handle(IpcEvent.Integrity.Login, (_, data: IIpcIntegrityRegister) => {
     // evt
     // _.sender.
     console.log(data)

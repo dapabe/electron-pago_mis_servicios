@@ -1,7 +1,7 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
 import {
   IIpcIntegrityInitialize,
-  IpcIntegrityLoginSchema
+  IpcIntegrityRegisterSchema
 } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
 import { IpcResponse } from '#shared/utilities/IpcResponse'
 import { ipcRenderer } from 'electron'
@@ -13,7 +13,7 @@ export const preloadApi = {
     return await ipcRenderer.invoke(IpcEvent.Integrity.Initialize)
   },
   integrityLogin: async (data: unknown) => {
-    const validated = IpcIntegrityLoginSchema.safeParse(data)
+    const validated = IpcIntegrityRegisterSchema.safeParse(data)
     if (!validated.success) {
       return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error.format())
     }

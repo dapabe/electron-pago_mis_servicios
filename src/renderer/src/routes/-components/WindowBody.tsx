@@ -13,7 +13,7 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
   useEffect(() => {
     setTitle(intl.formatMessage({ id: 'appTitle' }))
     document.title = appTitle
-  }, [intl.messages])
+  }, [intl.messages, intl.locale])
 
   const handleMinMax = () => window.electron.ipcRenderer.send(IpcEvent.App.ToggleMaximize)
   const handleClose = () => window.electron.ipcRenderer.send(IpcEvent.App.CloseApp)

@@ -13,7 +13,7 @@ export const IpcIntegrityInitializeSchema = AppSettingsManager.getLastSchema()
     })
   )
 
-export const IpcIntegrityLoginSchema = IpcIntegrityInitializeSchema.omit({
+export const IpcIntegrityRegisterSchema = IpcIntegrityInitializeSchema.omit({
   hasDB: true,
   preferredLocale: true
 })
@@ -23,5 +23,14 @@ export const IpcIntegrityLoginSchema = IpcIntegrityInitializeSchema.omit({
   })
   .refine((x) => x.password === x.repeatPassword)
 
+export const IpcIntegrityLoginSchema = IpcIntegrityInitializeSchema.omit({
+  hasDB: true,
+  preferredLocale: true,
+  databaseFilePath: true
+}).extend({
+  password: z.string().trim().min(1)
+})
+
 export type IIpcIntegrityInitialize = z.TypeOf<typeof IpcIntegrityInitializeSchema>
+export type IIpcIntegrityRegister = z.TypeOf<typeof IpcIntegrityRegisterSchema>
 export type IIpcIntegrityLogin = z.TypeOf<typeof IpcIntegrityLoginSchema>
