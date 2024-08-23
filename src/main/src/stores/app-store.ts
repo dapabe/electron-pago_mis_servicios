@@ -7,15 +7,19 @@ import { AppSettingsManager, IAppSettingsManager } from '#shared/schemas/setting
 type IAppStore = {
   settingsFilePath: string
   settingsData: IAppSettingsManager
+  isAuthenticated: boolean
 
   setSettings: (settings: IAppSettingsManager) => void
+  toggleAuth: () => void
 }
 
 export const AppStore = create<IAppStore>()(
   immer((set) => ({
     settingsFilePath: path.join(app.getPath('userData'), 'settings.json'),
     settingsData: AppSettingsManager.getLastSchema().parse({}),
+    isAuthenticated: false,
 
-    setSettings: (settingsData) => set({ settingsData })
+    setSettings: (settingsData) => set({ settingsData }),
+    toggleAuth: () => set((x) => ({ isAuthenticated: !x.isAuthenticated }))
   }))
 )

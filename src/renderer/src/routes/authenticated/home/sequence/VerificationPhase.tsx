@@ -5,7 +5,6 @@ import { ChangeEvent, useMemo, useState } from 'react'
 import { ISupportedServices } from '#shared/constants/supported-services'
 import { twJoin } from 'tailwind-merge'
 import { useTabPanel } from '#renderer/hooks/useTabPanel.hook'
-import { useUserDataStore } from '#renderer/stores/user-data.store'
 import { IpcEvent } from '#shared/constants/ipc-events'
 
 const createDefaultValues = <T extends object | undefined>(obj: T, defaultValue: boolean) => {
@@ -21,7 +20,6 @@ const createDefaultValues = <T extends object | undefined>(obj: T, defaultValue:
 }
 
 export const VerificationPhase = () => {
-  const { data } = useUserDataStore()
   const { hasSequenceStarted } = useAppSequence()
   const { goToTab } = useTabPanel()
 

@@ -1,17 +1,18 @@
+import { IAppInformation } from '#shared/types/readonly-data'
 import { create } from 'zustand'
 
 type IAppDataStore = {
-  version: string
   locales: string[]
+  appInfo: IAppInformation | null
 
-  setVersion: (version: string) => void
   setLocales: (locales: string[]) => void
+  setAppInfo: (appInfo: IAppInformation) => void
 }
 
 export const useAppDataStore = create<IAppDataStore>((set) => ({
-  version: '',
   locales: [],
+  appInfo: null,
 
-  setVersion: (version) => set({ version }),
-  setLocales: (locales) => set({ locales })
+  setLocales: (locales) => set({ locales }),
+  setAppInfo: (appInfo) => set({ appInfo })
 }))

@@ -1,8 +1,6 @@
 import { TabPanel } from '#renderer/routes/-components/TabPanel'
 import { Fragment } from 'react'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { ServiceLoginFieldForm } from './Service-LoginField.form'
-import { ServiceListForm } from './Service-List.form'
 import { ServiceEditForm } from './Service-Edit.form'
 
 export const ServiceAccounts = () => {
@@ -19,8 +17,8 @@ export const ServiceAccounts = () => {
             title: intl.formatMessage({ id: 'page.home.tab.services.tab.add' }),
             body: (
               <Fragment>
-                <ServiceLoginFieldForm />
-                <ServiceListForm />
+                {/* <ServiceLoginFieldForm />
+                <ServiceListForm /> */}
               </Fragment>
             )
           },

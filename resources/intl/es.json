@@ -4,6 +4,9 @@
 
   "common.yes": "Si",
   "common.no": "No",
+  "common.form.username": "Nombre de usuario",
+  "common.form.password": "Contraseña",
+  "common.form.password-repeat": "Repetir contraseña",
 
   "flags.secure.text": "Modo seguro",
   "flags.secure.label": "Oculta información sensible",
@@ -13,6 +16,12 @@
   "root.navBar.home.title": "Inicio",
   "root.navBar.settings.title": "Configuración",
   "root.navBar.help.title": "Ayuda",
+
+  "page.unauthorized.register.no-db": "Registrar nuevo usuario",
+  "page.unauthorized.register.has-db": "Iniciar sesión",
+  "page.unauthorized.register.db-file-path": "Ruta a tus datos encriptados",
+  "page.unauthorized.register.skip-server": "Saltear revision del servidor",
+  "page.unauthorized.register.submit": "Enviar",
 
   "page.home.tab.verify.title": "Verificación",
   "page.home.tab.verify.description": "Verifica qué y como quieres pagar tus servicios.",

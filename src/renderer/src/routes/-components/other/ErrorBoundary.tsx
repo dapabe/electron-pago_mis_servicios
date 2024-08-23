@@ -4,5 +4,5 @@ import { WindowBody } from '../WindowBody'
 export const ErrorBoundary = () => {
   const error = useRouteError()
   console.log(error)
-  return <WindowBody title="">{JSON.stringify(error)}</WindowBody>
+  return <WindowBody>{JSON.stringify(error)}</WindowBody>
 }

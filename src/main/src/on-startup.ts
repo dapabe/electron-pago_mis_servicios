@@ -13,11 +13,18 @@ import { PromisedValue } from '#shared/utilities/promised-value'
 import fs from 'node:fs/promises'
 import { StatusCodes } from 'http-status-codes'
 import { IpcResponse } from '#shared/utilities/IpcResponse'
+import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
 
-export async function onStartUp(mainWindow: BrowserWindow) {
-  // mainWindow.webContents.once('did-finish-load', async () => {
-  //   mainWindow.webContents.send(IpcEvent.Integrity.Loader, 'asdasd')
-  // })
+export async function onStartUp(mainWin: BrowserWindow) {
+  mainWin.webContents.once('did-finish-load', async () => {
+    mainWin.webContents.send(
+      IpcEvent.App.Info,
+      new IpcResponse(StatusCodes.OK, {
+        env: process.env.NODE_ENV,
+        version: app.getVersion()
+      })
+    )
+  })
 
   ipcMain.handle(IpcEvent.Integrity.Initialize, async () => {
     const integrityGenerator = verifyFileIntegrity()
@@ -33,7 +40,7 @@ export async function onStartUp(mainWindow: BrowserWindow) {
       databaseFilePath:
         x.databaseFilePath ?? path.join(app.getPath('appData'), LocalDatabase.dbName),
       skipServer: x.flags.skipServer
-    }).toResult()
+    })
   })
 
   ipcMain.handle(IpcEvent.Integrity.Login, (_, data: IIpcIntegrityLogin) => {
@@ -55,7 +62,22 @@ export async function onStartUp(mainWindow: BrowserWindow) {
         )
     )
 
-    if (intlErr) return new IpcResponse(StatusCodes.NOT_FOUND, null).toResult()
-    return new IpcResponse(StatusCodes.OK, JSON.parse(intlMessage)).toResult()
+    if (intlErr) return new IpcResponse(StatusCodes.NOT_FOUND, null)
+    return new IpcResponse(StatusCodes.OK, JSON.parse(intlMessage))
   })
+
+  ipcMain.on(IpcEvent.App.ToggleMaximize, () => {
+    if (mainWin.isMinimized()) mainWin.maximize()
+    else mainWin.minimize()
+  })
+
+  for (const flag of Object.keys(
+    FlagConfigManager.getLastSchema().shape
+  ) as (keyof IFlagConfig)[]) {
+    const ipcFlag = IpcEvent.Settings.Flag(flag)
+    ipcMain.handle(ipcFlag, async () => {
+      // await AppStore.getState().toggleFlag(flag)
+      return AppStore.getState().settingsData.flags[flag]
+    })
+  }
 }

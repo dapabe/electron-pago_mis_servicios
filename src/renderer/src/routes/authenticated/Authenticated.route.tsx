@@ -1,9 +1,13 @@
-import { WindowBody } from '../-components/WindowBody'
+import { Outlet } from 'react-router-dom'
+import { NavBar } from './-components/NavBar'
 
 export const AuthenticatedRoute = () => {
   return (
-    <WindowBody>
-      <>asdasd si</>
-    </WindowBody>
+    <>
+      <NavBar />
+      <section className="p-2">
+        <Outlet />
+      </section>
+    </>
   )
 }

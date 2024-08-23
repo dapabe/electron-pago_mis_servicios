@@ -1,16 +1,17 @@
 import { FormattedMessage } from 'react-intl'
 import { useNavigate } from 'react-router-dom'
-import { Menu } from '../../-components/Menu'
-import { useUserDataStore } from '#renderer/stores/user-data.store'
+import { Menu } from '#renderer/routes/-components/Menu'
+import { useAppDataStore } from '#renderer/stores/app-data.store'
 
 export const NavBar = (): JSX.Element => {
-  const { data, toggleFlag } = useUserDataStore()
+  // const { data, toggleFlag } = useUserDataStore()
+  const { appInfo } = useAppDataStore()
   // const { sequenceDisabled } = useAppSequence()
   const nav = useNavigate()
 
   return (
     <Menu isBar className={'can-hover border-b-[1px] border-b-black'}>
-      <Menu.Item type="option" onClick={() => nav('/')}>
+      <Menu.Item type="option" onClick={() => nav('/app')}>
         <FormattedMessage id="root.navBar.home.title" />
       </Menu.Item>
       <Menu.Item type="menu">
@@ -52,9 +53,14 @@ export const NavBar = (): JSX.Element => {
           ))} */}
         </Menu>
       </Menu.Item>
-      <Menu.Item type="option" onClick={() => nav('/help')}>
+      <Menu.Item type="option" onClick={() => nav('/app/help')}>
         <FormattedMessage id="root.navBar.help.title" />
       </Menu.Item>
+      {appInfo?.env === 'development' && (
+        <Menu.Item type="option" onClick={() => nav('/help')}>
+          Otro
+        </Menu.Item>
+      )}
     </Menu>
   )
 }

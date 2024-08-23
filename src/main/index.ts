@@ -68,7 +68,6 @@ app.whenReady().then(() => {
   })
 
   if (is.dev) mainWindow.webContents.openDevTools()
-
   onStartUp(mainWindow)
 })
 

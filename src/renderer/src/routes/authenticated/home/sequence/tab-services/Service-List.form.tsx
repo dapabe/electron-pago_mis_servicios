@@ -1,10 +1,8 @@
-import { useUserDataStore } from '#renderer/stores/user-data.store'
 import { SupportedServices } from '#shared/constants/supported-services'
 import { ChangeEvent, KeyboardEvent, useId, useMemo, useState } from 'react'
 
 type IAddServiceProps = {}
 export const ServiceListForm = ({}: IAddServiceProps) => {
-  const { data } = useUserDataStore()
   const [current, setCurrent] = useState('')
   const id = useId() + 'list'
 

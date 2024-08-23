@@ -3,13 +3,13 @@ import {
   IIpcIntegrityInitialize,
   IpcIntegrityLoginSchema
 } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
-import { IpcResponse, IpcResponseType } from '#shared/utilities/IpcResponse'
+import { IpcResponse } from '#shared/utilities/IpcResponse'
 import { ipcRenderer } from 'electron'
 import { StatusCodes } from 'http-status-codes'
 
 // Custom APIs for renderer
 export const preloadApi = {
-  integrityInitialize: async (): Promise<IpcResponseType<IIpcIntegrityInitialize>> => {
+  integrityInitialize: async (): Promise<IpcResponse<IIpcIntegrityInitialize>> => {
     return await ipcRenderer.invoke(IpcEvent.Integrity.Initialize)
   },
   integrityLogin: async (data: unknown) => {
@@ -23,7 +23,7 @@ export const preloadApi = {
 
     return new IpcResponse(StatusCodes.OK, null)
   },
-  getTranslation: async (): Promise<IpcResponseType<Record<string, string>>> => {
+  getTranslation: async (): Promise<IpcResponse<Record<string, string>>> => {
     return await ipcRenderer.invoke(IpcEvent.Language.Messages)
   }
 } as const

@@ -6,9 +6,11 @@ export class IpcResponse<ResponseType> {
     public data: ResponseType
   ) {}
 
+  isOk() {
+    return this.status < 400
+  }
+
   toResult() {
-    return [this.status, this.data]
+    return this.data
   }
 }
-
-export type IpcResponseType<T> = [StatusCodes, T]

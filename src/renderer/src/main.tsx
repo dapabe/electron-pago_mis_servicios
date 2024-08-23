@@ -3,12 +3,14 @@ import '7.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { RootRoute } from './routes/root.route'
 import { UnauthenticatedRoute } from './routes/unauthenticated/Unauthenticated.route'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './common/query-client'
 import { AuthenticatedRoute } from './routes/authenticated/Authenticated.route'
+import { HomeRoute } from './routes/authenticated/home/Home.route'
+import { HelpRoute } from './routes/authenticated/help/Help.route'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -18,7 +20,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           {
             path: '/',
             element: <RootRoute />,
-            // errorElement: <ErrorBoundary />,
             children: [
               {
                 index: true,
@@ -26,24 +27,23 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
               },
               {
                 path: '/app',
-                element: <AuthenticatedRoute />
+                element: <AuthenticatedRoute />,
+                children: [
+                  {
+                    index: true,
+                    element: <HomeRoute />
+                  },
+                  {
+                    path: '/app/help',
+                    element: <HelpRoute />
+                  }
+                ]
+              },
+              {
+                path: '*',
+                element: <Navigate to={'/'} />
               }
             ]
-
-            // children: [
-            // {
-            //   index: true,
-            //   element: <HomeRoute />
-            // },
-            // {
-            //   path: '/help',
-            //   element: <HelpRoute />
-            // },
-            // {
-            //   path: '*',
-            //   element: <Navigate to={'/'} />
-            // }
-            // ]
           }
         ])}
       />

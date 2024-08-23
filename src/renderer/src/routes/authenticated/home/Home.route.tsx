@@ -1,9 +1,8 @@
 import { useIntl } from 'react-intl'
-import { TabPanel } from '../-components/TabPanel'
-import { PayMethods } from './-components/sequence/PayMethods'
-import { ServiceAccounts } from './-components/sequence/tab-services/ServiceAccounts'
-import { VerificationPhase } from './-components/sequence/VerificationPhase'
+import { PayMethods } from './sequence/PayMethods'
+import { ServiceAccounts } from './sequence/tab-services/ServiceAccounts'
 import { AppSequenceProvider } from '#renderer/contexts/app-sequence.ctx'
+import { TabPanel } from '#renderer/routes/-components/TabPanel'
 
 export const HomeRoute = (): JSX.Element => {
   const intl = useIntl()
@@ -15,7 +14,7 @@ export const HomeRoute = (): JSX.Element => {
         tabs={[
           {
             title: intl.formatMessage({ id: 'page.home.tab.verify.title' }),
-            body: <VerificationPhase />
+            body: null
           },
           {
             title: intl.formatMessage({ id: 'page.home.tab.services.title' }),

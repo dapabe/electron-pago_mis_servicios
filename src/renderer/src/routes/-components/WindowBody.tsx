@@ -2,6 +2,8 @@ import { PropsWithChildren, useEffect, useState } from 'react'
 import style from '#renderer/assets/WindowBody.module.css'
 import { twJoin } from 'tailwind-merge'
 import { useIntl } from 'react-intl'
+import { WindowStatus } from './WindowStatus'
+import { IpcEvent } from '#shared/constants/ipc-events'
 
 type Props = PropsWithChildren
 export const WindowBody = ({ children }: Props): JSX.Element => {
@@ -11,10 +13,10 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
   useEffect(() => {
     setTitle(intl.formatMessage({ id: 'appTitle' }))
     document.title = appTitle
-  }, [intl.locale])
+  }, [intl.messages])
 
-  const handleMinMax = () => window.electron.ipcRenderer.send('toggle-maximize')
-  const handleClose = () => window.electron.ipcRenderer.send('closeApp')
+  const handleMinMax = () => window.electron.ipcRenderer.send(IpcEvent.App.ToggleMaximize)
+  const handleClose = () => window.electron.ipcRenderer.send(IpcEvent.App.CloseApp)
 
   return (
     <div className="window active max-h-[100vh]">
@@ -26,6 +28,7 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
         </div>
       </div>
       <div className="window-body flex flex-col h-80">{children}</div>
+      <WindowStatus />
     </div>
   )
 }

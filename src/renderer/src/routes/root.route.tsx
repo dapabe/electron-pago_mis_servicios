@@ -3,11 +3,16 @@ import { useQuery } from '@tanstack/react-query'
 import { IntlProvider } from 'react-intl'
 import { Outlet } from 'react-router-dom'
 import { WindowBody } from './-components/WindowBody'
+import { useIpcListener } from '#renderer/hooks/useIpcListener.hook'
+import { IpcResponse } from '#shared/utilities/IpcResponse'
+import { IAppInformation } from '#shared/types/readonly-data'
+import { useAppDataStore } from '#renderer/stores/app-data.store'
 
 export const RootRoute = () => {
   const { data: appInfo, isSuccess: isSuc1 } = useQuery({
     queryKey: [IpcEvent.Integrity.Initialize],
     queryFn: window.api.integrityInitialize
+    // staleTime: Infinity
   })
   const { data: translations, isSuccess: isSuc2 } = useQuery({
     queryKey: [IpcEvent.Language.Messages],
@@ -16,6 +21,7 @@ export const RootRoute = () => {
   })
   // const appStore = useAppDataStore()
   // const userStore = useUserDataStore()
+  const { setAppInfo } = useAppDataStore()
 
   // const [languageMessages, setMessages] = useState<IpcEventReturnType['LanguageChange']>({})
   // const [preferredLocale, setPreferred] = useState<string>('es')
@@ -30,21 +36,16 @@ export const RootRoute = () => {
   //   }
   // )
 
-  // useIpcListener(
-  //   IpcEvent.LanguageChange.Receive,
-  //   (_, value: IpcEventReturnType['LanguageChange']) => {
-  //     setMessages(value)
-  //   }
-  // )
+  useIpcListener(IpcEvent.App.Info, (_, value: IpcResponse<IAppInformation>) => {
+    setAppInfo(value.data)
+  })
 
   if (!isSuc1 || !isSuc2) return null
-
   return (
     <IntlProvider
-      // locale={preferredLocale}
-      locale={appInfo[1].preferredLocale}
+      locale={appInfo.data.preferredLocale}
       defaultLocale="es"
-      messages={translations[1]}
+      messages={translations.data}
       onError={() => undefined}
     >
       <WindowBody>

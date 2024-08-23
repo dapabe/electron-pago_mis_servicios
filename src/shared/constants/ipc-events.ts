@@ -1,15 +1,14 @@
 import { IFlagConfig } from '#shared/schemas/flags.schema'
 
-const CommonEvents = {
-  CloseApp: 'app-close',
-  ToggleMaximize: 'app-toggle-maximize'
-} as const
-
 /**
  *  Actually is `IpcChannel` but the double 'cC' triggers me
  */
 export const IpcEvent = {
-  ...CommonEvents,
+  App: {
+    CloseApp: 'app.close',
+    ToggleMaximize: 'app.toggle-maximize',
+    Info: 'app.info'
+  },
   Integrity: {
     Initialize: 'integrity.init',
     Loader: 'integrity.loader',
