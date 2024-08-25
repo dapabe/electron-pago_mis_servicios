@@ -7,6 +7,7 @@
   "common.form.username": "Nombre de usuario",
   "common.form.password": "Contraseña",
   "common.form.password-repeat": "Repetir contraseña",
+  "common.form.password-forget": "Olvidé mi contraseña",
 
   "flags.secure.text": "Modo seguro",
   "flags.secure.label": "Oculta información sensible",
@@ -17,7 +18,7 @@
   "root.navBar.settings.title": "Configuración",
   "root.navBar.help.title": "Ayuda",
 
-  "page.unauthorized.register.no-db": "Registrar nuevo usuario",
+  "page.unauthorized.register.no-db": "Registro unico",
   "page.unauthorized.register.has-db": "Iniciar sesión",
   "page.unauthorized.register.db-file-path": "Ruta a tus datos encriptados",
   "page.unauthorized.register.skip-server": "Saltear revision del servidor",
@@ -39,5 +40,8 @@
   "page.home.tab.services.tab.edit": "Editar ({amount})",
 
   "errors.service.unavailable": "No disponible",
-  "errors.service.not-found": "No encontrado"
+  "errors.service.not-found": "No encontrado",
+
+  "errors.form.is-empty": "Este campo no puede estar vacio",
+  "errors.form.passwords-not-equal": "Las contraseñas no son iguales"
 }

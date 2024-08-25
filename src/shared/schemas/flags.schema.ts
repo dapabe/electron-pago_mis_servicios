@@ -7,10 +7,12 @@ class FlagConfigSchema
   extends ZodSchemaManager<typeof FlagConfigSchema, LastV>
   implements SchemaUtilities
 {
-  static '0.0.0' = z.object({
-    secure: z.boolean().default(true),
-    skipServer: z.boolean().default(false)
-  })
+  static '0.0.0' = z
+    .object({
+      secure: z.boolean().default(true),
+      skipServer: z.boolean().default(false)
+    })
+    .strict()
 
   constructor() {
     super(FlagConfigSchema, '0.0.0')

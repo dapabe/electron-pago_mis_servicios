@@ -22,10 +22,13 @@ export const IpcEvent = {
         NotFound: 'integrity.verify.db.not-found'
       }
     },
-    Login: 'integrity.login',
     Finish: 'integrity.finish'
   },
   Db: {
+    Register: 'db.register',
+    Login: 'db.login',
+    SelectFile: 'db.select-file',
+    CreateDb: 'db.create-db',
     Password: {
       // Create: 'db.password.create',
       Update: 'db.password.update'

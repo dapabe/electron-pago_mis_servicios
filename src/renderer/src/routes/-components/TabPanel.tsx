@@ -43,7 +43,7 @@ export const TabPanel = ({ tabs, label, selectedTab, beforeChange }: Props) => {
         </menu>
         {tabs.map((x, idx) => (
           <article key={idx} role="tabpanel" id={idx.toString()} hidden={count !== idx}>
-            {x.body}
+            {count !== idx ? null : x.body}
           </article>
         ))}
       </section>

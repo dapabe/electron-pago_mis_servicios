@@ -6,30 +6,32 @@ export const IpcIntegrityInitializeSchema = AppSettingsManager.getLastSchema()
     flags: true
   })
   .merge(
-    z.object({
-      databaseFilePath: z.string().trim().min(1),
-      hasDB: z.boolean(),
-      skipServer: z.boolean()
-    })
+    z
+      .object({
+        databaseFilePath: z.string().trim().min(1, 'errors.form.is-empty'),
+        hasDB: z.boolean(),
+        skipServer: z.boolean()
+      })
+      .strict()
   )
 
-export const IpcIntegrityRegisterSchema = IpcIntegrityInitializeSchema.omit({
-  hasDB: true,
-  preferredLocale: true
+export const IpcIntegrityRegisterSchema = IpcIntegrityInitializeSchema.pick({
+  databaseFilePath: true
 })
   .extend({
-    password: z.string().trim().min(1),
-    repeatPassword: z.string().trim().min(1)
+    password: z.string().trim().min(1, 'errors.form.is-empty'),
+    repeatPassword: z.string().trim().min(1, 'errors.form.is-empty')
   })
-  .refine((x) => x.password === x.repeatPassword)
+  .refine((x) => x.password === x.repeatPassword, {
+    path: ['samePassword'],
+    message: 'errors.form.passwords-not-equal'
+  })
 
-export const IpcIntegrityLoginSchema = IpcIntegrityInitializeSchema.omit({
-  hasDB: true,
-  preferredLocale: true,
-  databaseFilePath: true
-}).extend({
-  password: z.string().trim().min(1)
-})
+export const IpcIntegrityLoginSchema = z
+  .object({
+    password: z.string().trim().min(1, 'errors.form.is-empty')
+  })
+  .strict()
 
 export type IIpcIntegrityInitialize = z.TypeOf<typeof IpcIntegrityInitializeSchema>
 export type IIpcIntegrityRegister = z.TypeOf<typeof IpcIntegrityRegisterSchema>

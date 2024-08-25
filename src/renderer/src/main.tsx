@@ -32,12 +32,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                   {
                     index: true,
                     element: <HomeRoute />
-                  },
-                  {
-                    path: '/app/help',
-                    element: <HelpRoute />
                   }
                 ]
+              },
+              {
+                path: '/help',
+                element: <HelpRoute />
               },
               {
                 path: '*',

@@ -1,3 +1,9 @@
 export const HelpRoute = (): JSX.Element => {
-  return <>cosas</>
+  return (
+    <section>
+      <ul>
+        <li>toda tu información</li>
+      </ul>
+    </section>
+  )
 }

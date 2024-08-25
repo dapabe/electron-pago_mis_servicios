@@ -4,11 +4,13 @@ import { twJoin } from 'tailwind-merge'
 import { useIntl } from 'react-intl'
 import { WindowStatus } from './WindowStatus'
 import { IpcEvent } from '#shared/constants/ipc-events'
+import { useNavigate } from 'react-router-dom'
 
 type Props = PropsWithChildren
 export const WindowBody = ({ children }: Props): JSX.Element => {
-  const intl = useIntl()
   const [appTitle, setTitle] = useState('')
+  const nav = useNavigate()
+  const intl = useIntl()
 
   useEffect(() => {
     setTitle(intl.formatMessage({ id: 'appTitle' }))
@@ -24,6 +26,7 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
         <div className="title-bar-text">{appTitle}</div>
         <div className={`title-bar-controls ${style.noDraggable}`}>
           <button aria-label="Minimize" onClick={handleMinMax}></button>
+          <button aria-label="Help" onClick={() => nav('/help')}></button>
           <button aria-label="Close" onClick={handleClose}></button>
         </div>
       </div>

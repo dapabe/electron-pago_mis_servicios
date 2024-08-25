@@ -13,11 +13,13 @@ class AppSettingsSchema
   extends ZodSchemaManager<typeof AppSettingsSchema, LastVer>
   implements SchemaUtilities
 {
-  static '0.0.0' = z.object({
-    databaseFilePath: z.string().nullable().default(null),
-    preferredLocale: z.string().default('es'),
-    flags: FlagConfigManager.getLastSchema().default(FlagConfigManager.getLastSchema().parse({}))
-  })
+  static '0.0.0' = z
+    .object({
+      databaseFilePath: z.string().nullable().default(null),
+      preferredLocale: z.string().default('es'),
+      flags: FlagConfigManager.getLastSchema().default(FlagConfigManager.getLastSchema().parse({}))
+    })
+    .strict()
 
   constructor() {
     super(AppSettingsSchema, '0.0.0')

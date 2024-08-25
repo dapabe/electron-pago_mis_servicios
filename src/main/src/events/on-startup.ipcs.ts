@@ -1,21 +1,18 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 
 import { IpcEvent } from '#shared/constants/ipc-events'
-import { verifyFileIntegrity } from './utilities/verify-file-integrity'
-import { AppStore } from './stores/app-store'
+import { verifyFileIntegrity } from '../utilities/verify-file-integrity'
+import { AppStore } from '../stores/app-store'
 import path from 'path'
-import {
-  IIpcIntegrityInitialize,
-  IIpcIntegrityRegister
-} from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
-import { LocalDatabase } from './database/LocalDatabase'
+import { IIpcIntegrityInitialize } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
 import { PromisedValue } from '#shared/utilities/promised-value'
 import fs from 'node:fs/promises'
 import { StatusCodes } from 'http-status-codes'
 import { IpcResponse } from '#shared/utilities/IpcResponse'
 import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
+import { AppIntlSchema } from '#shared/schemas/intl.schema'
 
-export async function onStartUp(mainWin: BrowserWindow) {
+export async function ipcsOnStartUp(mainWin: BrowserWindow) {
   mainWin.webContents.once('did-finish-load', async () => {
     mainWin.webContents.send(
       IpcEvent.App.Info,
@@ -38,32 +35,29 @@ export async function onStartUp(mainWin: BrowserWindow) {
       hasDB,
       preferredLocale: x.preferredLocale,
       databaseFilePath:
-        x.databaseFilePath ?? path.join(app.getPath('appData'), LocalDatabase.dbName),
+        x.databaseFilePath ??
+        path.join(app.getPath('appData'), app.getName(), `${app.getName()}.sqlite`),
       skipServer: x.flags.skipServer
     })
   })
 
-  ipcMain.handle(IpcEvent.Integrity.Login, (_, data: IIpcIntegrityRegister) => {
-    // evt
-    // _.sender.
-    console.log(data)
-  })
-
-  ipcMain.handle(IpcEvent.Language.Messages, async (_) => {
+  ipcMain.handle(IpcEvent.Language.Messages, async () => {
+    const intlPath = path.resolve(
+      'resources',
+      'intl',
+      `${AppStore.getState().settingsData.preferredLocale}.json`
+    )
     const [intlErr, intlMessage] = await PromisedValue(
-      async () =>
-        await fs.readFile(
-          path.resolve(
-            'resources',
-            'intl',
-            `${AppStore.getState().settingsData.preferredLocale}.json`
-          ),
-          'utf8'
-        )
+      async () => await fs.readFile(intlPath, 'utf-8')
     )
 
     if (intlErr) return new IpcResponse(StatusCodes.NOT_FOUND, null)
-    return new IpcResponse(StatusCodes.OK, JSON.parse(intlMessage))
+
+    const validated = AppIntlSchema.safeParse(JSON.parse(intlMessage))
+    if (!validated.success) {
+      return new IpcResponse(StatusCodes.NOT_ACCEPTABLE, validated.error.format())
+    }
+    return new IpcResponse(StatusCodes.OK, validated.data)
   })
 
   ipcMain.on(IpcEvent.App.ToggleMaximize, () => {
@@ -71,13 +65,17 @@ export async function onStartUp(mainWin: BrowserWindow) {
     else mainWin.minimize()
   })
 
+  ipcMain.once(IpcEvent.App.CloseApp, (evt) => {
+    BrowserWindow.fromWebContents(evt.sender)!.close()
+  })
+
   for (const flag of Object.keys(
     FlagConfigManager.getLastSchema().shape
   ) as (keyof IFlagConfig)[]) {
     const ipcFlag = IpcEvent.Settings.Flag(flag)
     ipcMain.handle(ipcFlag, async () => {
-      // await AppStore.getState().toggleFlag(flag)
-      return AppStore.getState().settingsData.flags[flag]
+      AppStore.getState().toggleFlag(flag)
+      // AppStore.getState().settingsData.flags[flag]
     })
   }
 }

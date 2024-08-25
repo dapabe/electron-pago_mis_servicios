@@ -1,3 +1,4 @@
+import { InputText } from '#renderer/routes/-components/form/InputText'
 import {
   IIpcIntegrityRegister,
   IpcIntegrityRegisterSchema
@@ -8,56 +9,87 @@ import { FormattedMessage } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
 
 type IRegisterProps = {
+  skipServer: boolean
   values: IIpcIntegrityRegister
-  onSubmit: (data: IIpcIntegrityRegister) => Promise<void>
 }
 
-export const RegisterForm = ({ values, onSubmit }: IRegisterProps) => {
-  const { register, handleSubmit } = useForm<IIpcIntegrityRegister>({
-    values,
-    resolver: zodResolver(IpcIntegrityRegisterSchema)
-  })
+export const RegisterForm = ({ values, skipServer }: IRegisterProps) => {
+  const { register, handleSubmit, getValues, setValue, control, formState } =
+    useForm<IIpcIntegrityRegister>({
+      values,
+      resolver: zodResolver(IpcIntegrityRegisterSchema)
+    })
+
+  const handleDbSelection = async () => {
+    const res = await window.api.selectDatabase(getValues().databaseFilePath)
+    if (res) setValue('databaseFilePath', res)
+  }
+
+  const handleRegister = async (data: IIpcIntegrityRegister) => {}
 
   return (
-    <form className="grid grid-cols-5 grid-rows-3 w-full" onSubmit={handleSubmit(onSubmit)}>
-      <div className="col-span-3">
+    <form
+      className="grid grid-cols-6 grid-rows-3 w-full gap-2"
+      onSubmit={handleSubmit(handleRegister)}
+    >
+      <div className="col-span-full flex flex-col">
         <label htmlFor={register('databaseFilePath').name}>
           <FormattedMessage id="page.unauthorized.register.db-file-path" />
         </label>
-        <div className="searchbox">
+        <div className="searchbox" title={getValues('databaseFilePath')}>
           <input
             type="search"
             {...register('databaseFilePath')}
             aria-disabled="true"
             disabled
             placeholder="C:\"
-            className="text-gray-500 text-ellipsis"
+            className="text-gray-500 text-ellipsis w-full cursor-help"
           />
-          <button aria-label="search" className="mr-auto"></button>
+          <button aria-label="search" tabIndex={-1} onClick={handleDbSelection}></button>
         </div>
       </div>
-      <div className="col-span-2">
-        <input type="checkbox" {...register('skipServer')} />
-        <label htmlFor={register('skipServer').name}>
-          <FormattedMessage id="page.unauthorized.register.skip-server" />
-        </label>
-      </div>
-      <div className="col-span-3">
+      <div className="col-span-3 flex flex-col">
         <label htmlFor={register('password').name}>
           <FormattedMessage id="common.form.password" />
         </label>
-        <input type="password" {...register('password')} className="text-ellipsis" />
+        <InputText
+          control={control}
+          name="password"
+          type="password"
+          isInvalid={Object.hasOwn(formState.errors, 'samePassword')}
+          className="text-ellipsis"
+        />
+        <span className="text-red-500">
+          <FormattedMessage id={formState.errors.password?.message ?? ' '} />
+        </span>
       </div>
-      <div className="col-span-3">
+      <div className="col-span-3 flex flex-col">
         <label htmlFor={register('repeatPassword').name}>
           <FormattedMessage id="common.form.password-repeat" />
         </label>
-        <input type="password" {...register('repeatPassword')} className="text-ellipsis" />
+        <InputText
+          control={control}
+          name="repeatPassword"
+          type="password"
+          isInvalid={Object.hasOwn(formState.errors, 'samePassword')}
+          className="text-ellipsis"
+        />
+        <span className="text-red-500">
+          <FormattedMessage id={formState.errors.repeatPassword?.message ?? ' '} />
+        </span>
       </div>
-      <button
-        type="submit"
-        className={twJoin('col-start-4 row-start-2 row-end-4 col-span-2 p-2 m-auto')}
-      >
+      <div className="col-span-3 flex">
+        <div className="text-red-500 my-auto">
+          <FormattedMessage
+            id={
+              // @ts-ignore
+              formState.errors.samePassword?.message ?? ' '
+            }
+          />
+        </div>
+      </div>
+
+      <button type="submit" className={twJoin('col-span-3 size-max p-2 ml-auto')}>
         <FormattedMessage id="page.unauthorized.register.submit" />
       </button>
     </form>
