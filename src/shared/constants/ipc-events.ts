@@ -28,7 +28,6 @@ export const IpcEvent = {
     Register: 'db.register',
     Login: 'db.login',
     SelectFile: 'db.select-file',
-    CreateDb: 'db.create-db',
     Password: {
       // Create: 'db.password.create',
       Update: 'db.password.update'

@@ -15,5 +15,7 @@ export class LocalDatabase {
     return this
   }
 
-  public async initialize() {}
+  public async initialize() {
+    await LocalDatabase.db.authenticate().then(console.log).catch(console.log)
+  }
 }

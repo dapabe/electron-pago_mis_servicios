@@ -1,28 +1,25 @@
 import { InputText } from '#renderer/routes/-components/form/InputText'
-import { IpcEvent } from '#shared/constants/ipc-events'
 import {
   IIpcIntegrityLogin,
   IpcIntegrityLoginSchema
 } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { FormattedMessage } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
 
 type ILoginProps = {
-  skipServer: boolean
   values: IIpcIntegrityLogin
 }
 
-export const LoginForm = ({ values, skipServer }: ILoginProps) => {
-  const d = useQuery({
-    queryKey: [IpcEvent.Db.Login]
-  })
-
-  const { control, handleSubmit, formState } = useForm<IIpcIntegrityLogin>({
+export const LoginForm = ({ values }: ILoginProps) => {
+  const { control, handleSubmit, formState, getValues } = useForm<IIpcIntegrityLogin>({
     values,
     resolver: zodResolver(IpcIntegrityLoginSchema)
+  })
+  const mutation = useMutation({
+    mutationFn: async () => await window.api.appLogin(getValues())
   })
 
   const handleLogin = async (data: IIpcIntegrityLogin) => {}
@@ -45,8 +42,17 @@ export const LoginForm = ({ values, skipServer }: ILoginProps) => {
           <FormattedMessage id="common.form.password-forget" />
         </a>
       </div>
-      <button type="submit" className={twJoin('col-start-3 p-2 w-max ml-auto')}>
-        <FormattedMessage id="page.unauthorized.register.submit" />
+      <button
+        type="submit"
+        disabled={formState.isSubmitting}
+        className={twJoin('col-start-3 p-2 w-max ml-auto')}
+      >
+        <FormattedMessage
+          id="page.unauthorized.register.submit"
+          values={{
+            isSubmitting: formState.isSubmitting
+          }}
+        />
       </button>
     </form>
   )

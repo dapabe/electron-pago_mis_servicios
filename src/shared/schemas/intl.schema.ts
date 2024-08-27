@@ -27,7 +27,9 @@ export const AppIntlSchema = z
     'page.unauthorized.register.has-db': S,
     'page.unauthorized.register.db-file-path': S,
     'page.unauthorized.register.skip-server': S,
-    'page.unauthorized.register.submit': S,
+    'page.unauthorized.register.submit': S.regex(
+      /^\{isSubmitting, select, true \{.+?\} other \{.+?\}\}$/
+    ),
 
     'page.home.tab.verify.title': S,
     'page.home.tab.verify.description': S,

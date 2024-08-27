@@ -13,22 +13,22 @@ export const preloadApi = {
   integrityInitialize: async (): Promise<IpcResponse<IIpcIntegrityInitialize>> => {
     return await ipcRenderer.invoke(IpcEvent.Integrity.Initialize)
   },
-  appRegister: async (data: unknown, skipServer: boolean) => {
+  appRegister: async (data: unknown) => {
     const validated = IpcIntegrityRegisterSchema.safeParse(data)
     if (!validated.success) {
       return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error.format())
     }
-    //todo check pass ok
 
     await ipcRenderer.invoke(IpcEvent.Db.Register, validated.data)
 
     return new IpcResponse(StatusCodes.OK, null)
   },
-  appLogin: async (data: unknown, skipServer: boolean) => {
+  appLogin: async (data: unknown) => {
     const validated = IpcIntegrityLoginSchema.safeParse(data)
     if (!validated.success) {
       return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error.format())
     }
+    return new IpcResponse(StatusCodes.OK, null)
   },
   getTranslation: async (): Promise<IpcResponse<Record<string, string>>> => {
     return await ipcRenderer.invoke(IpcEvent.Language.Messages)

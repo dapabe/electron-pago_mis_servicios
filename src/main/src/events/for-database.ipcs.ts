@@ -4,18 +4,17 @@ import {
   IIpcIntegrityRegister
 } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
 import { BrowserWindow, dialog, ipcMain } from 'electron'
+import { LocalDatabase } from '../database/LocalDatabase'
+import { AppStore } from '../stores/app-store'
 
 export async function ipcsForDatabase(mainWin: BrowserWindow) {
-  ipcMain.handle(IpcEvent.Db.Register, (_, data: IIpcIntegrityRegister) => {
-    // evt
-    // _.sender.
-    console.log(data)
+  ipcMain.handle(IpcEvent.Db.Register, async (_, data: IIpcIntegrityRegister) => {
+    await new LocalDatabase(AppStore.getState().settingsData.databaseFilePath).initialize()
   })
 
-  ipcMain.handle(IpcEvent.Db.Login, (_, data: IIpcIntegrityLogin) => {
+  ipcMain.handle(IpcEvent.Db.Login, async (_, data: IIpcIntegrityLogin) => {
     // evt
     // _.sender.
-    console.log(data)
   })
 
   ipcMain.handle(IpcEvent.Db.SelectFile, async (evt, defaultPath: string) => {
@@ -26,8 +25,9 @@ export async function ipcsForDatabase(mainWin: BrowserWindow) {
     })
 
     if (dialogResult.canceled) return undefined
+    await AppStore.getState().changeSettings((settings) => {
+      settings.databaseFilePath = dialogResult.filePaths[0]
+    })
     return dialogResult.filePaths[0]
   })
-
-  ipcMain.handle(IpcEvent.Db.CreateDb, async () => {})
 }

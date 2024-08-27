@@ -9,7 +9,7 @@ let mainWindow: BrowserWindow
 
 function createWindow(): BrowserWindow {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 500,
     height: 400,
     resizable: false,
@@ -70,7 +70,7 @@ app.whenReady().then(() => {
 
   if (is.dev) mainWindow.webContents.openDevTools()
   ipcsOnStartUp(mainWindow)
-  ipcsForDatabase()
+  ipcsForDatabase(mainWindow)
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

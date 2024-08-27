@@ -27,17 +27,16 @@ export async function ipcsOnStartUp(mainWin: BrowserWindow) {
     const integrityGenerator = verifyFileIntegrity()
     let hasDB = true
     for await (const event of integrityGenerator) {
+      console.log(event)
       if (event === IpcEvent.Integrity.Verify.Db.NotFound) hasDB = !hasDB
     }
 
     const x = AppStore.getState().settingsData
+    console.log(x)
     return new IpcResponse<IIpcIntegrityInitialize>(StatusCodes.OK, {
       hasDB,
       preferredLocale: x.preferredLocale,
-      databaseFilePath:
-        x.databaseFilePath ??
-        path.join(app.getPath('appData'), app.getName(), `${app.getName()}.sqlite`),
-      skipServer: x.flags.skipServer
+      databaseFilePath: x.databaseFilePath!
     })
   })
 
@@ -74,8 +73,9 @@ export async function ipcsOnStartUp(mainWin: BrowserWindow) {
   ) as (keyof IFlagConfig)[]) {
     const ipcFlag = IpcEvent.Settings.Flag(flag)
     ipcMain.handle(ipcFlag, async () => {
-      AppStore.getState().toggleFlag(flag)
-      // AppStore.getState().settingsData.flags[flag]
+      await AppStore.getState().changeSettings((settings) => {
+        settings.flags[flag] = !settings.flags[flag]
+      })
     })
   }
 }

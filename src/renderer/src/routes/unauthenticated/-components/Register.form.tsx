@@ -4,33 +4,35 @@ import {
   IpcIntegrityRegisterSchema
 } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { FormattedMessage } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
 
 type IRegisterProps = {
-  skipServer: boolean
   values: IIpcIntegrityRegister
 }
 
-export const RegisterForm = ({ values, skipServer }: IRegisterProps) => {
+export const RegisterForm = ({ values }: IRegisterProps) => {
   const { register, handleSubmit, getValues, setValue, control, formState } =
     useForm<IIpcIntegrityRegister>({
       values,
       resolver: zodResolver(IpcIntegrityRegisterSchema)
     })
+  const mutation = useMutation({
+    // mutationKey: [IpcEvent.Db.Register],
+    mutationFn: async () => await window.api.appRegister(getValues())
+  })
 
   const handleDbSelection = async () => {
     const res = await window.api.selectDatabase(getValues().databaseFilePath)
     if (res) setValue('databaseFilePath', res)
   }
 
-  const handleRegister = async (data: IIpcIntegrityRegister) => {}
-
   return (
     <form
       className="grid grid-cols-6 grid-rows-3 w-full gap-2"
-      onSubmit={handleSubmit(handleRegister)}
+      onSubmit={handleSubmit(async () => await mutation.mutateAsync())}
     >
       <div className="col-span-full flex flex-col">
         <label htmlFor={register('databaseFilePath').name}>
@@ -89,8 +91,17 @@ export const RegisterForm = ({ values, skipServer }: IRegisterProps) => {
         </div>
       </div>
 
-      <button type="submit" className={twJoin('col-span-3 size-max p-2 ml-auto')}>
-        <FormattedMessage id="page.unauthorized.register.submit" />
+      <button
+        type="submit"
+        disabled={formState.isSubmitting}
+        className={twJoin('col-span-3 size-max p-2 ml-auto')}
+      >
+        <FormattedMessage
+          id="page.unauthorized.register.submit"
+          values={{
+            isSubmitting: formState.isSubmitting
+          }}
+        />
       </button>
     </form>
   )

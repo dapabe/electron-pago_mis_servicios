@@ -17,18 +17,17 @@ export const UnauthenticatedRoute = () => {
     <section className="flex justify-center p-2">
       <div className="w-full">
         <TabPanel
-          selectedTab={query.data.hasDB ? 1 : 0}
+          selectedTab={Number(query.data.hasDB)}
           tabs={[
             {
               title: intl.formatMessage({ id: `page.unauthorized.register.no-db` }),
               isDisabled: query.data.hasDB,
               body: (
                 <RegisterForm
-                  skipServer={query.data.skipServer}
                   values={{
                     databaseFilePath: query.data.databaseFilePath,
-                    password: '',
-                    repeatPassword: ''
+                    password: '123',
+                    repeatPassword: '123'
                   }}
                 />
               )
@@ -38,9 +37,8 @@ export const UnauthenticatedRoute = () => {
               isDisabled: !query.data.hasDB,
               body: (
                 <LoginForm
-                  skipServer={query.data.skipServer}
                   values={{
-                    password: ''
+                    password: '123'
                   }}
                 />
               )

@@ -22,7 +22,7 @@
   "page.unauthorized.register.has-db": "Iniciar sesión",
   "page.unauthorized.register.db-file-path": "Ruta a tus datos encriptados",
   "page.unauthorized.register.skip-server": "Saltear revision del servidor",
-  "page.unauthorized.register.submit": "Enviar",
+  "page.unauthorized.register.submit": "{isSubmitting, select, true {Enviando...} other {Enviar}}",
 
   "page.home.tab.verify.title": "Verificación",
   "page.home.tab.verify.description": "Verifica qué y como quieres pagar tus servicios.",

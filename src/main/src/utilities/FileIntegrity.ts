@@ -7,8 +7,8 @@ type IFileIntegrityConfig<DataType, T> = {
   defaultData: DataType
   zodSchema: z.ZodType<DataType>
   // parseFn?: ParseFn
-  onError?: (error: Error) => T
-  onSuccess?: () => T
+  onError: (error: Error) => T
+  onSuccess: () => T
 }
 
 /**
@@ -17,7 +17,7 @@ type IFileIntegrityConfig<DataType, T> = {
 export class FileIntegrity<DataType extends object, onFinal> {
   constructor(public config: IFileIntegrityConfig<DataType, NonNullable<onFinal>>) {}
 
-  async isFileOk() {
+  async isFileOk(): Promise<{ onFinal: NonNullable<onFinal>; data: DataType }> {
     let [fileError, fileData] = await PromisedValue(
       async () => await fs.readFile(this.config.filePath, 'utf-8')
     )
@@ -25,18 +25,20 @@ export class FileIntegrity<DataType extends object, onFinal> {
     fileData ??= JSON.stringify(this.config.defaultData)
 
     if (fileError instanceof Error) {
-      const onFinal = this.config.onError?.(fileError)
+      const onFinal = this.config.onError(fileError)
       await fs.writeFile(this.config.filePath, fileData)
       return { onFinal, data: this.config.defaultData }
     }
 
-    const parsedData = JSON.parse(fileData)
-    const verifiedData = this.config.zodSchema.safeParse(parsedData)
+    const verifiedData = this.config.zodSchema.safeParse(this.config.defaultData)
 
     if (!verifiedData.success) {
+      const onFinal = this.config.onError(verifiedData.error)
       await fs.writeFile(this.config.filePath, fileData)
+      return { onFinal, data: this.config.defaultData }
     }
+
     const onFinal = this.config.onSuccess?.()
-    return { onFinal, data: verifiedData.data! }
+    return { onFinal, data: verifiedData.data }
   }
 }

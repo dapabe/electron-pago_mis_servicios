@@ -9,8 +9,7 @@ export const IpcIntegrityInitializeSchema = AppSettingsManager.getLastSchema()
     z
       .object({
         databaseFilePath: z.string().trim().min(1, 'errors.form.is-empty'),
-        hasDB: z.boolean(),
-        skipServer: z.boolean()
+        hasDB: z.boolean()
       })
       .strict()
   )
