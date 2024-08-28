@@ -33,7 +33,7 @@ export const RegisterForm = ({ values }: IRegisterProps) => {
 
   const handleDbSelection = async () => {
     const res = await window.api.selectDatabase(getValues().databaseFilePath)
-    if (res) setValue('databaseFilePath', res)
+    if (res.data) setValue('databaseFilePath', res.data)
   }
 
   return (
