@@ -21,7 +21,7 @@ export const UnauthenticatedRoute = () => {
           tabs={[
             {
               title: intl.formatMessage({ id: `page.unauthorized.register.no-db` }),
-              isDisabled: query.data.hasDB,
+              isDisabled: !query.data.hasDB,
               body: (
                 <RegisterForm
                   values={{

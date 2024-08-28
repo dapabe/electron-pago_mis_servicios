@@ -11,26 +11,28 @@ export async function* verifyFileIntegrity() {
 
   const settingsIntegrity = new FileIntegrity({
     filePath: AppStore.getState().settingsFilePath,
-    defaultData: AppSettingsManager.getLastSchema().parse({
-      databaseFilePath: path.join(app.getPath('appData'), app.getName(), `${app.getName()}.sqlite`)
-    }),
+    defaultData: AppSettingsManager.getLastSchema().parse({}),
     zodSchema: AppSettingsManager.getLastSchema(),
     onError: () => IpcEvent.Integrity.Verify.Settings.NotFound,
     onSuccess: () => IpcEvent.Integrity.Verify.Settings.Found
   })
   const { onFinal, data } = await settingsIntegrity.isFileOk()
-
   yield onFinal
+  const defaultDbPath = path.join(app.getPath('appData'), app.getName(), `${app.getName()}.sqlite`)
+  appStore.setSettings(data as IAppSettingsManager)
 
-  const dbExists = await doesFileExists(data.databaseFilePath!)
+  if (!data.databaseFilePath || !data.databaseFilePath.length) {
+    yield IpcEvent.Integrity.Verify.Db.NotFound
+    await appStore.changeSettings((settings) => (settings.databaseFilePath = defaultDbPath))
+    return yield IpcEvent.Integrity.Finish
+  }
+
+  const dbExists = await doesFileExists(data.databaseFilePath)
   if (dbExists) yield IpcEvent.Integrity.Verify.Db.Found
   else {
     yield IpcEvent.Integrity.Verify.Db.NotFound
-    appStore.setSettings(data as IAppSettingsManager)
-    await appStore.changeSettings(
-      (settings) => (settings.databaseFilePath = data.databaseFilePath!)
-    )
+    await appStore.changeSettings((settings) => (settings.databaseFilePath = defaultDbPath))
   }
 
-  yield IpcEvent.Integrity.Finish
+  return yield IpcEvent.Integrity.Finish
 }

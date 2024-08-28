@@ -1,3 +1,4 @@
+import { useTabPanel } from '#renderer/hooks/useTabPanel.hook'
 import { InputText } from '#renderer/routes/-components/form/InputText'
 import {
   IIpcIntegrityRegister,
@@ -8,20 +9,26 @@ import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { FormattedMessage } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
+import { ZodError } from 'zod'
 
 type IRegisterProps = {
   values: IIpcIntegrityRegister
 }
 
 export const RegisterForm = ({ values }: IRegisterProps) => {
+  const tabPanel = useTabPanel()
   const { register, handleSubmit, getValues, setValue, control, formState } =
     useForm<IIpcIntegrityRegister>({
       values,
       resolver: zodResolver(IpcIntegrityRegisterSchema)
     })
+
   const mutation = useMutation({
-    // mutationKey: [IpcEvent.Db.Register],
-    mutationFn: async () => await window.api.appRegister(getValues())
+    mutationFn: async () => {
+      const err = await window.api.appRegister(getValues())
+
+      if (!(err.data instanceof ZodError)) tabPanel.goToTab(1)
+    }
   })
 
   const handleDbSelection = async () => {

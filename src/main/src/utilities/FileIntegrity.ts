@@ -15,9 +15,9 @@ type IFileIntegrityConfig<DataType, T> = {
  *  Assumes files are .json / utf-8 encoding
  */
 export class FileIntegrity<DataType extends object, onFinal> {
-  constructor(public config: IFileIntegrityConfig<DataType, NonNullable<onFinal>>) {}
+  constructor(public config: IFileIntegrityConfig<DataType, onFinal>) {}
 
-  async isFileOk(): Promise<{ onFinal: NonNullable<onFinal>; data: DataType }> {
+  async isFileOk(): Promise<{ onFinal: onFinal; data: DataType }> {
     let [fileError, fileData] = await PromisedValue(
       async () => await fs.readFile(this.config.filePath, 'utf-8')
     )
@@ -26,15 +26,16 @@ export class FileIntegrity<DataType extends object, onFinal> {
 
     if (fileError instanceof Error) {
       const onFinal = this.config.onError(fileError)
+
       await fs.writeFile(this.config.filePath, fileData)
       return { onFinal, data: this.config.defaultData }
     }
 
-    const verifiedData = this.config.zodSchema.safeParse(this.config.defaultData)
+    const verifiedData = this.config.zodSchema.safeParse(JSON.parse(fileData))
 
     if (!verifiedData.success) {
       const onFinal = this.config.onError(verifiedData.error)
-      await fs.writeFile(this.config.filePath, fileData)
+      await fs.writeFile(this.config.filePath, JSON.stringify(this.config.defaultData))
       return { onFinal, data: this.config.defaultData }
     }
 

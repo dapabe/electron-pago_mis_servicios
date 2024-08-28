@@ -11,6 +11,8 @@ export class IpcResponse<ResponseType> {
   }
 
   toResult() {
-    return this.data
+    return { status: this.status, data: this.data }
   }
 }
+
+export type IpcResponseResult<T> = ReturnType<InstanceType<typeof IpcResponse<T>>['toResult']>

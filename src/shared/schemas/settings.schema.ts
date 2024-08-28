@@ -15,8 +15,8 @@ class AppSettingsSchema
 {
   static '0.0.0' = z
     .object({
-      databaseFilePath: z.string().nullable().default(null),
-      preferredLocale: z.string().min(1).default('es'),
+      databaseFilePath: z.string().min(1).endsWith('.sqlite').nullable().default(null),
+      preferredLocale: z.string().min(2).default('es'),
       flags: FlagConfigManager.getLastSchema().default(FlagConfigManager.getLastSchema().parse({}))
     })
     .strict()

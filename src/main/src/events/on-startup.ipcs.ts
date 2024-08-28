@@ -19,7 +19,16 @@ export async function ipcsOnStartUp(mainWin: BrowserWindow) {
       new IpcResponse(StatusCodes.OK, {
         env: process.env.NODE_ENV,
         version: app.getVersion()
-      })
+      }).toResult()
+    )
+  })
+  mainWin.webContents.on('devtools-reload-page', async () => {
+    mainWin.webContents.send(
+      IpcEvent.App.Info,
+      new IpcResponse(StatusCodes.OK, {
+        env: process.env.NODE_ENV,
+        version: app.getVersion()
+      }).toResult()
     )
   })
 
@@ -27,12 +36,11 @@ export async function ipcsOnStartUp(mainWin: BrowserWindow) {
     const integrityGenerator = verifyFileIntegrity()
     let hasDB = true
     for await (const event of integrityGenerator) {
-      console.log(event)
       if (event === IpcEvent.Integrity.Verify.Db.NotFound) hasDB = !hasDB
     }
 
     const x = AppStore.getState().settingsData
-    console.log(x)
+
     return new IpcResponse<IIpcIntegrityInitialize>(StatusCodes.OK, {
       hasDB,
       preferredLocale: x.preferredLocale,
@@ -54,9 +62,9 @@ export async function ipcsOnStartUp(mainWin: BrowserWindow) {
 
     const validated = AppIntlSchema.safeParse(JSON.parse(intlMessage))
     if (!validated.success) {
-      return new IpcResponse(StatusCodes.NOT_ACCEPTABLE, validated.error.format())
+      return new IpcResponse(StatusCodes.NOT_ACCEPTABLE, validated.error).toResult()
     }
-    return new IpcResponse(StatusCodes.OK, validated.data)
+    return new IpcResponse(StatusCodes.OK, validated.data).toResult()
   })
 
   ipcMain.on(IpcEvent.App.ToggleMaximize, () => {
