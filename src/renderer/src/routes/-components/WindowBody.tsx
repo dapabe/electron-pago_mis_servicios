@@ -30,7 +30,7 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
           <button aria-label="Close" onClick={handleClose}></button>
         </div>
       </div>
-      <div className="window-body flex flex-col h-80">{children}</div>
+      <main className="window-body flex flex-col h-80">{children}</main>
       <WindowStatus />
     </div>
   )

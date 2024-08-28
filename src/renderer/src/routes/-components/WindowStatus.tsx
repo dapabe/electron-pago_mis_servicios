@@ -1,16 +1,20 @@
 import { useRef } from 'react'
 import { StatusBar } from './StatusBar'
-import { useAppDataStore } from '#renderer/stores/app-data.store'
+import { useQueryClient } from '@tanstack/react-query'
+import { IpcEvent } from '#shared/constants/ipc-events'
+import { IpcResponseResult } from '#shared/utilities/IpcResponse'
 
 export function WindowStatus(): JSX.Element {
-  const { appInfo } = useAppDataStore()
+  const app = useQueryClient().getQueryData([IpcEvent.App.Info]) as IpcResponseResult<{
+    version: string
+  }>
   const versions = useRef(window.electron.process.versions).current
 
   return (
     <>
       <StatusBar
         statuses={[
-          `v${appInfo?.version}`,
+          `v${app.data.version}`,
           `Electron v${versions.electron}`,
           `Chromium v${versions.chrome}`,
           `Node v${versions.node}`

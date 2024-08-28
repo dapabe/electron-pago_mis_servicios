@@ -3,7 +3,7 @@ import '7.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { RootRoute } from './routes/root.route'
 import { UnauthenticatedRoute } from './routes/unauthenticated/Unauthenticated.route'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider
-        router={createBrowserRouter([
+        router={createHashRouter([
           {
             path: '/',
             element: <RootRoute />,

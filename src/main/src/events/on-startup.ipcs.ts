@@ -13,23 +13,11 @@ import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
 import { AppIntlSchema } from '#shared/schemas/intl.schema'
 
 export async function ipcsOnStartUp(mainWin: BrowserWindow) {
-  mainWin.webContents.once('did-finish-load', async () => {
-    mainWin.webContents.send(
-      IpcEvent.App.Info,
-      new IpcResponse(StatusCodes.OK, {
-        env: process.env.NODE_ENV,
-        version: app.getVersion()
-      }).toResult()
-    )
-  })
-  mainWin.webContents.on('devtools-reload-page', async () => {
-    mainWin.webContents.send(
-      IpcEvent.App.Info,
-      new IpcResponse(StatusCodes.OK, {
-        env: process.env.NODE_ENV,
-        version: app.getVersion()
-      }).toResult()
-    )
+  ipcMain.handle(IpcEvent.App.Info, () => {
+    return new IpcResponse(StatusCodes.OK, {
+      env: process.env.NODE_ENV,
+      version: app.getVersion()
+    }).toResult()
   })
 
   ipcMain.handle(IpcEvent.Integrity.Initialize, async () => {

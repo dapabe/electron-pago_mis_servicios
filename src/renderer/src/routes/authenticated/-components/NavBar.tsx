@@ -1,11 +1,9 @@
 import { FormattedMessage } from 'react-intl'
 import { useNavigate } from 'react-router-dom'
 import { Menu } from '#renderer/routes/-components/Menu'
-import { useAppDataStore } from '#renderer/stores/app-data.store'
 
 export const NavBar = (): JSX.Element => {
   // const { data, toggleFlag } = useUserDataStore()
-  const { appInfo } = useAppDataStore()
   // const { sequenceDisabled } = useAppSequence()
   const nav = useNavigate()
 
@@ -14,53 +12,9 @@ export const NavBar = (): JSX.Element => {
       <Menu.Item type="option" onClick={() => nav('/app')}>
         <FormattedMessage id="root.navBar.home.title" />
       </Menu.Item>
-      <Menu.Item type="menu">
+      <Menu.Item type="option" onClick={() => nav('/app/settings')}>
         <FormattedMessage id="root.navBar.settings.title" />
-        <Menu className="w-max">
-          {/* <Menu.Item
-            type="checkbox"
-            isChecked={data?.flags.secure ?? true}
-            onChange={async () => await toggleFlag('secure')}
-          >
-            <div className="flex gap-x-2">
-              <div>
-                <FormattedMessage id={`flags.secure.text`} />
-              </div>
-              <div className="text-gray-500 flex-grow text-right">
-                <FormattedMessage id={`flags.secure.label`} />
-              </div>
-            </div>
-          </Menu.Item> */}
-          {/* {Object.entries(data?.flags ?? {}).map(([name, value], idx) => (
-            <Menu.Item
-              key={name}
-              type="checkbox"
-              isChecked={name === 'headless' ? !value : value}
-              onChange={async () => await toggleFlag(name as keyof IFlagConfig)}
-              isDivider={Object.keys(data?.flags ?? {}).length === 1 + idx}
-              // isDisabled={name === 'headless' && !sequenceDisabled}
-              isDisabled={name === 'headless'}
-            >
-              <div className="flex gap-x-2">
-                <div>
-                  <FormattedMessage id={`flags.${name}.text`} />
-                </div>
-                <div className="text-gray-500 flex-grow text-right">
-                  {name === 'headless' ? 'WIP' : <FormattedMessage id={`flags.${name}.label`} />}
-                </div>
-              </div>
-            </Menu.Item>
-          ))} */}
-        </Menu>
       </Menu.Item>
-      <Menu.Item type="option" onClick={() => nav('/app/help')}>
-        <FormattedMessage id="root.navBar.help.title" />
-      </Menu.Item>
-      {appInfo?.env === 'development' && (
-        <Menu.Item type="option" onClick={() => nav('/help')}>
-          Otro
-        </Menu.Item>
-      )}
     </Menu>
   )
 }

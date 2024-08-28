@@ -3,49 +3,45 @@ import { useQuery } from '@tanstack/react-query'
 import { IntlProvider } from 'react-intl'
 import { Outlet } from 'react-router-dom'
 import { WindowBody } from './-components/WindowBody'
-import { useIpcListener } from '#renderer/hooks/useIpcListener.hook'
-import { IpcResponse } from '#shared/utilities/IpcResponse'
-import { IAppInformation } from '#shared/types/readonly-data'
-import { useAppDataStore } from '#renderer/stores/app-data.store'
+import { ZodError } from 'zod'
 
 export const RootRoute = () => {
-  const { data: appInfo, isSuccess: isSuc1 } = useQuery({
+  /**
+   *  Application important info
+   */
+  useQuery({
+    queryKey: [IpcEvent.App.Info],
+    queryFn: async () => await window.electron.ipcRenderer.invoke(IpcEvent.App.Info),
+    staleTime: Infinity
+  })
+
+  /**
+   *  On start app information
+   */
+  const { data: initInfo, isSuccess: isSuc1 } = useQuery({
     queryKey: [IpcEvent.Integrity.Initialize],
     queryFn: window.api.integrityInitialize
-    // staleTime: Infinity
   })
+
+  /**
+   *  I18n messages
+   */
   const { data: translations, isSuccess: isSuc2 } = useQuery({
     queryKey: [IpcEvent.Language.Messages],
-    queryFn: window.api.getTranslation,
-    enabled: !!appInfo
-  })
-  // const appStore = useAppDataStore()
-  // const userStore = useUserDataStore()
-  const { setAppInfo } = useAppDataStore()
-
-  // const [languageMessages, setMessages] = useState<IpcEventReturnType['LanguageChange']>({})
-  // const [preferredLocale, setPreferred] = useState<string>('es')
-
-  // useIpcListener(
-  //   IpcEvent.Config.InitialConfig,
-  //   (_, values: IpcEventReturnType['Config']['InitialConfig']) => {
-  //     userStore.setConfig(values.config)
-  //     appStore.setVersion(values.appVersion)
-  //     appStore.setLocales(values.locales)
-  //     setPreferred(values.preferredLocale)
-  //   }
-  // )
-
-  useIpcListener(IpcEvent.App.Info, (_, value: IpcResponse<IAppInformation>) => {
-    setAppInfo(value.data)
+    queryFn: async () => {
+      const res = await window.api.getTranslation()
+      if (res.data instanceof ZodError) return {}
+      return res.data
+    },
+    enabled: !!initInfo
   })
 
   if (!isSuc1 || !isSuc2) return null
   return (
     <IntlProvider
-      locale={appInfo.data.preferredLocale}
+      locale={initInfo.data.preferredLocale}
       defaultLocale="es"
-      messages={translations.data}
+      messages={translations}
       onError={() => undefined}
     >
       <WindowBody>
