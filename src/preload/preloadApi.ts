@@ -7,6 +7,7 @@ import {
   IpcIntegrityLoginSchema,
   IpcIntegrityRegisterSchema
 } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
+import { AppSettingsManager } from '#shared/schemas/settings.schema'
 import { IpcResponse, IpcResponseResult } from '#shared/utilities/IpcResponse'
 import { ipcRenderer } from 'electron'
 import { StatusCodes } from 'http-status-codes'
@@ -35,12 +36,18 @@ export const preloadApi = {
     }
     return new IpcResponse(StatusCodes.OK, null).toResult()
   },
-  getTranslation: async (): Promise<
-    IpcResponse<IpcResponseResult<IAppIntl | ZodError<IAppIntl>>>
-  > => {
+  getTranslation: async (): Promise<IpcResponseResult<IAppIntl | ZodError<IAppIntl>>> => {
     return await ipcRenderer.invoke(IpcEvent.Language.Messages)
   },
-  selectDatabase: async (defaultPath: string): Promise<IpcResponseResult<string | null>> => {
+  selectDatabase: async (
+    defaultPath: unknown
+  ): Promise<IpcResponseResult<string | ZodError<string>>> => {
+    const validated = AppSettingsManager.getLastSchema()
+      .shape.databaseFilePath.removeDefault()
+      .safeParse(defaultPath ?? '')
+    if (!validated.success) {
+      return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error)
+    }
     return await ipcRenderer.invoke(IpcEvent.Db.SelectFile, defaultPath)
   }
 } as const
