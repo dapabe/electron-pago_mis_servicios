@@ -29,7 +29,7 @@ export const IpcEvent = {
     Login: 'db.login',
     SelectFile: 'db.select-file',
     Password: {
-      // Create: 'db.password.create',
+      Reset: 'db.password.reset',
       Update: 'db.password.update'
     }
   },

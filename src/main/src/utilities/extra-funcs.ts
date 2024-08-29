@@ -18,8 +18,9 @@ type IWriteToFileOptions<T> = {
  */
 export async function writeToFile<T>({ filePath, cb, onSuccess }: IWriteToFileOptions<T>) {
   const [jsonErr, data] = await PromisedValue(
-    async () => (await fs.readFile(filePath, 'utf-8')) as unknown as T
+    async () => (await fs.readFile(filePath, 'utf-8').then(JSON.parse)) as unknown as T
   )
+
   if (data) {
     cb(data)
     await fs.writeFile(filePath, JSON.stringify(data), 'utf-8')

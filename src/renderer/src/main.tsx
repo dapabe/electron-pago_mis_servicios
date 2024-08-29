@@ -10,7 +10,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './common/query-client'
 import { AuthenticatedRoute } from './routes/authenticated/Authenticated.route'
 import { HomeRoute } from './routes/authenticated/home/Home.route'
-import { HelpRoute } from './routes/authenticated/help/Help.route'
+import { HelpRoute } from './routes/help/Help.route'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

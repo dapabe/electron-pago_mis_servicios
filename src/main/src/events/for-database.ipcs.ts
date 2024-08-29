@@ -11,15 +11,22 @@ import { getReasonPhrase, StatusCodes } from 'http-status-codes'
 
 export async function ipcsForDatabase(mainWin: BrowserWindow) {
   ipcMain.handle(IpcEvent.Db.Register, async (_, data: IIpcIntegrityRegister) => {
-    await new LocalDatabase(AppStore.getState().settingsData.databaseFilePath!).initialize()
+    await new LocalDatabase(AppStore.getState().settingsData.databaseFilePath!).initialize(
+      data.password
+    )
 
     return new IpcResponse(StatusCodes.CREATED, getReasonPhrase(StatusCodes.CREATED)).toResult()
   })
 
   ipcMain.handle(IpcEvent.Db.Login, async (_, data: IIpcIntegrityLogin) => {
-    // evt
-    // _.sender.
+    await new LocalDatabase(AppStore.getState().settingsData.databaseFilePath!).initialize(
+      data.password
+    )
+
+    return new IpcResponse(StatusCodes.OK, getReasonPhrase(StatusCodes.OK)).toResult()
   })
+
+  ipcMain.handle(IpcEvent.Db.Password.Reset, async () => {})
 
   ipcMain.handle(IpcEvent.Db.SelectFile, async (evt, defaultPath: string) => {
     const dialogResult = await dialog.showOpenDialog(BrowserWindow.fromWebContents(evt.sender)!, {

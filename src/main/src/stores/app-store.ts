@@ -28,7 +28,7 @@ export const AppStore = create<IAppStore>()(
     setSettings: (settingsData) => set({ settingsData }),
     changeSettings: async (cb) => {
       return await writeToFile<IAppSettingsManager>({
-        filePath: get().settingsData.databaseFilePath!,
+        filePath: get().settingsFilePath,
         cb,
         onSuccess: (settings) => get().setSettings(settings)
       })

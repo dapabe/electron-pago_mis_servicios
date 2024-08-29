@@ -29,12 +29,12 @@ export const preloadApi = {
   },
   appLogin: async (
     data: unknown
-  ): Promise<IpcResponseResult<null | ZodError<IIpcIntegrityLogin>>> => {
+  ): Promise<IpcResponseResult<string | ZodError<IIpcIntegrityLogin>>> => {
     const validated = IpcIntegrityLoginSchema.safeParse(data)
     if (!validated.success) {
       return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error).toResult()
     }
-    return new IpcResponse(StatusCodes.OK, null).toResult()
+    return await ipcRenderer.invoke(IpcEvent.Db.Login, validated.data)
   },
   getTranslation: async (): Promise<IpcResponseResult<IAppIntl | ZodError<IAppIntl>>> => {
     return await ipcRenderer.invoke(IpcEvent.Language.Messages)

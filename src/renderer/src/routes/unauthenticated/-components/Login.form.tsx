@@ -1,4 +1,5 @@
 import { InputText } from '#renderer/routes/-components/form/InputText'
+import { IpcEvent } from '#shared/constants/ipc-events'
 import {
   IIpcIntegrityLogin,
   IpcIntegrityLoginSchema
@@ -22,9 +23,13 @@ export const LoginForm = ({ values }: ILoginProps) => {
     mutationFn: async () => await window.api.appLogin(getValues())
   })
 
-  const handleLogin = async (data: IIpcIntegrityLogin) => {}
+  const handleLogin = async (data: IIpcIntegrityLogin) => {
+    window.api.appLogin(data)
+  }
 
-  const handlePasswordForget = async () => {}
+  const handlePasswordForget = async () => {
+    window.electron.ipcRenderer.invoke(IpcEvent.Db.Password.Reset)
+  }
 
   return (
     <form className="grid grid-cols-3 grid-rows-2 gap-2" onSubmit={handleSubmit(handleLogin)}>

@@ -33,7 +33,8 @@ export const RegisterForm = ({ values }: IRegisterProps) => {
 
   const handleDbSelection = async () => {
     const res = await window.api.selectDatabase(getValues().databaseFilePath)
-    if (res.data) setValue('databaseFilePath', res.data)
+    if (typeof res.data === 'string') setValue('databaseFilePath', res.data)
+    else setValue('databaseFilePath', values.databaseFilePath)
   }
 
   return (
@@ -54,7 +55,12 @@ export const RegisterForm = ({ values }: IRegisterProps) => {
             placeholder="C:\"
             className="text-gray-500 text-ellipsis w-full cursor-help"
           />
-          <button aria-label="search" tabIndex={-1} onClick={handleDbSelection}></button>
+          <button
+            type="button"
+            aria-label="search"
+            tabIndex={-1}
+            onClick={handleDbSelection}
+          ></button>
         </div>
       </div>
       <div className="col-span-3 flex flex-col">
