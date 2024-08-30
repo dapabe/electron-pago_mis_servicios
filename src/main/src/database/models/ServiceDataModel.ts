@@ -1,36 +1,54 @@
-import { DataTypes, Model, Sequelize } from 'sequelize'
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  Sequelize
+} from 'sequelize'
 import { TABLE_NAME } from '../../utilities/constants/table-names'
+import { ISupportedServices, SupportedServices } from '#shared/constants/supported-services'
 
-export class ServiceDataModel extends Model<{
-  id: number
-  serviceId: number
-  userId: number
-  password: string
-}> {}
+export class ServiceDataModel extends Model<
+  InferAttributes<ServiceDataModel>,
+  InferCreationAttributes<ServiceDataModel>
+> {
+  declare id: CreationOptional<string>
+  declare user_name: ISupportedServices
+  declare password: string
+  declare account_number: number
+
+  declare service_name: string
+}
 
 export default (sequelize: Sequelize) =>
   ServiceDataModel.init(
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
-        autoIncrement: true
+        defaultValue: DataTypes.UUIDV4
       },
-      serviceId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
+      service_name: {
+        type: DataTypes.ENUM<ISupportedServices>,
+        values: SupportedServices._def.values
       },
-      userId: {
+      user_name: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
+      },
+      account_number: {
+        type: DataTypes.INTEGER,
+        allowNull: true
       }
     },
     {
       sequelize,
+      underscored: true,
       tableName: TABLE_NAME.SERVICE_DATA
     }
   )

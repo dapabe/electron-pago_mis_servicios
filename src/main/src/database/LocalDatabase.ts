@@ -1,19 +1,33 @@
 import { is } from '@electron-toolkit/utils'
 import { Sequelize } from 'sequelize'
-import { UserModel } from './models/UserModel'
+import { app } from 'electron'
+import os from 'node:os'
 
 export class LocalDatabase {
   static fileName = 'revision.sqlite'
   static db: InstanceType<typeof Sequelize>
+  static #userPassword: string
 
-  constructor(dbFilePath: string) {
+  constructor(dbFilePath: string, password: string) {
     if (LocalDatabase.db instanceof Sequelize) {
       return this
     }
-    LocalDatabase.db = new Sequelize({
+    LocalDatabase.#userPassword = password
+
+    LocalDatabase.db = new Sequelize(app.getName(), os.userInfo().username, {
       dialect: 'sqlite',
-      storage: dbFilePath
+      dialectModulePath: '@journeyapps/sqlcipher',
+      pool: {
+        max: 1
+      },
+      storage: dbFilePath,
+      logging: console.log
     })
+
+    //  SQLCipher configuration
+    LocalDatabase.db.query(`PRAGMA key = '${LocalDatabase.#userPassword}'`)
+    LocalDatabase.db.query('PRAGMA cipher_compatibility = 4')
+
     return this
   }
 
@@ -24,26 +38,13 @@ export class LocalDatabase {
     }
   }
 
-  public async initialize(password: string) {
-    await LocalDatabase.db.authenticate().then(console.log).catch(console.log)
+  public async initialize() {
     await this.#loadModels()
     await LocalDatabase.db.sync({ force: is.dev }).catch(console.log)
   }
 
-  public async register(password: string) {
-    const t = await LocalDatabase.db.transaction()
-    try {
-      await UserModel.create(
-        {
-          password
-        },
-        { transaction: t }
-      )
-
-      await t.commit()
-    } catch (error) {
-      console.log(error)
-      await t.rollback()
-    }
+  static async changePassword(newPassword: string) {
+    await LocalDatabase.db.query(`PRAGMA rekey = '${newPassword}'`).catch(console.log)
+    LocalDatabase.#userPassword = newPassword
   }
 }

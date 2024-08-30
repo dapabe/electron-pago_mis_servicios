@@ -31,6 +31,22 @@ export const IpcEvent = {
     Password: {
       Reset: 'db.password.reset',
       Update: 'db.password.update'
+    },
+    Create: {
+      ServiceData: 'db.create.service-data',
+      PayMethod: 'db.create.pay-method'
+    },
+    Read: {
+      ServiceData: 'db.read.service-data',
+      PayMethod: 'db.read.pay-method'
+    },
+    Update: {
+      ServiceData: 'db.update.service-data',
+      PayMethod: 'db.update.pay-method'
+    },
+    Delete: {
+      ServiceData: 'db.delete.service-data',
+      PayMethod: 'db.delete.pay-method'
     }
   },
   Language: {
