@@ -1,8 +1,19 @@
-import { z } from 'zod'
+import { z, ZodType } from 'zod'
 import { CardBrand, CardType } from '#shared/constants/cards'
 
-export const PaymentMethodSchema = z
-  .object({
+export class PaymentMethodDTO {
+  static ReadSchema = z.object({
+    id: z.string().uuid(),
+    fullName: z.string(),
+    payAlias: z.string(),
+    frontNumber: z.string(),
+    expireDate: z.string(),
+    backNumber: z.string(),
+    type: CardType,
+    brand: CardBrand.nullable()
+  })
+
+  static CreateSchema = PaymentMethodDTO.ReadSchema.extend({
     fullName: z.string().trim().min(1, 'El nombre no puede estar vacio.'),
     payAlias: z.string().trim().min(1, 'El Alias no puede estar vacio.'),
     frontNumber: z.string().refine((val) => /^\d{14,16}$/.test(val), {
@@ -13,13 +24,11 @@ export const PaymentMethodSchema = z
     }),
     backNumber: z.string().refine((val) => /^\d{3,4}$/.test(val), {
       message: `backNumber tiene que ser un numero de 3-4 digitos.`
-    }),
-    cardType: CardType.default('Débito'),
-    cardBrand: CardBrand.nullable().default(null)
+    })
   })
-  .strict()
+}
 
-/**
- * Credit/debit card data structure.
- */
-export type IPaymentMethod = z.TypeOf<typeof PaymentMethodSchema>
+export type IPaymentMethodDTO<Method extends keyof typeof PaymentMethodDTO> =
+  (typeof PaymentMethodDTO)[Method] extends ZodType
+    ? z.TypeOf<(typeof PaymentMethodDTO)[Method]>
+    : never

@@ -4,10 +4,11 @@ import {
   DataTypes,
   InferAttributes,
   InferCreationAttributes,
-  Model,
-  Sequelize
+  Model
 } from 'sequelize'
+import { ServiceDataModel } from './ServiceDataModel'
 import { TABLE_NAME } from '../../utilities/constants/table-names'
+import { IDefaultModelMethods } from '../../utilities/types/default.model'
 
 export class PaymentMethodModel extends Model<
   InferAttributes<PaymentMethodModel>,
@@ -16,61 +17,63 @@ export class PaymentMethodModel extends Model<
   declare id: CreationOptional<string>
   declare alias: string
 
-  declare full_name: string
-  declare front_number: string
-  declare expire_date: Date
-  declare security_number: number
+  declare fullName: string
+  declare frontNumber: string
+  declare expireDate: Date
+  declare securityNumber: number
   declare type: CreationOptional<ICardType>
   declare brand: CreationOptional<ICardBrand>
 }
 
-export default (sequelize: Sequelize) =>
-  PaymentMethodModel.init(
-    {
-      id: {
-        type: DataTypes.UUID,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4
-      },
-      alias: {
-        type: DataTypes.TEXT,
-        allowNull: false
-      },
-      full_name: {
-        type: DataTypes.TEXT,
-        allowNull: false
-      },
-      front_number: {
-        type: DataTypes.TEXT,
-        allowNull: false
-      },
-      expire_date: {
-        type: DataTypes.DATE,
-        allowNull: false
-      },
-      security_number: {
-        type: DataTypes.TINYINT,
-        allowNull: false,
-        validate: {
-          isInt: true,
-          min: 3,
-          max: 4
+export default (): IDefaultModelMethods => ({
+  init: (sequelize) =>
+    PaymentMethodModel.init(
+      {
+        id: {
+          type: DataTypes.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
+        },
+        alias: {
+          type: DataTypes.TEXT,
+          allowNull: false
+        },
+        fullName: {
+          type: DataTypes.TEXT,
+          allowNull: false
+        },
+        frontNumber: {
+          type: DataTypes.TEXT,
+          allowNull: false
+        },
+        expireDate: {
+          type: DataTypes.DATE,
+          allowNull: false
+        },
+        securityNumber: {
+          type: DataTypes.TINYINT,
+          allowNull: false,
+          validate: {
+            isInt: true,
+            min: 3,
+            max: 4
+          }
+        },
+        type: {
+          type: DataTypes.ENUM<ICardType>,
+          allowNull: true,
+          values: CardType._def.values
+        },
+        brand: {
+          type: DataTypes.ENUM<ICardType>,
+          allowNull: true,
+          values: CardBrand._def.values
         }
       },
-      type: {
-        type: DataTypes.ENUM<ICardType>,
-        allowNull: true,
-        values: CardType._def.values
-      },
-      brand: {
-        type: DataTypes.ENUM<ICardType>,
-        allowNull: true,
-        values: CardBrand._def.values
+      {
+        sequelize,
+        tableName: TABLE_NAME.PAY_METHODS
       }
-    },
-    {
-      sequelize,
-      underscored: true,
-      tableName: TABLE_NAME.PAY_METHODS
-    }
-  )
+    ),
+  associate: () => PaymentMethodModel.hasMany(ServiceDataModel, { foreignKey: 'idPaymentMethod' })
+})

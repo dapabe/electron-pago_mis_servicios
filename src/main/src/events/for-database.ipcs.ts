@@ -9,6 +9,9 @@ import { AppStore } from '../stores/app-store'
 import { IpcResponse } from '#shared/utilities/IpcResponse'
 import { getReasonPhrase, StatusCodes } from 'http-status-codes'
 import { ServiceDataModel } from '../database/models/ServiceDataModel'
+import { IServiceDataDTO } from '#shared/schemas/dtos/ServiceData.dto.schema'
+import { IPaymentMethodDTO } from '#shared/schemas/dtos/PaymentMethod.dto.schema'
+import { PaymentMethodModel } from '../database/models/PaymentMethodModel'
 
 export async function ipcsForDatabase(mainWin: BrowserWindow) {
   ipcMain.handle(IpcEvent.Db.Register, async (_, data: IIpcIntegrityRegister) => {
@@ -48,23 +51,21 @@ export async function ipcsForDatabase(mainWin: BrowserWindow) {
     return new IpcResponse(StatusCodes.OK, dialogResult.filePaths[0]).toResult()
   })
 
-  ipcMain.handle(IpcEvent.Db.Create.ServiceData, async (_, data) => {
-    const t = await LocalDatabase.db.transaction()
-    try {
-      await ServiceDataModel.create(
-        {
-          service_name: data.serviceName,
-          user_name: data.userName,
-          password: data.password,
-          account_number: data.accountNumber
-        },
-        { transaction: t }
-      )
-      await t.commit()
+  /**
+   *  CRUD EVENTS
+   */
+
+  ipcMain.handle(IpcEvent.Db.Create.ServiceData, async (_, data: IServiceDataDTO<'ReadSchema'>) => {
+    return await LocalDatabase.withTransaction(async (t) => {
+      await ServiceDataModel.create(data, { transaction: t })
       return new IpcResponse(StatusCodes.CREATED, getReasonPhrase(StatusCodes.CREATED)).toResult()
-    } catch (error) {
-      console.log(error)
-      await t.rollback()
-    }
+    })
+  })
+
+  ipcMain.handle(IpcEvent.Db.Create.PayMethod, async (_, data: IPaymentMethodDTO<'ReadSchema'>) => {
+    return await LocalDatabase.withTransaction(async (t) => {
+      await PaymentMethodModel.create(data, { transaction: t })
+      return new IpcResponse(StatusCodes.CREATED, getReasonPhrase(StatusCodes.CREATED)).toResult()
+    })
   })
 }

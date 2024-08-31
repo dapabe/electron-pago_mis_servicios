@@ -1,54 +1,68 @@
 import {
   CreationOptional,
   DataTypes,
+  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
-  Model,
-  Sequelize
+  Model
 } from 'sequelize'
-import { TABLE_NAME } from '../../utilities/constants/table-names'
 import { ISupportedServices, SupportedServices } from '#shared/constants/supported-services'
+import { PaymentMethodModel } from './PaymentMethodModel'
+import { IDefaultModelMethods } from '../../utilities/types/default.model'
+import { TABLE_NAME } from '../../utilities/constants/table-names'
 
 export class ServiceDataModel extends Model<
   InferAttributes<ServiceDataModel>,
   InferCreationAttributes<ServiceDataModel>
 > {
   declare id: CreationOptional<string>
-  declare user_name: ISupportedServices
+  declare serviceName: ISupportedServices
+  declare userName: string
   declare password: string
-  declare account_number: number
+  declare accountNumber: number
 
-  declare service_name: string
+  declare idPaymentMethod?: ForeignKey<PaymentMethodModel['id']>
 }
 
-export default (sequelize: Sequelize) =>
-  ServiceDataModel.init(
-    {
-      id: {
-        type: DataTypes.UUID,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4
+export default (): IDefaultModelMethods => ({
+  init: (sequelize) =>
+    ServiceDataModel.init(
+      {
+        id: {
+          type: DataTypes.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
+        },
+        serviceName: {
+          type: DataTypes.ENUM<ISupportedServices>,
+          values: SupportedServices._def.values
+        },
+        userName: {
+          type: DataTypes.STRING,
+          allowNull: true
+        },
+        password: {
+          type: DataTypes.STRING,
+          allowNull: true
+        },
+        accountNumber: {
+          type: DataTypes.INTEGER,
+          allowNull: true
+        },
+
+        idPaymentMethod: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          references: {
+            model: PaymentMethodModel,
+            key: 'id'
+          }
+        }
       },
-      service_name: {
-        type: DataTypes.ENUM<ISupportedServices>,
-        values: SupportedServices._def.values
-      },
-      user_name: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: true
-      },
-      account_number: {
-        type: DataTypes.INTEGER,
-        allowNull: true
+      {
+        sequelize,
+        tableName: TABLE_NAME.SERVICE_DATA
       }
-    },
-    {
-      sequelize,
-      underscored: true,
-      tableName: TABLE_NAME.SERVICE_DATA
-    }
-  )
+    ),
+  associate: () => ServiceDataModel.belongsTo(PaymentMethodModel)
+})
