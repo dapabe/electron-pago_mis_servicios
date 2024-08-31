@@ -97,6 +97,11 @@ export class LocalDatabase {
     }
   }
 
+  /**
+   *  On error returns INTERNAL_SERVER_ERROR IpcResponse
+   *  with reason phrase.
+   *
+   */
   static async withTransaction<T>(
     cb: (t: Transaction) => Promise<T>
   ): Promise<T | IpcResponseResult<string>> {

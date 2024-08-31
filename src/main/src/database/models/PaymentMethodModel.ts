@@ -18,7 +18,7 @@ export class PaymentMethodModel extends Model<
   declare alias: string
 
   declare fullName: string
-  declare frontNumber: string
+  declare frontNumber: number
   declare expireDate: Date
   declare securityNumber: number
   declare type: CreationOptional<ICardType>
