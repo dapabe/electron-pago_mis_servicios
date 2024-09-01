@@ -6,10 +6,11 @@ import crypto from 'node:crypto'
 import keytar from 'keytar'
 import { IpcResponse, IpcResponseResult } from '#shared/utilities/IpcResponse'
 import { getReasonPhrase, StatusCodes } from 'http-status-codes'
+import { ipcsForDatabaseCrud } from '../events/for-database-crud.ipcs'
 
 export class LocalDatabase {
   static fileName = 'revision.sqlite'
-  static instance: InstanceType<typeof Sequelize>
+  static sqlite: InstanceType<typeof Sequelize>
 
   static #masterKeyService = app.getName()
   static #masterKeyAccount = os.userInfo().username
@@ -33,7 +34,7 @@ export class LocalDatabase {
   }
 
   static async createInstance(dbFilePath: string, password: string) {
-    if (LocalDatabase.instance) {
+    if (LocalDatabase.sqlite) {
       return this
     }
 
@@ -42,6 +43,9 @@ export class LocalDatabase {
 
     const instance = new LocalDatabase()
     await instance.#initialize()
+
+    await ipcsForDatabaseCrud()
+
     return instance
   }
 
@@ -51,7 +55,7 @@ export class LocalDatabase {
       await LocalDatabase.setMasterKey(LocalDatabase.#masterKey)
     }
 
-    LocalDatabase.instance = new Sequelize({
+    LocalDatabase.sqlite = new Sequelize({
       dialect: 'sqlite',
       dialectModulePath: '@journeyapps/sqlcipher',
       pool: {
@@ -60,13 +64,13 @@ export class LocalDatabase {
       storage: LocalDatabase.#dbFilePath
     })
 
-    await LocalDatabase.instance.query(`PRAGMA key = :password`, {
+    await LocalDatabase.sqlite.query(`PRAGMA key = :password`, {
       replacements: { password: LocalDatabase.#userPassword }
     })
-    await LocalDatabase.instance.query('PRAGMA cipher_compatibility = 4')
+    await LocalDatabase.sqlite.query('PRAGMA cipher_compatibility = 4')
 
     await this.#loadModels()
-    await LocalDatabase.instance.sync({ alter: is.dev })
+    await LocalDatabase.sqlite.sync({ alter: is.dev })
   }
 
   async #loadModels() {
@@ -74,7 +78,7 @@ export class LocalDatabase {
       const models = await import('./models/index')
       //  Initialize models
       for (const model of Object.values(models)) {
-        LocalDatabase.instance.modelManager.addModel(model().init(LocalDatabase.instance))
+        LocalDatabase.sqlite.modelManager.addModel(model().init(LocalDatabase.sqlite))
       }
       //  Associate models
       for (const model of Object.values(models)) {
@@ -96,10 +100,10 @@ export class LocalDatabase {
        *  2.  Change the password
        *  3.  Lock the db using new user password
        */
-      await LocalDatabase.instance.query(`PRAGMA key = :masterKey`, {
+      await LocalDatabase.sqlite.query(`PRAGMA key = :masterKey`, {
         replacements: { masterKey }
       })
-      await LocalDatabase.instance.query(`PRAGMA rekey = :newPassword`, {
+      await LocalDatabase.sqlite.query(`PRAGMA rekey = :newPassword`, {
         replacements: { newPassword }
       })
       LocalDatabase.#userPassword = newPassword
@@ -121,7 +125,7 @@ export class LocalDatabase {
   static async withTransaction<T>(
     cb: (t: Transaction) => Promise<T>
   ): Promise<T | IpcResponseResult<string>> {
-    const t = await LocalDatabase.instance.transaction()
+    const t = await LocalDatabase.sqlite.transaction()
     try {
       const result = await cb(t)
       await t.commit()

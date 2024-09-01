@@ -4,7 +4,6 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { ipcsOnStartUp } from './src/events/on-startup.ipcs'
 import { ipcsForDatabase } from './src/events/for-database.ipcs'
-import { ipcsForDatabaseCrud } from './src/events/for-database-crud.ipcs'
 
 let mainWindow: BrowserWindow
 
@@ -72,7 +71,6 @@ app.whenReady().then(() => {
   if (is.dev) mainWindow.webContents.openDevTools()
   ipcsOnStartUp(mainWindow)
   ipcsForDatabase(mainWindow)
-  ipcsForDatabaseCrud()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
