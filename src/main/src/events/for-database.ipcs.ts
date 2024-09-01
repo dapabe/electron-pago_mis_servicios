@@ -11,13 +11,19 @@ import { getReasonPhrase, StatusCodes } from 'http-status-codes'
 
 export async function ipcsForDatabase(mainWin: BrowserWindow) {
   ipcMain.handle(IpcEvent.Db.Register, async (_, data: IIpcIntegrityRegister) => {
-    new LocalDatabase(AppStore.getState().settingsData.databaseFilePath!, data.password)
+    await LocalDatabase.createInstance(
+      AppStore.getState().settingsData.databaseFilePath!,
+      data.password
+    )
 
     return new IpcResponse(StatusCodes.CREATED, getReasonPhrase(StatusCodes.CREATED)).toResult()
   })
 
   ipcMain.handle(IpcEvent.Db.Login, async (_, data: IIpcIntegrityLogin) => {
-    new LocalDatabase(AppStore.getState().settingsData.databaseFilePath!, data.password)
+    await LocalDatabase.createInstance(
+      AppStore.getState().settingsData.databaseFilePath!,
+      data.password
+    )
 
     return new IpcResponse(StatusCodes.OK, getReasonPhrase(StatusCodes.OK)).toResult()
   })
