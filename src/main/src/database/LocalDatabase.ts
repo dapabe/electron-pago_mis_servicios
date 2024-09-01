@@ -17,32 +17,36 @@ export class LocalDatabase {
   static #masterKey: string
 
   constructor(dbFilePath: string, password: string) {
-    if (LocalDatabase.instance instanceof Sequelize) {
+    ;(async () => {
+      if (LocalDatabase.instance) {
+        return this
+      }
+
+      if (!(await LocalDatabase.getMasterKey())) {
+        LocalDatabase.#masterKey = crypto.randomBytes(32).toString('hex')
+        await LocalDatabase.setMasterKey(LocalDatabase.#masterKey)
+      }
+
+      LocalDatabase.#userPassword = password
+
+      LocalDatabase.instance = new Sequelize({
+        dialect: 'sqlite',
+        dialectModulePath: '@journeyapps/sqlcipher',
+        pool: {
+          max: 1
+        },
+        storage: dbFilePath
+      })
+
+      //  SQLCipher configuration
+      await LocalDatabase.instance.query(`PRAGMA key = '${LocalDatabase.#userPassword}'`)
+      await LocalDatabase.instance.query('PRAGMA cipher_compatibility = 4')
+
+      await this.#loadModels()
+      await LocalDatabase.instance.sync({ force: is.dev })
+
       return this
-    }
-
-    if (!LocalDatabase.getMasterKey()) {
-      LocalDatabase.#masterKey = crypto.randomBytes(32).toString('hex')
-      LocalDatabase.setMasterKey(LocalDatabase.#masterKey)
-    }
-
-    LocalDatabase.#userPassword = password
-
-    LocalDatabase.instance = new Sequelize({
-      dialect: 'sqlite',
-      dialectModulePath: '@journeyapps/sqlcipher',
-      pool: {
-        max: 1
-      },
-      storage: dbFilePath,
-      logging: console.log
-    })
-
-    //  SQLCipher configuration
-    LocalDatabase.instance.query(`PRAGMA key = '${LocalDatabase.#userPassword}'`)
-    LocalDatabase.instance.query('PRAGMA cipher_compatibility = 4')
-
-    return this
+    })()
   }
 
   static async setMasterKey(masterKey: string) {
@@ -72,28 +76,31 @@ export class LocalDatabase {
         model().associate?.()
       }
     } catch (error) {
-      console.log(error)
+      console.log(error!['message'] as any)
     }
-  }
-
-  public async initialize() {
-    await this.#loadModels()
-    await LocalDatabase.instance.sync({ force: is.dev }).catch(console.log)
   }
 
   static async changePassword(newPassword: string) {
     const masterKey = await LocalDatabase.getMasterKey()
-    if (masterKey) {
+    if (!masterKey)
+      return new IpcResponse(StatusCodes.INTERNAL_SERVER_ERROR, 'MASTER KEY NOT FOUND').toResult()
+
+    try {
       /**
        *  1.  Unlock the db using master key
        *  2.  Change the password
        *  3.  Lock the db using new user password
        */
-      await LocalDatabase.instance.query(`PRAGMA key = '${masterKey}'`).catch(console.log)
-      await LocalDatabase.instance.query(`PRAGMA rekey = '${newPassword}'`).catch(console.log)
+      await LocalDatabase.instance.query(`PRAGMA key = '${masterKey}'`)
+      await LocalDatabase.instance.query(`PRAGMA rekey = '${newPassword}'`)
       LocalDatabase.#userPassword = newPassword
-    } else {
-      throw new Error('Master key not found')
+      return new IpcResponse(StatusCodes.OK, getReasonPhrase(StatusCodes.OK)).toResult()
+    } catch (error) {
+      console.log(error)
+      return new IpcResponse(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)
+      ).toResult()
     }
   }
 

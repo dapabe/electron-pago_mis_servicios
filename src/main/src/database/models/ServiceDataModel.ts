@@ -15,11 +15,11 @@ export class ServiceDataModel extends Model<
   InferAttributes<ServiceDataModel>,
   InferCreationAttributes<ServiceDataModel>
 > {
-  declare id: CreationOptional<string>
+  declare id: CreationOptional<number>
   declare serviceName: ISupportedServices
-  declare userName: string
-  declare password: string
-  declare accountNumber: number
+  declare userName: string | null
+  declare password: string | null
+  declare accountNumber: number | null
 
   declare idPaymentMethod?: ForeignKey<PaymentMethodModel['id']>
 }
@@ -39,15 +39,18 @@ export default (): IDefaultModelMethods => ({
         },
         userName: {
           type: DataTypes.STRING,
-          allowNull: true
+          allowNull: true,
+          defaultValue: null
         },
         password: {
           type: DataTypes.STRING,
-          allowNull: true
+          allowNull: true,
+          defaultValue: null
         },
         accountNumber: {
           type: DataTypes.INTEGER,
-          allowNull: true
+          allowNull: true,
+          defaultValue: null
         },
 
         idPaymentMethod: {

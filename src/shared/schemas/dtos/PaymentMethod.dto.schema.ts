@@ -29,6 +29,16 @@ export class PaymentMethodDTO {
     type: CardType.optional(),
     brand: CardBrand.optional()
   })
+
+  static UpdateSchema = PaymentMethodDTO.ReadSchema.extend({
+    alias: z.string().optional(),
+    fullName: z.string().optional(),
+    frontNumber: z.number().optional(),
+    expireDate: z.date().optional(),
+    securityNumber: z.number().optional(),
+    type: CardType.optional(),
+    brand: CardBrand.optional()
+  })
 }
 
 export type IPaymentMethodDTO<Method extends keyof typeof PaymentMethodDTO> =
