@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { FormattedMessage } from 'react-intl'
+import { useNavigate } from 'react-router-dom'
 import { twJoin } from 'tailwind-merge'
 
 type ILoginProps = {
@@ -15,24 +16,27 @@ type ILoginProps = {
 }
 
 export const LoginForm = ({ values }: ILoginProps) => {
+  const nav = useNavigate()
   const { control, handleSubmit, formState, getValues } = useForm<IIpcIntegrityLogin>({
     values,
     resolver: zodResolver(IpcIntegrityLoginSchema)
   })
   const mutation = useMutation({
-    mutationFn: async () => await window.api.appLogin(getValues())
+    mutationFn: async () => {
+      await window.api.appLogin(getValues())
+      nav('/', { replace: true })
+    }
   })
-
-  const handleLogin = async (data: IIpcIntegrityLogin) => {
-    window.api.appLogin(data)
-  }
 
   const handlePasswordForget = async () => {
     window.electron.ipcRenderer.invoke(IpcEvent.Db.Password.Reset)
   }
 
   return (
-    <form className="grid grid-cols-3 grid-rows-2 gap-2" onSubmit={handleSubmit(handleLogin)}>
+    <form
+      className="grid grid-cols-3 grid-rows-2 gap-2"
+      onSubmit={handleSubmit(() => mutation.mutateAsync())}
+    >
       <div className="col-span-3 flex items-center gap-x-2">
         <label htmlFor={control.register('password').name}>
           <FormattedMessage id="common.form.password" />

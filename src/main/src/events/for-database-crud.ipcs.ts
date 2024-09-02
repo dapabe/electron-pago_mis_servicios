@@ -14,7 +14,7 @@ export async function ipcsForDatabaseCrud() {
    */
 
   ipcMain.handle(
-    IpcEvent.Db.Create.ServiceData,
+    IpcEvent.Db.CRUD.Create.ServiceData,
     async (_, data: IServiceDataDTO<'CreateSchema'>) => {
       return await LocalDatabase.withTransaction(async (t) => {
         await ServiceDataModel.create(data, { transaction: t })
@@ -23,7 +23,7 @@ export async function ipcsForDatabaseCrud() {
     }
   )
 
-  ipcMain.handle(IpcEvent.Db.Read.ServiceData, async () => {
+  ipcMain.handle(IpcEvent.Db.CRUD.Read.ServiceData, async () => {
     return await LocalDatabase.withTransaction(async (t) => {
       const res = await ServiceDataModel.findAll({ transaction: t })
       const mapped = ServiceDataDTO.ReadSchema.array().safeParse(res.map((item) => item.toJSON()))
@@ -34,7 +34,7 @@ export async function ipcsForDatabaseCrud() {
   })
 
   ipcMain.handle(
-    IpcEvent.Db.Update.ServiceData,
+    IpcEvent.Db.CRUD.Update.ServiceData,
     async (_, data: IServiceDataDTO<'UpdateSchema'>) => {
       return await LocalDatabase.withTransaction(async (t) => {
         await ServiceDataModel.update(data, { where: { id: data.id }, transaction: t })
@@ -43,7 +43,7 @@ export async function ipcsForDatabaseCrud() {
     }
   )
 
-  ipcMain.handle(IpcEvent.Db.Delete.ServiceData, async (_, ...ids: number[]) => {
+  ipcMain.handle(IpcEvent.Db.CRUD.Delete.ServiceData, async (_, ...ids: number[]) => {
     return await LocalDatabase.withTransaction(async (t) => {
       await ServiceDataModel.destroy({ where: ids.map((id) => ({ id })), transaction: t })
       return new IpcResponse(
@@ -58,7 +58,7 @@ export async function ipcsForDatabaseCrud() {
    */
 
   ipcMain.handle(
-    IpcEvent.Db.Create.PayMethod,
+    IpcEvent.Db.CRUD.Create.PayMethod,
     async (_, data: IPaymentMethodDTO<'CreateSchema'>) => {
       return await LocalDatabase.withTransaction(async (t) => {
         await PaymentMethodModel.create(data, { transaction: t })
@@ -67,7 +67,7 @@ export async function ipcsForDatabaseCrud() {
     }
   )
 
-  ipcMain.handle(IpcEvent.Db.Read.PayMethod, async () => {
+  ipcMain.handle(IpcEvent.Db.CRUD.Read.PayMethod, async () => {
     return await LocalDatabase.withTransaction(async (t) => {
       const res = await PaymentMethodModel.findAll({ transaction: t })
       const mapped = ServiceDataDTO.ReadSchema.array().safeParse(res.map((item) => item.toJSON()))
@@ -78,7 +78,7 @@ export async function ipcsForDatabaseCrud() {
   })
 
   ipcMain.handle(
-    IpcEvent.Db.Update.PayMethod,
+    IpcEvent.Db.CRUD.Update.PayMethod,
     async (_, data: IPaymentMethodDTO<'UpdateSchema'>) => {
       return await LocalDatabase.withTransaction(async (t) => {
         await PaymentMethodModel.update(data, { where: { id: data.id }, transaction: t })
@@ -87,7 +87,7 @@ export async function ipcsForDatabaseCrud() {
     }
   )
 
-  ipcMain.handle(IpcEvent.Db.Delete.PayMethod, async (_, ...ids: number[]) => {
+  ipcMain.handle(IpcEvent.Db.CRUD.Delete.PayMethod, async (_, ...ids: number[]) => {
     return await LocalDatabase.withTransaction(async (t) => {
       await PaymentMethodModel.destroy({ where: ids.map((id) => ({ id })), transaction: t })
       return new IpcResponse(

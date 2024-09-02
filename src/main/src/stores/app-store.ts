@@ -8,22 +8,17 @@ import { writeToFile } from '../utilities/extra-funcs'
 type IAppStore = {
   settingsFilePath: string
   settingsData: IAppSettingsManager
-  isAuthenticated: boolean
-
   setSettings: (settings: IAppSettingsManager) => void
   /**
    * Asynchronously changes JSON file values
    */
   changeSettings: (cb: (settings: IAppSettingsManager) => void) => Promise<Error | null>
-
-  toggleAuth: () => void
 }
 
 export const AppStore = create<IAppStore>()(
   immer((set, get) => ({
     settingsFilePath: path.join(app.getPath('appData'), app.getName(), 'settings.json'),
     settingsData: AppSettingsManager.getLastSchema().parse({}),
-    isAuthenticated: false,
 
     setSettings: (settingsData) => set({ settingsData }),
     changeSettings: async (cb) => {
@@ -32,8 +27,6 @@ export const AppStore = create<IAppStore>()(
         cb,
         onSuccess: (settings) => get().setSettings(settings)
       })
-    },
-
-    toggleAuth: () => set((x) => ({ isAuthenticated: !x.isAuthenticated }))
+    }
   }))
 )

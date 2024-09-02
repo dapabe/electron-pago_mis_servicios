@@ -6,12 +6,18 @@ import { useIntl } from 'react-intl'
 import { LoginForm } from './-components/Login.form'
 import { RegisterForm } from './-components/Register.form'
 import { TabPanel } from '../-components/TabPanel'
+import { Navigate } from 'react-router-dom'
 
 export const UnauthenticatedRoute = () => {
   const query = useQueryClient().getQueryData([
     IpcEvent.Integrity.Initialize
   ]) as IpcResponseResult<IIpcIntegrityInitialize>
+
+  const authQuery = useQueryClient().getQueryData([IpcEvent.Db.isAuthenticated]) as boolean
+
   const intl = useIntl()
+
+  if (authQuery) return <Navigate to={'/app'} replace />
 
   return (
     <section className="flex justify-center p-2">

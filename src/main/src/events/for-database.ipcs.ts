@@ -9,7 +9,7 @@ import { AppStore } from '../stores/app-store'
 import { IpcResponse } from '#shared/utilities/IpcResponse'
 import { getReasonPhrase, StatusCodes } from 'http-status-codes'
 
-export async function ipcsForDatabase(mainWin: BrowserWindow) {
+export async function ipcsForDatabase() {
   ipcMain.handle(IpcEvent.Db.Register, async (_, data: IIpcIntegrityRegister) => {
     await LocalDatabase.createInstance(
       AppStore.getState().settingsData.databaseFilePath!,
@@ -44,5 +44,9 @@ export async function ipcsForDatabase(mainWin: BrowserWindow) {
       settings.databaseFilePath = dialogResult.filePaths[0]
     })
     return new IpcResponse(StatusCodes.OK, dialogResult.filePaths[0]).toResult()
+  })
+
+  ipcMain.handle(IpcEvent.Db.isAuthenticated, () => {
+    return Boolean(LocalDatabase.sqlite)
   })
 }
