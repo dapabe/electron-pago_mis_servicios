@@ -9,7 +9,10 @@ import { queryClient } from '#renderer/common/query-client'
 export const Route = createRootRouteWithContext<{
   queryClient: typeof queryClient
 }>()({
-  component: Component
+  component: Component,
+  notFoundComponent: () => {
+    return <p>Not found</p>
+  }
 })
 
 function Component() {

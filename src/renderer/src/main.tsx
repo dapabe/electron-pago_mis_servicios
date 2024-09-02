@@ -1,6 +1,6 @@
 import './assets/global.css'
 
-import React, { Suspense } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './common/query-client'
@@ -41,9 +41,9 @@ ReactDOM.createRoot(root).render(
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
       <ReactQueryDevtools buttonPosition="bottom-right" />
-      <Suspense>
+      {/* <Suspense>
         <TanStackRouterDevtools isOpen setIsOpen={() => false} router={router} />
-      </Suspense>
+      </Suspense> */}
     </QueryClientProvider>
   </React.StrictMode>
 )

@@ -5,7 +5,16 @@ import { useIntl } from 'react-intl'
 import { WindowStatus } from './WindowStatus'
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { useNavigate } from '@tanstack/react-router'
-import { Button } from 'keep-react'
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from 'keep-react'
+import { IconHelp, IconMinus, IconX } from '@tabler/icons-react'
 
 type Props = PropsWithChildren
 export const WindowBody = ({ children }: Props): JSX.Element => {
@@ -22,17 +31,29 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
   const handleClose = () => window.electron.ipcRenderer.send(IpcEvent.App.CloseApp)
 
   return (
-    <div className="max-h-[100vh]">
-      <div className={twJoin(style.draggable, 'flex flex-row')}>
-        <div className="">{appTitle}</div>
-        <div className={`${style.noDraggable}`}>
-          <Button onClick={handleMinMax}></Button>
-          <Button onClick={async () => await nav({ to: '/help' })}></Button>
-          <Button onClick={handleClose}></Button>
-        </div>
-      </div>
-      <main className="">{children}</main>
-      <WindowStatus />
-    </div>
+    <Card className="flex flex-col max-w-full max-h-full border-0">
+      <CardHeader
+        className={twJoin(style.draggable, 'flex bg-metal-700 border-b border-metal-900')}
+      >
+        <CardTitle>{appTitle}</CardTitle>
+        <ButtonGroup className={twJoin(style.noDraggable, 'ml-auto')}>
+          <Button position="start" size="sm" onClick={handleMinMax}>
+            <IconMinus />
+          </Button>
+          <Button position="center" size="sm" onClick={async () => await nav({ to: '/help' })}>
+            <IconHelp />
+          </Button>
+          <Button position="end" size="sm" onClick={handleClose}>
+            <IconX />
+          </Button>
+        </ButtonGroup>
+      </CardHeader>
+      <CardContent className="py-0 h-full">
+        <main>{children}</main>
+      </CardContent>
+      <CardDescription>
+        <WindowStatus />
+      </CardDescription>
+    </Card>
   )
 }

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Collapse } from '../-components/Collapse'
 import { Underline } from '../-components/Underline'
 
@@ -10,9 +10,7 @@ function Component() {
   return (
     <section className="flex h-full">
       <div className="p-2 border-r border-black mr-4">
-        {/* <a className="cursor-pointer" onClick={() => nav(-1)}>
-          Volver
-        </a> */}
+        <Link to="/">Volver</Link>
       </div>
       <div className="has-scrollbar flex-1 py-2 space-y-2 overflow-y-auto">
         <Collapse title={'¿Como funciona?'}>

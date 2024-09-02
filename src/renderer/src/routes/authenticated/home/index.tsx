@@ -1,10 +1,15 @@
 import { useIntl } from 'react-intl'
-import { PayMethods } from './sequence/PayMethods'
-import { ServiceAccounts } from './sequence/tab-services/ServiceAccounts'
+import { PayMethods } from './-sequence/PayMethods'
+import { ServiceAccounts } from './-sequence/tab-services/ServiceAccounts'
 import { AppSequenceProvider } from '#renderer/contexts/app-sequence.ctx'
 import { TabPanel } from '#renderer/routes/-components/TabPanel'
+import { createFileRoute } from '@tanstack/react-router'
 
-export const HomeRoute = (): JSX.Element => {
+export const Route = createFileRoute('/authenticated/home/')({
+  component: Component
+})
+
+function Component() {
   const intl = useIntl()
 
   return (

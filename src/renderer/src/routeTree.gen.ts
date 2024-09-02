@@ -14,14 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as UnauthenticatedIndexImport } from './routes/unauthenticated/index'
 import { Route as HelpIndexImport } from './routes/help/index'
 import { Route as AuthenticatedIndexImport } from './routes/authenticated/index'
-import { Route as AuthenticatedHomeHomeRouteImport } from './routes/authenticated/home/Home.route'
-import { Route as AuthenticatedHomeSequenceVerificationPhaseImport } from './routes/authenticated/home/sequence/VerificationPhase'
-import { Route as AuthenticatedHomeSequencePayMethodsImport } from './routes/authenticated/home/sequence/PayMethods'
-import { Route as AuthenticatedHomeSequenceTabServicesServiceAccountsImport } from './routes/authenticated/home/sequence/tab-services/ServiceAccounts'
-import { Route as AuthenticatedHomeSequenceVerificationTableImport } from './routes/authenticated/home/sequence/Verification.table'
-import { Route as AuthenticatedHomeSequenceTabServicesServiceLoginFieldFormImport } from './routes/authenticated/home/sequence/tab-services/Service-LoginField.form'
-import { Route as AuthenticatedHomeSequenceTabServicesServiceListFormImport } from './routes/authenticated/home/sequence/tab-services/Service-List.form'
-import { Route as AuthenticatedHomeSequenceTabServicesServiceEditFormImport } from './routes/authenticated/home/sequence/tab-services/Service-Edit.form'
+import { Route as AuthenticatedHomeIndexImport } from './routes/authenticated/home/index'
 
 // Create/Update Routes
 
@@ -40,54 +33,10 @@ const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthenticatedHomeHomeRouteRoute = AuthenticatedHomeHomeRouteImport.update(
-  {
-    path: '/authenticated/home/Home',
-    getParentRoute: () => rootRoute,
-  } as any,
-)
-
-const AuthenticatedHomeSequenceVerificationPhaseRoute =
-  AuthenticatedHomeSequenceVerificationPhaseImport.update({
-    path: '/authenticated/home/sequence/VerificationPhase',
-    getParentRoute: () => rootRoute,
-  } as any)
-
-const AuthenticatedHomeSequencePayMethodsRoute =
-  AuthenticatedHomeSequencePayMethodsImport.update({
-    path: '/authenticated/home/sequence/PayMethods',
-    getParentRoute: () => rootRoute,
-  } as any)
-
-const AuthenticatedHomeSequenceTabServicesServiceAccountsRoute =
-  AuthenticatedHomeSequenceTabServicesServiceAccountsImport.update({
-    path: '/authenticated/home/sequence/tab-services/ServiceAccounts',
-    getParentRoute: () => rootRoute,
-  } as any)
-
-const AuthenticatedHomeSequenceVerificationTableRoute =
-  AuthenticatedHomeSequenceVerificationTableImport.update({
-    path: '/authenticated/home/sequence/Verification/table',
-    getParentRoute: () => rootRoute,
-  } as any)
-
-const AuthenticatedHomeSequenceTabServicesServiceLoginFieldFormRoute =
-  AuthenticatedHomeSequenceTabServicesServiceLoginFieldFormImport.update({
-    path: '/authenticated/home/sequence/tab-services/Service-LoginField/form',
-    getParentRoute: () => rootRoute,
-  } as any)
-
-const AuthenticatedHomeSequenceTabServicesServiceListFormRoute =
-  AuthenticatedHomeSequenceTabServicesServiceListFormImport.update({
-    path: '/authenticated/home/sequence/tab-services/Service-List/form',
-    getParentRoute: () => rootRoute,
-  } as any)
-
-const AuthenticatedHomeSequenceTabServicesServiceEditFormRoute =
-  AuthenticatedHomeSequenceTabServicesServiceEditFormImport.update({
-    path: '/authenticated/home/sequence/tab-services/Service-Edit/form',
-    getParentRoute: () => rootRoute,
-  } as any)
+const AuthenticatedHomeIndexRoute = AuthenticatedHomeIndexImport.update({
+  path: '/authenticated/home/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -114,60 +63,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnauthenticatedIndexImport
       parentRoute: typeof rootRoute
     }
-    '/authenticated/home/Home': {
-      id: '/authenticated/home/Home'
-      path: '/authenticated/home/Home'
-      fullPath: '/authenticated/home/Home'
-      preLoaderRoute: typeof AuthenticatedHomeHomeRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/authenticated/home/sequence/PayMethods': {
-      id: '/authenticated/home/sequence/PayMethods'
-      path: '/authenticated/home/sequence/PayMethods'
-      fullPath: '/authenticated/home/sequence/PayMethods'
-      preLoaderRoute: typeof AuthenticatedHomeSequencePayMethodsImport
-      parentRoute: typeof rootRoute
-    }
-    '/authenticated/home/sequence/VerificationPhase': {
-      id: '/authenticated/home/sequence/VerificationPhase'
-      path: '/authenticated/home/sequence/VerificationPhase'
-      fullPath: '/authenticated/home/sequence/VerificationPhase'
-      preLoaderRoute: typeof AuthenticatedHomeSequenceVerificationPhaseImport
-      parentRoute: typeof rootRoute
-    }
-    '/authenticated/home/sequence/Verification/table': {
-      id: '/authenticated/home/sequence/Verification/table'
-      path: '/authenticated/home/sequence/Verification/table'
-      fullPath: '/authenticated/home/sequence/Verification/table'
-      preLoaderRoute: typeof AuthenticatedHomeSequenceVerificationTableImport
-      parentRoute: typeof rootRoute
-    }
-    '/authenticated/home/sequence/tab-services/ServiceAccounts': {
-      id: '/authenticated/home/sequence/tab-services/ServiceAccounts'
-      path: '/authenticated/home/sequence/tab-services/ServiceAccounts'
-      fullPath: '/authenticated/home/sequence/tab-services/ServiceAccounts'
-      preLoaderRoute: typeof AuthenticatedHomeSequenceTabServicesServiceAccountsImport
-      parentRoute: typeof rootRoute
-    }
-    '/authenticated/home/sequence/tab-services/Service-Edit/form': {
-      id: '/authenticated/home/sequence/tab-services/Service-Edit/form'
-      path: '/authenticated/home/sequence/tab-services/Service-Edit/form'
-      fullPath: '/authenticated/home/sequence/tab-services/Service-Edit/form'
-      preLoaderRoute: typeof AuthenticatedHomeSequenceTabServicesServiceEditFormImport
-      parentRoute: typeof rootRoute
-    }
-    '/authenticated/home/sequence/tab-services/Service-List/form': {
-      id: '/authenticated/home/sequence/tab-services/Service-List/form'
-      path: '/authenticated/home/sequence/tab-services/Service-List/form'
-      fullPath: '/authenticated/home/sequence/tab-services/Service-List/form'
-      preLoaderRoute: typeof AuthenticatedHomeSequenceTabServicesServiceListFormImport
-      parentRoute: typeof rootRoute
-    }
-    '/authenticated/home/sequence/tab-services/Service-LoginField/form': {
-      id: '/authenticated/home/sequence/tab-services/Service-LoginField/form'
-      path: '/authenticated/home/sequence/tab-services/Service-LoginField/form'
-      fullPath: '/authenticated/home/sequence/tab-services/Service-LoginField/form'
-      preLoaderRoute: typeof AuthenticatedHomeSequenceTabServicesServiceLoginFieldFormImport
+    '/authenticated/home/': {
+      id: '/authenticated/home/'
+      path: '/authenticated/home'
+      fullPath: '/authenticated/home'
+      preLoaderRoute: typeof AuthenticatedHomeIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -179,14 +79,7 @@ export const routeTree = rootRoute.addChildren({
   AuthenticatedIndexRoute,
   HelpIndexRoute,
   UnauthenticatedIndexRoute,
-  AuthenticatedHomeHomeRouteRoute,
-  AuthenticatedHomeSequencePayMethodsRoute,
-  AuthenticatedHomeSequenceVerificationPhaseRoute,
-  AuthenticatedHomeSequenceVerificationTableRoute,
-  AuthenticatedHomeSequenceTabServicesServiceAccountsRoute,
-  AuthenticatedHomeSequenceTabServicesServiceEditFormRoute,
-  AuthenticatedHomeSequenceTabServicesServiceListFormRoute,
-  AuthenticatedHomeSequenceTabServicesServiceLoginFieldFormRoute,
+  AuthenticatedHomeIndexRoute,
 })
 
 /* prettier-ignore-end */
@@ -200,14 +93,7 @@ export const routeTree = rootRoute.addChildren({
         "/authenticated/",
         "/help/",
         "/unauthenticated/",
-        "/authenticated/home/Home",
-        "/authenticated/home/sequence/PayMethods",
-        "/authenticated/home/sequence/VerificationPhase",
-        "/authenticated/home/sequence/Verification/table",
-        "/authenticated/home/sequence/tab-services/ServiceAccounts",
-        "/authenticated/home/sequence/tab-services/Service-Edit/form",
-        "/authenticated/home/sequence/tab-services/Service-List/form",
-        "/authenticated/home/sequence/tab-services/Service-LoginField/form"
+        "/authenticated/home/"
       ]
     },
     "/authenticated/": {
@@ -219,29 +105,8 @@ export const routeTree = rootRoute.addChildren({
     "/unauthenticated/": {
       "filePath": "unauthenticated/index.tsx"
     },
-    "/authenticated/home/Home": {
-      "filePath": "authenticated/home/Home.route.tsx"
-    },
-    "/authenticated/home/sequence/PayMethods": {
-      "filePath": "authenticated/home/sequence/PayMethods.tsx"
-    },
-    "/authenticated/home/sequence/VerificationPhase": {
-      "filePath": "authenticated/home/sequence/VerificationPhase.tsx"
-    },
-    "/authenticated/home/sequence/Verification/table": {
-      "filePath": "authenticated/home/sequence/Verification.table.tsx"
-    },
-    "/authenticated/home/sequence/tab-services/ServiceAccounts": {
-      "filePath": "authenticated/home/sequence/tab-services/ServiceAccounts.tsx"
-    },
-    "/authenticated/home/sequence/tab-services/Service-Edit/form": {
-      "filePath": "authenticated/home/sequence/tab-services/Service-Edit.form.tsx"
-    },
-    "/authenticated/home/sequence/tab-services/Service-List/form": {
-      "filePath": "authenticated/home/sequence/tab-services/Service-List.form.tsx"
-    },
-    "/authenticated/home/sequence/tab-services/Service-LoginField/form": {
-      "filePath": "authenticated/home/sequence/tab-services/Service-LoginField.form.tsx"
+    "/authenticated/home/": {
+      "filePath": "authenticated/home/index.tsx"
     }
   }
 }

@@ -20,6 +20,9 @@ importers:
       '@journeyapps/sqlcipher':
         specifier: 5.3.1
         version: 5.3.1(encoding@0.1.13)
+      '@tabler/icons-react':
+        specifier: ^3.14.0
+        version: 3.14.0(react@18.3.1)
       '@tanstack/react-query':
         specifier: ^5.53.2
         version: 5.53.2(react@18.3.1)
@@ -44,9 +47,6 @@ importers:
       keytar:
         specifier: 7.9.0
         version: 7.9.0
-      phosphor-react:
-        specifier: 1.4.1
-        version: 1.4.1(react@18.3.1)
       playwright-core:
         specifier: ^1.46.0
         version: 1.46.0
@@ -969,6 +969,14 @@ packages:
   '@szmarczak/http-timer@4.0.6':
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
     engines: {node: '>=10'}
+
+  '@tabler/icons-react@3.14.0':
+    resolution: {integrity: sha512-3XdbuyhBNq8aZW0qagR9YL8diACZYSAtaw6VuwcO2l6HzVFPN6N5TDex9WTz/3lf+uktAvOv1kNuuFBjSjN9yw==}
+    peerDependencies:
+      react: '>= 16'
+
+  '@tabler/icons@3.14.0':
+    resolution: {integrity: sha512-OakKjK1kuDWKoNwdnHHVMt11kTZAC10iZpN/8o/CSYdeBH7S3v5n8IyqAYynFxLI8yBGTyBvljtvWdmWh57zSg==}
 
   '@tanstack/history@1.51.7':
     resolution: {integrity: sha512-y25aH3NDbdUp5Gk6Fnb77LsHTT2JrzVgI44ZiyEOf8i2j14Ma3oJ80fCw7rT/iV4xa4IN2Yex9flAsZQdh1i4A==}
@@ -2943,12 +2951,6 @@ packages:
   pg-connection-string@2.6.4:
     resolution: {integrity: sha512-v+Z7W/0EO707aNMaAEfiGnGL9sxxumwLl2fJvCQtMn9Fxsg+lPpPkdcyBSv/KFgpGdYkMfn+EI1Or2EHjpgLCA==}
 
-  phosphor-react@1.4.1:
-    resolution: {integrity: sha512-gO5j7U0xZrdglTAYDYPACU4xDOFBTJmptrrB/GeR+tHhCZF3nUMyGmV/0hnloKjuTrOmpSFlbfOY78H39rgjUQ==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      react: '>=16'
-
   picocolors@1.0.1:
     resolution: {integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==}
 
@@ -4705,6 +4707,13 @@ snapshots:
   '@szmarczak/http-timer@4.0.6':
     dependencies:
       defer-to-connect: 2.0.1
+
+  '@tabler/icons-react@3.14.0(react@18.3.1)':
+    dependencies:
+      '@tabler/icons': 3.14.0
+      react: 18.3.1
+
+  '@tabler/icons@3.14.0': {}
 
   '@tanstack/history@1.51.7': {}
 
@@ -7033,10 +7042,6 @@ snapshots:
   pend@1.2.0: {}
 
   pg-connection-string@2.6.4: {}
-
-  phosphor-react@1.4.1(react@18.3.1):
-    dependencies:
-      react: 18.3.1
 
   picocolors@1.0.1: {}
 
