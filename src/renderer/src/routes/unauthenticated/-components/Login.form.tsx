@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { FormattedMessage } from 'react-intl'
-import { useNavigate } from 'react-router-dom'
 import { twJoin } from 'tailwind-merge'
 
 type ILoginProps = {
@@ -16,7 +15,6 @@ type ILoginProps = {
 }
 
 export const LoginForm = ({ values }: ILoginProps) => {
-  const nav = useNavigate()
   const { control, handleSubmit, formState, getValues } = useForm<IIpcIntegrityLogin>({
     values,
     resolver: zodResolver(IpcIntegrityLoginSchema)
@@ -24,7 +22,6 @@ export const LoginForm = ({ values }: ILoginProps) => {
   const mutation = useMutation({
     mutationFn: async () => {
       await window.api.appLogin(getValues())
-      nav('/', { replace: true })
     }
   })
 

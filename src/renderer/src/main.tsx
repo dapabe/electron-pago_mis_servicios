@@ -1,52 +1,49 @@
 import './assets/global.css'
-import '7.css'
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
-import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom'
-import { RootRoute } from './routes/root.route'
-import { UnauthenticatedRoute } from './routes/unauthenticated/Unauthenticated.route'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './common/query-client'
-import { AuthenticatedRoute } from './routes/authenticated/Authenticated.route'
-import { HomeRoute } from './routes/authenticated/home/Home.route'
-import { HelpRoute } from './routes/help/Help.route'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { routeTree } from './routeTree.gen'
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+const router = createRouter({
+  routeTree,
+  context: { queryClient },
+  defaultPreload: 'intent',
+  // Since we're using React Query, we don't want loader calls to ever be stale
+  // This will ensure that the loader is always called when the route is preloaded or visited
+  defaultPreloadStaleTime: 0
+})
+
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === 'production'
+    ? () => null // Render nothing in production
+    : React.lazy(() =>
+        // Lazy load in development
+        import('@tanstack/router-devtools').then((res) => ({
+          default: res.TanStackRouterDevtoolsPanel
+        }))
+      )
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
+
+const root = document.getElementById('root')
+if (!root) throw new Error('Root element not found')
+
+ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider
-        router={createHashRouter([
-          {
-            path: '/',
-            element: <RootRoute />,
-            children: [
-              {
-                index: true,
-                element: <UnauthenticatedRoute />
-              },
-              {
-                path: '/app',
-                element: <AuthenticatedRoute />,
-                children: [
-                  {
-                    index: true,
-                    element: <HomeRoute />
-                  }
-                ]
-              },
-              {
-                path: '/help',
-                element: <HelpRoute />
-              },
-              {
-                path: '*',
-                element: <Navigate to={'/'} />
-              }
-            ]
-          }
-        ])}
-      />
+      <RouterProvider router={router} />
+      <ReactQueryDevtools buttonPosition="bottom-right" />
+      <Suspense>
+        <TanStackRouterDevtools isOpen setIsOpen={() => false} router={router} />
+      </Suspense>
     </QueryClientProvider>
   </React.StrictMode>
 )

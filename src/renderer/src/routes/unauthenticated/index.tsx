@@ -6,9 +6,13 @@ import { useIntl } from 'react-intl'
 import { LoginForm } from './-components/Login.form'
 import { RegisterForm } from './-components/Register.form'
 import { TabPanel } from '../-components/TabPanel'
-import { Navigate } from 'react-router-dom'
+import { createFileRoute, Navigate } from '@tanstack/react-router'
 
-export const UnauthenticatedRoute = () => {
+export const Route = createFileRoute('/unauthenticated/')({
+  component: Component
+})
+
+function Component() {
   const query = useQueryClient().getQueryData([
     IpcEvent.Integrity.Initialize
   ]) as IpcResponseResult<IIpcIntegrityInitialize>

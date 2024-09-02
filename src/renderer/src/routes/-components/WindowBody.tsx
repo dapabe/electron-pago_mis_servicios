@@ -4,7 +4,8 @@ import { twJoin } from 'tailwind-merge'
 import { useIntl } from 'react-intl'
 import { WindowStatus } from './WindowStatus'
 import { IpcEvent } from '#shared/constants/ipc-events'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
+import { Button } from 'keep-react'
 
 type Props = PropsWithChildren
 export const WindowBody = ({ children }: Props): JSX.Element => {
@@ -21,16 +22,16 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
   const handleClose = () => window.electron.ipcRenderer.send(IpcEvent.App.CloseApp)
 
   return (
-    <div className="window active max-h-[100vh]">
-      <div className={twJoin(`title-bar ${style.draggable}`, 'flex flex-row')}>
-        <div className="title-bar-text">{appTitle}</div>
-        <div className={`title-bar-controls ${style.noDraggable}`}>
-          <button aria-label="Minimize" onClick={handleMinMax}></button>
-          <button aria-label="Help" onClick={() => nav('/help')}></button>
-          <button aria-label="Close" onClick={handleClose}></button>
+    <div className="max-h-[100vh]">
+      <div className={twJoin(style.draggable, 'flex flex-row')}>
+        <div className="">{appTitle}</div>
+        <div className={`${style.noDraggable}`}>
+          <Button onClick={handleMinMax}></Button>
+          <Button onClick={async () => await nav({ to: '/help' })}></Button>
+          <Button onClick={handleClose}></Button>
         </div>
       </div>
-      <main className="window-body flex flex-col h-80">{children}</main>
+      <main className="">{children}</main>
       <WindowStatus />
     </div>
   )

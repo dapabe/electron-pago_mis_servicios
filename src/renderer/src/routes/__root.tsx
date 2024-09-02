@@ -1,11 +1,18 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { useQuery } from '@tanstack/react-query'
 import { IntlProvider } from 'react-intl'
-import { Outlet } from 'react-router-dom'
 import { WindowBody } from './-components/WindowBody'
 import { ZodError } from 'zod'
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import { queryClient } from '#renderer/common/query-client'
 
-export const RootRoute = () => {
+export const Route = createRootRouteWithContext<{
+  queryClient: typeof queryClient
+}>()({
+  component: Component
+})
+
+function Component() {
   /**
    *  Application important info
    */
