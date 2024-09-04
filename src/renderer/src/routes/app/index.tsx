@@ -2,7 +2,7 @@ import { useIntl } from 'react-intl'
 import { AppSequenceProvider } from '#renderer/contexts/app-sequence.ctx'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/authenticated/home/')({
+export const Route = createFileRoute('/app/')({
   component: Component
 })
 
@@ -11,6 +11,7 @@ function Component() {
 
   return (
     <AppSequenceProvider>
+      sequence
       {/* <TabPanel
         label="Secuencía"
         tabs={[

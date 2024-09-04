@@ -1,17 +1,17 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { NavBar } from './-components/NavBar'
 
-export const Route = createFileRoute('/authenticated/')({
+export const Route = createFileRoute('/app/_layout')({
   component: Component
 })
 
 function Component() {
   return (
-    <>
+    <main>
       <NavBar />
       <section className="p-2">
         <Outlet />
       </section>
-    </>
+    </main>
   )
 }

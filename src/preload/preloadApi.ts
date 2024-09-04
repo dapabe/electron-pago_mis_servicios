@@ -1,7 +1,6 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { IPaymentMethodDTO, PaymentMethodDTO } from '#shared/schemas/dtos/PaymentMethod.dto.schema'
 import { IServiceDataDTO, ServiceDataDTO } from '#shared/schemas/dtos/ServiceData.dto.schema'
-import { IAppIntl } from '#shared/schemas/intl.schema'
 import {
   IIpcIntegrityInitialize,
   IIpcIntegrityLogin,
@@ -37,9 +36,6 @@ export const preloadApi = {
       return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error).toResult()
     }
     return await ipcRenderer.invoke(IpcEvent.Db.Login, validated.data)
-  },
-  getTranslation: async (): Promise<IpcResponseResult<IAppIntl | ZodError<IAppIntl>>> => {
-    return await ipcRenderer.invoke(IpcEvent.Language.Messages)
   },
   selectDatabase: async (
     defaultPath: unknown

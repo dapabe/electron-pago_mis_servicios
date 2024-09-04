@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useIntl } from 'react-intl'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/unauthenticated/')({
+export const Route = createFileRoute('/auth/')({
   component: Component
 })
 
@@ -14,14 +14,10 @@ function Component() {
     IpcEvent.Integrity.Initialize
   ]) as IpcResponseResult<IIpcIntegrityInitialize>
 
-  const authQuery = useQueryClient().getQueryData([IpcEvent.Db.isAuthenticated]) as boolean
-
   const intl = useIntl()
 
-  // if (authQuery) return <Navigate to={'/app'} replace />
-
   return (
-    <section className="flex justify-center p-2">
+    <main className="flex justify-center p-2">
       <div className="w-full">
         {/* <TabPanel
           selectedTab={Number(query.data.hasDB)}
@@ -53,6 +49,6 @@ function Component() {
           ]}
         /> */}
       </div>
-    </section>
+    </main>
   )
 }
