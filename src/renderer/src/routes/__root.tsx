@@ -2,9 +2,13 @@ import { IpcEvent } from '#shared/constants/ipc-events'
 import { useQuery } from '@tanstack/react-query'
 import { IntlProvider } from 'react-intl'
 import { WindowBody } from './-components/WindowBody'
-import { ZodError } from 'zod'
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { queryClient } from '#renderer/common/query-client'
+import { useRef } from 'react'
+import { IAppIntl } from '#shared/schemas/intl.schema'
+import { IpcResponseResult } from '#shared/utilities/IpcResponse'
+import { ZodError } from 'zod'
+import { useIpcListenerOnce } from '#renderer/hooks/useIpcListenerOnce.hook'
 
 export const Route = createRootRouteWithContext<{
   queryClient: typeof queryClient
@@ -36,22 +40,22 @@ function Component() {
   /**
    *  I18n messages
    */
-  const { data: translations, isSuccess: isSuc2 } = useQuery({
-    queryKey: [IpcEvent.Language.Messages],
-    queryFn: async () => {
-      const res = await window.api.getTranslation()
-      if (res.data instanceof ZodError) return {}
-      return res.data
-    },
-    enabled: !!initInfo
-  })
 
-  if (!isSuc1 || !isSuc2) return null
+  const translations = useRef<Partial<IAppIntl>>({})
+  useIpcListenerOnce(
+    IpcEvent.Language.Messages,
+    (_, ipcResponse: IpcResponseResult<Partial<IAppIntl> | ZodError<IAppIntl>>) => {
+      if (ipcResponse.data instanceof ZodError) translations.current = {}
+      else translations.current = ipcResponse.data
+    }
+  )
+
+  if (!isSuc1) return null
   return (
     <IntlProvider
       locale={initInfo.data.preferredLocale}
       defaultLocale="es"
-      messages={translations}
+      messages={translations.current}
       onError={() => undefined}
     >
       <WindowBody>

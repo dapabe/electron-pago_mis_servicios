@@ -1,8 +1,5 @@
 import { useIntl } from 'react-intl'
-import { PayMethods } from './-sequence/PayMethods'
-import { ServiceAccounts } from './-sequence/tab-services/ServiceAccounts'
 import { AppSequenceProvider } from '#renderer/contexts/app-sequence.ctx'
-import { TabPanel } from '#renderer/routes/-components/TabPanel'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/authenticated/home/')({
@@ -14,7 +11,7 @@ function Component() {
 
   return (
     <AppSequenceProvider>
-      <TabPanel
+      {/* <TabPanel
         label="Secuencía"
         tabs={[
           {
@@ -30,7 +27,7 @@ function Component() {
             body: <PayMethods />
           }
         ]}
-      />
+      /> */}
     </AppSequenceProvider>
   )
 }

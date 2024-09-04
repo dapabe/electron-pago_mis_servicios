@@ -8,6 +8,8 @@ import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { routeTree } from './routeTree.gen'
 
+window.document.documentElement.classList.add('dark')
+
 const router = createRouter({
   routeTree,
   context: { queryClient },

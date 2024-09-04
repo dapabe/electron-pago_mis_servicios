@@ -8,11 +8,33 @@ import { IIpcIntegrityInitialize } from '#shared/schemas/ipc-schemas/ipc-integri
 import { PromisedValue } from '#shared/utilities/promised-value'
 import fs from 'node:fs/promises'
 import { StatusCodes } from 'http-status-codes'
-import { IpcResponse } from '#shared/utilities/IpcResponse'
+import { IpcResponse, IpcResponseResult } from '#shared/utilities/IpcResponse'
 import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
-import { AppIntlSchema } from '#shared/schemas/intl.schema'
+import { AppIntlSchema, IAppIntl } from '#shared/schemas/intl.schema'
+import { ZodError } from 'zod'
 
 export async function ipcsOnStartUp(mainWin: BrowserWindow) {
+  mainWin.webContents.once('did-finish-load', async () => {
+    const intlPath = path.resolve(
+      'resources',
+      'intl',
+      `${AppStore.getState().settingsData.preferredLocale}.json`
+    )
+    const [intlErr, intlMessage] = await PromisedValue(
+      async () => await fs.readFile(intlPath, 'utf-8')
+    )
+    let messageResponse: IpcResponseResult<Partial<IAppIntl> | ZodError<IAppIntl>>
+    if (intlErr) messageResponse = new IpcResponse(StatusCodes.NOT_FOUND, {}).toResult()
+
+    const validated = AppIntlSchema.safeParse(JSON.parse(intlMessage!))
+    if (!validated.success) {
+      messageResponse = new IpcResponse(StatusCodes.NOT_ACCEPTABLE, validated.error).toResult()
+    } else {
+      messageResponse = new IpcResponse(StatusCodes.OK, validated.data).toResult()
+    }
+    mainWin.webContents.send(IpcEvent.Language.Messages, messageResponse)
+  })
+
   ipcMain.handle(IpcEvent.App.Info, () => {
     return new IpcResponse(StatusCodes.OK, {
       env: process.env.NODE_ENV,
@@ -34,25 +56,6 @@ export async function ipcsOnStartUp(mainWin: BrowserWindow) {
       preferredLocale: x.preferredLocale,
       databaseFilePath: x.databaseFilePath!
     })
-  })
-
-  ipcMain.handle(IpcEvent.Language.Messages, async () => {
-    const intlPath = path.resolve(
-      'resources',
-      'intl',
-      `${AppStore.getState().settingsData.preferredLocale}.json`
-    )
-    const [intlErr, intlMessage] = await PromisedValue(
-      async () => await fs.readFile(intlPath, 'utf-8')
-    )
-
-    if (intlErr) return new IpcResponse(StatusCodes.NOT_FOUND, null)
-
-    const validated = AppIntlSchema.safeParse(JSON.parse(intlMessage))
-    if (!validated.success) {
-      return new IpcResponse(StatusCodes.NOT_ACCEPTABLE, validated.error).toResult()
-    }
-    return new IpcResponse(StatusCodes.OK, validated.data).toResult()
   })
 
   ipcMain.on(IpcEvent.App.ToggleMaximize, () => {

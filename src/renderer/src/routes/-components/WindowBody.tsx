@@ -1,20 +1,10 @@
 import { PropsWithChildren, useEffect, useState } from 'react'
-import style from '#renderer/assets/WindowBody.module.css'
-import { twJoin } from 'tailwind-merge'
 import { useIntl } from 'react-intl'
-import { WindowStatus } from './WindowStatus'
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { useNavigate } from '@tanstack/react-router'
-import {
-  Button,
-  ButtonGroup,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from 'keep-react'
-import { IconHelp, IconMinus, IconX } from '@tabler/icons-react'
+import { Button, ButtonGroup, Card, CardContent, CardHeader, CardTitle } from 'keep-react'
+import * as Icon from 'phosphor-react'
+import { WindowStatus } from './WindowStatus'
 
 type Props = PropsWithChildren
 export const WindowBody = ({ children }: Props): JSX.Element => {
@@ -31,29 +21,46 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
   const handleClose = () => window.electron.ipcRenderer.send(IpcEvent.App.CloseApp)
 
   return (
-    <Card className="flex flex-col max-w-full max-h-full border-0">
-      <CardHeader
-        className={twJoin(style.draggable, 'flex bg-metal-700 border-b border-metal-900')}
-      >
-        <CardTitle>{appTitle}</CardTitle>
-        <ButtonGroup className={twJoin(style.noDraggable, 'ml-auto')}>
-          <Button position="start" size="sm" onClick={handleMinMax}>
-            <IconMinus />
+    <Card className="h-screen max-w-full flex flex-col bg-metal-900">
+      <CardHeader className="draggable flex items-center">
+        <CardTitle className="text-lg ml-2 flex-1">{appTitle}</CardTitle>
+        <ButtonGroup className="noDraggable">
+          <Button
+            variant="link"
+            shape="icon"
+            color="secondary"
+            className="hover:text-metal-100"
+            onClick={handleMinMax}
+          >
+            <Icon.Minus size={32} />
           </Button>
-          <Button position="center" size="sm" onClick={async () => await nav({ to: '/help' })}>
-            <IconHelp />
+          <Button
+            variant="link"
+            shape="icon"
+            color="secondary"
+            className="hover:text-primary-400"
+            onClick={async () => await nav({ to: '/help' })}
+          >
+            <Icon.Question size={32} />
           </Button>
-          <Button position="end" size="sm" onClick={handleClose}>
-            <IconX />
+          <Button
+            variant="link"
+            shape="icon"
+            color="error"
+            className="hover:text-error-700"
+            onClick={handleClose}
+          >
+            <Icon.X size={32} />
           </Button>
         </ButtonGroup>
       </CardHeader>
-      <CardContent className="py-0 h-full">
-        <main>{children}</main>
+
+      <CardContent className="flex-grow p-0 bg-metal-900 border-y border-y-metal-700">
+        {children}
       </CardContent>
-      <CardDescription>
+      <footer className="draggable px-2 text-metal-500">
         <WindowStatus />
-      </CardDescription>
+      </footer>
     </Card>
   )
 }

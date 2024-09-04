@@ -1,5 +1,5 @@
 import { app, shell, BrowserWindow } from 'electron'
-import { join } from 'path'
+import path from 'node:path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { ipcsOnStartUp } from './src/events/on-startup.ipcs'
@@ -17,9 +17,10 @@ function createWindow(): BrowserWindow {
     show: false,
     transparent: true,
     autoHideMenuBar: true,
+    icon: path.resolve('build', 'icon.ico'),
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
       sandbox: false
     }
   })
@@ -40,7 +41,7 @@ function createWindow(): BrowserWindow {
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
   }
 
   return mainWindow

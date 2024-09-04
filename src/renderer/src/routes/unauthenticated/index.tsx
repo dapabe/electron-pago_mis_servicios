@@ -3,10 +3,7 @@ import { IIpcIntegrityInitialize } from '#shared/schemas/ipc-schemas/ipc-integri
 import { IpcResponseResult } from '#shared/utilities/IpcResponse'
 import { useQueryClient } from '@tanstack/react-query'
 import { useIntl } from 'react-intl'
-import { LoginForm } from './-components/Login.form'
-import { RegisterForm } from './-components/Register.form'
-import { TabPanel } from '../-components/TabPanel'
-import { createFileRoute, Navigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/unauthenticated/')({
   component: Component
@@ -21,12 +18,12 @@ function Component() {
 
   const intl = useIntl()
 
-  if (authQuery) return <Navigate to={'/app'} replace />
+  // if (authQuery) return <Navigate to={'/app'} replace />
 
   return (
     <section className="flex justify-center p-2">
       <div className="w-full">
-        <TabPanel
+        {/* <TabPanel
           selectedTab={Number(query.data.hasDB)}
           tabs={[
             {
@@ -54,7 +51,7 @@ function Component() {
               )
             }
           ]}
-        />
+        /> */}
       </div>
     </section>
   )
