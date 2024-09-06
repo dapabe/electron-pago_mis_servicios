@@ -1,13 +1,13 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
-import { useQuery } from '@tanstack/react-query'
 import { FormattedMessage, IntlProvider } from 'react-intl'
 import { WindowBody } from './-components/WindowBody'
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Outlet, useLoaderData } from '@tanstack/react-router'
 import { queryClient } from '#renderer/common/query-client'
-import { IAppIntl } from '#shared/schemas/intl.schema'
+import { AppIntlSchema, IAppIntl } from '#shared/schemas/intl.schema'
 import { IpcResponseResult } from '#shared/utilities/IpcResponse'
 import { ZodError } from 'zod'
 import React, { Suspense, useEffect } from 'react'
+import { getDefaultsForSchema } from 'zod-defaults'
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === 'production'
@@ -30,58 +30,63 @@ const ReactQueryDevtools =
 export const Route = createRootRouteWithContext<{
   queryClient: typeof queryClient
 }>()({
+  beforeLoad: async (ctx) => {
+    /**
+     *  Application important info
+     */
+    await ctx.context.queryClient.prefetchQuery({
+      queryKey: [IpcEvent.App.Info],
+      queryFn: async () => await window.electron.ipcRenderer.invoke(IpcEvent.App.Info),
+      staleTime: Infinity
+    })
+  },
+  loader: async (ctx) => {
+    /**
+     *  On start app information
+     */
+    const {
+      data: { preferredLocale }
+    } = await ctx.context.queryClient.fetchQuery({
+      queryKey: [IpcEvent.Integrity.Initialize],
+      queryFn: window.api.integrityInitialize
+    })
+
+    /**
+     *  I18n messages
+     */
+    const translations = await ctx.context.queryClient.fetchQuery({
+      queryKey: [IpcEvent.Language.Messages],
+      queryFn: async () => {
+        const res = (await window.electron.ipcRenderer.invoke(
+          IpcEvent.Language.Messages,
+          preferredLocale
+        )) as IpcResponseResult<IAppIntl | ZodError<IAppIntl>>
+        if (res.data instanceof ZodError) return getDefaultsForSchema(AppIntlSchema)
+        return res.data
+      }
+    })
+
+    return { translations, preferredLocale }
+  },
   component: Component,
   notFoundComponent: () => {
     return <p>Not found</p>
   },
-  errorComponent: (ctx) => <div className="size-full bg-white">{JSON.stringify(ctx.error)}</div>
+  errorComponent: (ctx) => <div className="h-screen bg-white">{JSON.stringify(ctx.error)}</div>
 })
 
 function Component() {
-  /**
-   *  Application important info
-   */
-  useQuery({
-    queryKey: [IpcEvent.App.Info],
-    queryFn: async () => await window.electron.ipcRenderer.invoke(IpcEvent.App.Info),
-    staleTime: Infinity
-  })
-
-  /**
-   *  On start app information
-   */
-  const { data: initInfo, isSuccess: isSuc1 } = useQuery({
-    queryKey: [IpcEvent.Integrity.Initialize],
-    queryFn: window.api.integrityInitialize
-  })
-
-  /**
-   *  I18n messages
-   */
-  const { data: translations } = useQuery({
-    queryKey: [IpcEvent.Language.Messages],
-    enabled: !!initInfo?.data.preferredLocale,
-    queryFn: async () => {
-      const res = (await window.electron.ipcRenderer.invoke(
-        IpcEvent.Language.Messages,
-        initInfo?.data.preferredLocale
-      )) as IpcResponseResult<Partial<IAppIntl> | ZodError<IAppIntl>>
-      if (res.data instanceof ZodError) return {}
-      return res.data
-    }
-  })
-
+  const { preferredLocale, translations } = useLoaderData({ from: '__root__' })
   useEffect(() => {
-    document.title = translations?.appTitle ?? ''
+    document.title = translations.appTitle
     return () => {
       document.title = ''
     }
-  }, [translations])
+  }, [preferredLocale])
 
-  if (!isSuc1) return null
   return (
     <IntlProvider
-      locale={initInfo.data.preferredLocale}
+      locale={preferredLocale}
       defaultLocale="es"
       messages={translations}
       onError={() => undefined}

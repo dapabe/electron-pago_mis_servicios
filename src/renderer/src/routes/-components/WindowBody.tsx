@@ -30,7 +30,7 @@ export const WindowBody = ({ children, title }: Props): JSX.Element => {
             variant="link"
             shape="icon"
             color="secondary"
-            className="hover:text-primary-400"
+            className="hover:text-metal-100"
             onClick={async () => await nav({ to: '/help' })}
           >
             <Icon.Question size={32} />
@@ -39,7 +39,7 @@ export const WindowBody = ({ children, title }: Props): JSX.Element => {
             variant="link"
             shape="icon"
             color="error"
-            className="hover:text-error-700"
+            className="hover:text-error-900"
             onClick={handleClose}
           >
             <Icon.X size={32} />

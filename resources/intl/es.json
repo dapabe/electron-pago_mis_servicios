@@ -18,11 +18,11 @@
   "root.navBar.settings.title": "Configuración",
   "root.navBar.help.title": "Ayuda",
 
-  "page.unauthorized.register.no-db": "Registro unico",
-  "page.unauthorized.register.has-db": "Iniciar sesión",
-  "page.unauthorized.register.db-file-path": "Ruta a tus datos encriptados",
-  "page.unauthorized.register.skip-server": "Saltear revision del servidor",
-  "page.unauthorized.register.submit": "{isSubmitting, select, true {Enviando...} other {Enviar}}",
+  "page.auth.no-db": "Registro unico",
+  "page.auth.has-db": "Iniciar sesión",
+  "page.auth.db-file-path": "Ruta a tus datos encriptados",
+  "page.auth.skip-server": "Saltear revision del servidor",
+  "page.auth.submit": "Enviar",
 
   "page.home.tab.verify.title": "Verificación",
   "page.home.tab.verify.description": "Verifica qué y como quieres pagar tus servicios.",

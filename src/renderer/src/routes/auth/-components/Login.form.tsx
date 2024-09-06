@@ -7,18 +7,18 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { Button } from 'keep-react'
 import { useForm } from 'react-hook-form'
 import { FormattedMessage } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
+import { getDefaultsForSchema } from 'zod-defaults'
+import * as Icon from 'phosphor-react'
+import { IDefaultValues } from '#renderer/common/types/form.props'
 
-type ILoginProps = {
-  values: IIpcIntegrityLogin
-}
-
-export const LoginForm = ({ values }: ILoginProps) => {
+export const LoginForm = ({ values }: IDefaultValues<IIpcIntegrityLogin>) => {
   const nav = useNavigate()
   const { control, handleSubmit, formState, getValues } = useForm<IIpcIntegrityLogin>({
-    values,
+    values: Object.assign(getDefaultsForSchema(IpcIntegrityLoginSchema), values),
     resolver: zodResolver(IpcIntegrityLoginSchema)
   })
   const mutation = useMutation({
@@ -51,18 +51,17 @@ export const LoginForm = ({ values }: ILoginProps) => {
           <FormattedMessage id="common.form.password-forget" />
         </a>
       </div>
-      <button
+      <Button
         type="submit"
         disabled={formState.isSubmitting}
-        className={twJoin('col-start-3 p-2 w-max ml-auto')}
+        className={twJoin('col-span-3 size-max p-2 ml-auto')}
       >
-        <FormattedMessage
-          id="page.unauthorized.register.submit"
-          values={{
-            isSubmitting: formState.isSubmitting
-          }}
-        />
-      </button>
+        {formState.isSubmitting ? (
+          <Icon.Spinner size={32} className="mr-2" />
+        ) : (
+          <FormattedMessage id="page.unauthorized.register.submit" />
+        )}
+      </Button>
     </form>
   )
 }

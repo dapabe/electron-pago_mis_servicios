@@ -9,9 +9,7 @@ function Component() {
   return (
     <main>
       <NavBar />
-      <section className="p-2">
-        <Outlet />
-      </section>
+      <Outlet />
     </main>
   )
 }

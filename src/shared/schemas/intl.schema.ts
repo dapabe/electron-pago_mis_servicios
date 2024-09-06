@@ -2,6 +2,9 @@ import { z } from 'zod'
 
 const S = z.string().min(1)
 
+//  Exact string regex example
+// /^\{isSubmitting, select, true \{.+?\} other \{.+?\}\}$/
+
 export const AppIntlSchema = z
   .object({
     appTitle: S,
@@ -23,13 +26,11 @@ export const AppIntlSchema = z
     'root.navBar.settings.title': S,
     'root.navBar.help.title': S,
 
-    'page.unauthorized.register.no-db': S,
-    'page.unauthorized.register.has-db': S,
-    'page.unauthorized.register.db-file-path': S,
-    'page.unauthorized.register.skip-server': S,
-    'page.unauthorized.register.submit': S.regex(
-      /^\{isSubmitting, select, true \{.+?\} other \{.+?\}\}$/
-    ),
+    'page.auth.no-db': S,
+    'page.auth.has-db': S,
+    'page.auth.db-file-path': S,
+    'page.auth.skip-server': S,
+    'page.auth.submit': S,
 
     'page.home.tab.verify.title': S,
     'page.home.tab.verify.description': S,

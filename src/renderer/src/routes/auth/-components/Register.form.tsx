@@ -11,18 +11,16 @@ import { FormattedMessage, useIntl } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
 import { ZodError } from 'zod'
 import * as Icon from 'phosphor-react'
-import { InputIcon } from 'keep-react'
+import { Button, InputIcon } from 'keep-react'
+import { getDefaultsForSchema } from 'zod-defaults'
+import { IDefaultValues } from '#renderer/common/types/form.props'
 
-type IRegisterProps = {
-  values: IIpcIntegrityRegister
-}
-
-export const RegisterForm = ({ values }: IRegisterProps) => {
+export const RegisterForm = ({ values }: IDefaultValues<IIpcIntegrityRegister>) => {
   const stepPanel = useStepPanel()
   const intl = useIntl()
   const { register, handleSubmit, getValues, setValue, control, formState } =
     useForm<IIpcIntegrityRegister>({
-      values,
+      values: Object.assign(getDefaultsForSchema(IpcIntegrityRegisterSchema), values),
       resolver: zodResolver(IpcIntegrityRegisterSchema)
     })
 
@@ -37,7 +35,7 @@ export const RegisterForm = ({ values }: IRegisterProps) => {
   const handleDbSelection = async () => {
     const res = await window.api.selectDatabase(getValues().databaseFilePath)
     if (typeof res.data === 'string') setValue('databaseFilePath', res.data)
-    else setValue('databaseFilePath', values.databaseFilePath)
+    else setValue('databaseFilePath', formState.defaultValues?.databaseFilePath ?? '')
   }
 
   return (
@@ -46,16 +44,6 @@ export const RegisterForm = ({ values }: IRegisterProps) => {
       onSubmit={handleSubmit(async () => await mutation.mutateAsync())}
     >
       <div className="col-span-full flex flex-col">
-        {/* <div className="searchbox" title={getValues('databaseFilePath')}>
-          <input
-            type="search"
-            {...register('databaseFilePath')}
-            aria-disabled="true"
-            disabled
-            placeholder="C:\"
-            className="text-gray-500 text-ellipsis w-full cursor-help"
-          />
-        </div> */}
         <InputText
           control={control}
           name={'databaseFilePath'}
@@ -113,18 +101,17 @@ export const RegisterForm = ({ values }: IRegisterProps) => {
         </div>
       </div>
 
-      <button
+      <Button
         type="submit"
         disabled={formState.isSubmitting}
         className={twJoin('col-span-3 size-max p-2 ml-auto')}
       >
-        <FormattedMessage
-          id="page.unauthorized.register.submit"
-          values={{
-            isSubmitting: formState.isSubmitting
-          }}
-        />
-      </button>
+        {formState.isSubmitting ? (
+          <Icon.Spinner size={32} className="mr-2" />
+        ) : (
+          <FormattedMessage id="page.unauthorized.register.submit" />
+        )}
+      </Button>
     </form>
   )
 }
