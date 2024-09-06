@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, ipcMain } from 'electron'
 
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { verifyFileIntegrity } from '../utilities/verify-file-integrity'
@@ -9,12 +9,7 @@ import { IpcResponse } from '#shared/utilities/IpcResponse'
 import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
 import { loadI18n } from '../utilities/loadi18n'
 
-export async function ipcsOnStartUp(mainWin: BrowserWindow) {
-  mainWin.webContents.once('did-finish-load', async () => {
-    const messageResponse = await loadI18n()
-    mainWin.webContents.send(IpcEvent.Language.Messages, messageResponse)
-  })
-
+export async function ipcsOnStartUp() {
   ipcMain.handle(IpcEvent.App.Info, () => {
     return new IpcResponse(StatusCodes.OK, {
       env: process.env.NODE_ENV,
@@ -38,13 +33,8 @@ export async function ipcsOnStartUp(mainWin: BrowserWindow) {
     })
   })
 
-  ipcMain.on(IpcEvent.App.ToggleMaximize, () => {
-    if (mainWin.isMinimized()) mainWin.maximize()
-    else mainWin.minimize()
-  })
-
-  ipcMain.once(IpcEvent.App.CloseApp, (evt) => {
-    BrowserWindow.fromWebContents(evt.sender)!.close()
+  ipcMain.handle(IpcEvent.Language.Messages, async (_, locale: string) => {
+    return await loadI18n(locale)
   })
 
   for (const flag of Object.keys(

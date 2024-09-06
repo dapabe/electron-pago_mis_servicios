@@ -9,7 +9,7 @@ type IAppSequence = {
 
 const SequenceContext = createContext<IAppSequence | null>(null)
 
-export const AppSequenceProvider = ({ children }: PropsWithChildren) => {
+const AppSequenceProvider = ({ children }: PropsWithChildren) => {
   const [hasSequenceStarted, toggleSeqDisabled] = useImplicitToggle(false)
 
   useIpcListener(IpcEvent.Sequence.ToggleInternal, () => toggleSeqDisabled())
@@ -26,3 +26,5 @@ export const AppSequenceProvider = ({ children }: PropsWithChildren) => {
 }
 
 AppSequenceProvider.CTX = SequenceContext
+
+export { AppSequenceProvider }

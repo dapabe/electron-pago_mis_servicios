@@ -1,21 +1,13 @@
-import { PropsWithChildren, useEffect, useState } from 'react'
-import { useIntl } from 'react-intl'
+import { PropsWithChildren, ReactNode } from 'react'
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { useNavigate } from '@tanstack/react-router'
 import { Button, ButtonGroup, Card, CardContent, CardHeader, CardTitle } from 'keep-react'
 import * as Icon from 'phosphor-react'
 import { WindowStatus } from './WindowStatus'
 
-type Props = PropsWithChildren
-export const WindowBody = ({ children }: Props): JSX.Element => {
-  const [appTitle, setTitle] = useState('')
+type Props = PropsWithChildren<{ title?: ReactNode }>
+export const WindowBody = ({ children, title }: Props): JSX.Element => {
   const nav = useNavigate()
-  const intl = useIntl()
-
-  useEffect(() => {
-    setTitle(intl.formatMessage({ id: 'appTitle' }))
-    document.title = appTitle
-  }, [intl.messages, intl.locale])
 
   const handleMinMax = () => window.electron.ipcRenderer.send(IpcEvent.App.ToggleMaximize)
   const handleClose = () => window.electron.ipcRenderer.send(IpcEvent.App.CloseApp)
@@ -23,7 +15,7 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
   return (
     <Card className="h-screen max-w-full flex flex-col bg-metal-900">
       <CardHeader className="draggable flex items-center">
-        <CardTitle className="text-lg ml-2 flex-1">{appTitle}</CardTitle>
+        <CardTitle className="text-lg ml-2 flex-1">{title}</CardTitle>
         <ButtonGroup className="noDraggable">
           <Button
             variant="link"
@@ -55,7 +47,7 @@ export const WindowBody = ({ children }: Props): JSX.Element => {
         </ButtonGroup>
       </CardHeader>
 
-      <CardContent className="flex-grow p-0 bg-metal-900 border-y border-y-metal-700">
+      <CardContent className="flex-grow p-0 bg-metal-800 border-y border-y-metal-700">
         {children}
       </CardContent>
       <footer className="draggable px-2 text-metal-500">

@@ -6,6 +6,7 @@ import {
 } from '#shared/schemas/ipc-schemas/ipc-integrity.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { FormattedMessage } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
@@ -15,18 +16,20 @@ type ILoginProps = {
 }
 
 export const LoginForm = ({ values }: ILoginProps) => {
+  const nav = useNavigate()
   const { control, handleSubmit, formState, getValues } = useForm<IIpcIntegrityLogin>({
     values,
     resolver: zodResolver(IpcIntegrityLoginSchema)
   })
   const mutation = useMutation({
     mutationFn: async () => {
-      await window.api.appLogin(getValues())
+      const res = await window.api.appLogin(getValues())
+      if (typeof res.data === 'string') await nav({ to: '/app' })
     }
   })
 
   const handlePasswordForget = async () => {
-    window.electron.ipcRenderer.invoke(IpcEvent.Db.Password.Reset)
+    await window.electron.ipcRenderer.invoke(IpcEvent.Db.Password.Reset)
   }
 
   return (

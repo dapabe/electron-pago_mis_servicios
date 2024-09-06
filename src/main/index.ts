@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { ipcsOnStartUp } from './src/events/on-startup.ipcs'
 import { ipcsForDatabase } from './src/events/for-database.ipcs'
+import { ipcsOnDefault } from './src/events/on-default.ipcs'
 
 let mainWindow: BrowserWindow
 
@@ -70,7 +71,8 @@ app.whenReady().then(() => {
   })
 
   if (is.dev) mainWindow.webContents.openDevTools()
-  ipcsOnStartUp(mainWindow)
+  ipcsOnDefault(mainWindow)
+  ipcsOnStartUp()
   ipcsForDatabase()
 })
 

@@ -1,14 +1,31 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { useQuery } from '@tanstack/react-query'
-import { IntlProvider } from 'react-intl'
+import { FormattedMessage, IntlProvider } from 'react-intl'
 import { WindowBody } from './-components/WindowBody'
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { queryClient } from '#renderer/common/query-client'
-import { useRef } from 'react'
 import { IAppIntl } from '#shared/schemas/intl.schema'
 import { IpcResponseResult } from '#shared/utilities/IpcResponse'
 import { ZodError } from 'zod'
-import { useIpcListenerOnce } from '#renderer/hooks/useIpcListenerOnce.hook'
+import React, { Suspense, useEffect } from 'react'
+
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === 'production'
+    ? () => null // Render nothing in production
+    : React.lazy(() =>
+        // Lazy load in development
+        import('@tanstack/router-devtools').then((res) => ({
+          default: res.TanStackRouterDevtools
+        }))
+      )
+const ReactQueryDevtools =
+  process.env.NODE_ENV === 'production'
+    ? () => null
+    : React.lazy(() =>
+        import('@tanstack/react-query-devtools').then((res) => ({
+          default: res.ReactQueryDevtools
+        }))
+      )
 
 export const Route = createRootRouteWithContext<{
   queryClient: typeof queryClient
@@ -16,7 +33,8 @@ export const Route = createRootRouteWithContext<{
   component: Component,
   notFoundComponent: () => {
     return <p>Not found</p>
-  }
+  },
+  errorComponent: (ctx) => <div className="size-full bg-white">{JSON.stringify(ctx.error)}</div>
 })
 
 function Component() {
@@ -40,27 +58,41 @@ function Component() {
   /**
    *  I18n messages
    */
-
-  const translations = useRef<Partial<IAppIntl>>({})
-  useIpcListenerOnce(
-    IpcEvent.Language.Messages,
-    (_, ipcResponse: IpcResponseResult<Partial<IAppIntl> | ZodError<IAppIntl>>) => {
-      if (ipcResponse.data instanceof ZodError) translations.current = {}
-      else translations.current = ipcResponse.data
+  const { data: translations } = useQuery({
+    queryKey: [IpcEvent.Language.Messages],
+    enabled: !!initInfo?.data.preferredLocale,
+    queryFn: async () => {
+      const res = (await window.electron.ipcRenderer.invoke(
+        IpcEvent.Language.Messages,
+        initInfo?.data.preferredLocale
+      )) as IpcResponseResult<Partial<IAppIntl> | ZodError<IAppIntl>>
+      if (res.data instanceof ZodError) return {}
+      return res.data
     }
-  )
+  })
+
+  useEffect(() => {
+    document.title = translations?.appTitle ?? ''
+    return () => {
+      document.title = ''
+    }
+  }, [translations])
 
   if (!isSuc1) return null
   return (
     <IntlProvider
       locale={initInfo.data.preferredLocale}
       defaultLocale="es"
-      messages={translations.current}
+      messages={translations}
       onError={() => undefined}
     >
-      <WindowBody>
+      <WindowBody title={<FormattedMessage id="appTitle" />}>
         <Outlet />
       </WindowBody>
+      <Suspense>
+        <ReactQueryDevtools buttonPosition="bottom-right" />
+        <TanStackRouterDevtools position="bottom-left" />
+      </Suspense>
     </IntlProvider>
   )
 }

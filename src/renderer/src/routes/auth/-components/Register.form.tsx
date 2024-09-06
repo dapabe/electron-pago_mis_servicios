@@ -1,4 +1,4 @@
-import { useTabPanel } from '#renderer/hooks/useTabPanel.hook'
+import { useStepPanel } from '#renderer/hooks/useStepPanel.hook'
 import { InputText } from '#renderer/routes/-components/form/InputText'
 import {
   IIpcIntegrityRegister,
@@ -7,16 +7,19 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { FormattedMessage } from 'react-intl'
+import { FormattedMessage, useIntl } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
 import { ZodError } from 'zod'
+import * as Icon from 'phosphor-react'
+import { InputIcon } from 'keep-react'
 
 type IRegisterProps = {
   values: IIpcIntegrityRegister
 }
 
 export const RegisterForm = ({ values }: IRegisterProps) => {
-  const tabPanel = useTabPanel()
+  const stepPanel = useStepPanel()
+  const intl = useIntl()
   const { register, handleSubmit, getValues, setValue, control, formState } =
     useForm<IIpcIntegrityRegister>({
       values,
@@ -27,7 +30,7 @@ export const RegisterForm = ({ values }: IRegisterProps) => {
     mutationFn: async () => {
       const err = await window.api.appRegister(getValues())
 
-      if (!(err.data instanceof ZodError)) tabPanel.goToTab(1)
+      if (!(err.data instanceof ZodError)) stepPanel.goToStep(1)
     }
   })
 
@@ -43,10 +46,7 @@ export const RegisterForm = ({ values }: IRegisterProps) => {
       onSubmit={handleSubmit(async () => await mutation.mutateAsync())}
     >
       <div className="col-span-full flex flex-col">
-        <label htmlFor={register('databaseFilePath').name}>
-          <FormattedMessage id="page.unauthorized.register.db-file-path" />
-        </label>
-        <div className="searchbox" title={getValues('databaseFilePath')}>
+        {/* <div className="searchbox" title={getValues('databaseFilePath')}>
           <input
             type="search"
             {...register('databaseFilePath')}
@@ -55,13 +55,22 @@ export const RegisterForm = ({ values }: IRegisterProps) => {
             placeholder="C:\"
             className="text-gray-500 text-ellipsis w-full cursor-help"
           />
-          <button
-            type="button"
-            aria-label="search"
-            tabIndex={-1}
-            onClick={handleDbSelection}
-          ></button>
-        </div>
+        </div> */}
+        <InputText
+          control={control}
+          name={'databaseFilePath'}
+          type="text"
+          // label={<FormattedMessage id="page.unauthorized.register.db-file-path" />}
+          icon={
+            <InputIcon
+              className="pointer-events-auto cursor-pointer text-metal-500 hover:text-primary-500"
+              onClick={handleDbSelection}
+            >
+              <Icon.FileSearch size={28} />
+            </InputIcon>
+          }
+          placeholder={intl.formatMessage({ id: 'page.unauthorized.register.db-file-path' })}
+        />
       </div>
       <div className="col-span-3 flex flex-col">
         <label htmlFor={register('password').name}>

@@ -4,8 +4,8 @@ import { VerificationTable } from './Verification.table'
 import { ChangeEvent, useMemo, useState } from 'react'
 import { ISupportedServices } from '#shared/constants/supported-services'
 import { twJoin } from 'tailwind-merge'
-import { useTabPanel } from '#renderer/hooks/useTabPanel.hook'
 import { IpcEvent } from '#shared/constants/ipc-events'
+import { useStepPanel } from '#renderer/hooks/useStepPanel.hook'
 
 const createDefaultValues = <T extends object | undefined>(obj: T, defaultValue: boolean) => {
   const temp = {} as Record<ISupportedServices, boolean>
@@ -21,14 +21,14 @@ const createDefaultValues = <T extends object | undefined>(obj: T, defaultValue:
 
 export const VerificationPhase = () => {
   const { hasSequenceStarted } = useAppSequence()
-  const { goToTab } = useTabPanel()
+  const { goToStep } = useStepPanel()
 
-  const [valuesToBePaid, setToBePaid] = useState(createDefaultValues(data?.serviceFields, false))
+  const [valuesToBePaid, setToBePaid] = useState(createDefaultValues({}?.serviceFields, false))
   const [valuesToInvalidate, setInvalidation] = useState(
-    createDefaultValues(data?.serviceFields, false)
+    createDefaultValues({}?.serviceFields, false)
   )
 
-  const hasServices = useMemo(() => Object.keys(valuesToBePaid).length > 0, [data?.serviceFields])
+  const hasServices = useMemo(() => Object.keys(valuesToBePaid).length > 0, [{}?.serviceFields])
   const noSelectedServices = useMemo(
     () => Object.values(valuesToInvalidate).every(Boolean),
     [valuesToInvalidate]
@@ -80,7 +80,7 @@ export const VerificationPhase = () => {
         ) : (
           <p>
             <FormattedMessage id="page.home.tab.verify.no-services" />{' '}
-            <a onClick={() => goToTab(1)} className="underline cursor-pointer">
+            <a onClick={() => goToStep(1)} className="underline cursor-pointer">
               {'['}
               <FormattedMessage id="page.home.tab.services.title" />
               {']'}
