@@ -1,89 +1,46 @@
-import { app, shell, BrowserWindow } from 'electron'
-import path from 'node:path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
-import { ipcsOnStartUp } from './src/events/on-startup.ipcs'
-import { ipcsForDatabase } from './src/events/for-database.ipcs'
-import { ipcsOnDefault } from './src/events/on-default.ipcs'
-
-let mainWindow: BrowserWindow
-
-function createWindow(): BrowserWindow {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 500,
-    height: 400,
-    resizable: false,
-    frame: false,
-    show: false,
-    transparent: true,
-    autoHideMenuBar: true,
-    icon: path.resolve('build', 'icon.ico'),
-    ...(process.platform === 'linux' ? { icon } : {}),
-    webPreferences: {
-      preload: path.join(__dirname, '../preload/index.js'),
-      sandbox: false
-    }
-  })
-
-  mainWindow.setMenu(null)
-
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
-  }
-
-  return mainWindow
-}
+import { app, ipcMain } from 'electron'
+import { electronApp } from '@electron-toolkit/utils'
+import { MainWindow } from './src/utilities/MainWindow'
+import { RawJavascript } from './src/utilities/constants/raw-javascript'
+import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
+import { IpcEvent } from '#shared/constants/ipc-events'
+import { AppStore } from './src/stores/app-store'
+import { AbstractIpcChannel } from './src/utilities/types/abstract-ipc-channel'
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
+  /**
+   *  Load event channels for main window
+   */
 
-  mainWindow = createWindow()
+  const channelFiles = await import('./src/events/for-main/index')
+  const channels: AbstractIpcChannel[] = []
+  for (const channelModule of Object.values(channelFiles)) {
+    channels.push(new channelModule())
+  }
 
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
+  /**
+   *  Register auto generated app flags
+   */
+  for (const flag of Object.keys(
+    FlagConfigManager.getLastSchema().shape
+  ) as (keyof IFlagConfig)[]) {
+    const ipcFlag = IpcEvent.Settings.Flag(flag)
+    ipcMain.handle(ipcFlag, async () => {
+      await AppStore.getState().changeSettings((settings) => {
+        settings.flags[flag] = !settings.flags[flag]
+      })
+    })
+  }
 
-  if (is.dev) mainWindow.webContents.openDevTools()
-  ipcsOnDefault(mainWindow)
-  ipcsOnStartUp()
-  ipcsForDatabase()
-})
+  const main = new MainWindow().init(channels)
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
+  for (const js of Object.values(RawJavascript)) {
+    await main.webContents.executeJavaScript(js)
   }
 })
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.

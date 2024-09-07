@@ -6,7 +6,6 @@ import crypto from 'node:crypto'
 import keytar from 'keytar'
 import { IpcResponse, IpcResponseResult } from '#shared/utilities/IpcResponse'
 import { getReasonPhrase, StatusCodes } from 'http-status-codes'
-import { ipcsForDatabaseCrud } from '../events/for-database-crud.ipcs'
 
 export class LocalDatabase {
   static fileName = 'revision.sqlite'
@@ -43,8 +42,6 @@ export class LocalDatabase {
 
     const instance = new LocalDatabase()
     await instance.#initialize()
-
-    await ipcsForDatabaseCrud()
 
     return instance
   }

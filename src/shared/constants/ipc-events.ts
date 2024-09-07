@@ -58,7 +58,7 @@ export const IpcEvent = {
   Settings: {
     Request: 'settings.req',
     Response: 'settings.res',
-    Flag: (flag: keyof IFlagConfig) => `settings.flags.${flag}`
+    Flag: (flag: keyof IFlagConfig) => `settings.flags.${flag}` as const
   },
   Sequence: {
     Started: 'sequence.started',

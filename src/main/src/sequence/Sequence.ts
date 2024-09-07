@@ -15,6 +15,7 @@ export class Sequence extends SequenceUtilities {
    */
   public async initialize(servicesToCheck: Record<ISupportedServices, boolean>) {
     try {
+      console.log(servicesToCheck)
       this.BRO = await chromium.launch({ headless: is.dev })
       this.CTX = await this.BRO.newContext()
       this.BrWindow.webContents.send(IpcEvent.Sequence.ToggleInternal)
