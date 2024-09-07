@@ -12,7 +12,7 @@ import { z } from 'zod'
 export const Route = createFileRoute('/app/')({
   validateSearch: (sq: Record<string, unknown>) => {
     const sqSchema = z.object({
-      page: z.number().positive().optional // page number
+      page: z.number().positive().optional().catch(1)
     })
     return sqSchema.parse(sq)
   },
