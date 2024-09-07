@@ -20,8 +20,8 @@ app.whenReady().then(async () => {
 
   const channelFiles = await import('./src/events/for-main/index')
   const channels: AbstractIpcChannel[] = []
-  for (const channelModule of Object.values(channelFiles)) {
-    channels.push(new channelModule())
+  for (const defChannelMod of Object.values(channelFiles) as unknown as AbstractIpcChannel[]) {
+    channels.push(defChannelMod)
   }
 
   /**

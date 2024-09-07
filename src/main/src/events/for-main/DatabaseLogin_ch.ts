@@ -6,8 +6,8 @@ import { LocalDatabase } from '../../database/LocalDatabase'
 import { AbstractIpcChannel } from '../../utilities/types/abstract-ipc-channel'
 import { AppStore } from '../../stores/app-store'
 
-export default class DatabaseLoginChannel implements AbstractIpcChannel {
-  channelID = IpcEvent.Db.Password.Reset
+const DatabaseLoginChannel: AbstractIpcChannel = {
+  channelID: IpcEvent.Db.Login,
 
   async handleAsync(_, request: IIpcIntegrityLogin) {
     await LocalDatabase.createInstance(
@@ -18,3 +18,5 @@ export default class DatabaseLoginChannel implements AbstractIpcChannel {
     return new IpcResponse(StatusCodes.OK, getReasonPhrase(StatusCodes.OK)).toResult()
   }
 }
+
+export default DatabaseLoginChannel

@@ -6,8 +6,8 @@ import { LocalDatabase } from '../../database/LocalDatabase'
 import { AppStore } from '../../stores/app-store'
 import { AbstractIpcChannel } from '../../utilities/types/abstract-ipc-channel'
 
-export default class DatabaseRegisterChannel implements AbstractIpcChannel {
-  channelID = IpcEvent.Db.Register
+const DatabaseRegisterChannel: AbstractIpcChannel = {
+  channelID: IpcEvent.Db.Register,
   async handleAsync(_, request: IIpcIntegrityRegister) {
     await LocalDatabase.createInstance(
       AppStore.getState().settingsData.databaseFilePath!,
@@ -16,3 +16,5 @@ export default class DatabaseRegisterChannel implements AbstractIpcChannel {
     return new IpcResponse(StatusCodes.CREATED, getReasonPhrase(StatusCodes.CREATED)).toResult()
   }
 }
+
+export default DatabaseRegisterChannel

@@ -1,11 +1,11 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { IpcResponse } from '#shared/utilities/IpcResponse'
 import { StatusCodes } from 'http-status-codes'
-import { AbstractIpcChannel } from '../../utilities/types/abstract-ipc-channel'
 import { app } from 'electron'
+import { AbstractIpcChannel } from '#main/src/utilities/types/abstract-ipc-channel'
 
-export default class BundleInfoChannel implements AbstractIpcChannel {
-  channelID = IpcEvent.App.Info
+const BundleInfoChannel: AbstractIpcChannel = {
+  channelID: IpcEvent.App.Info,
 
   async handleAsync() {
     return new IpcResponse(StatusCodes.OK, {
@@ -14,3 +14,5 @@ export default class BundleInfoChannel implements AbstractIpcChannel {
     }).toResult()
   }
 }
+
+export default BundleInfoChannel

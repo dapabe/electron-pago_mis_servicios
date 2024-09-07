@@ -5,8 +5,8 @@ import { AppStore } from '../../stores/app-store'
 import { IpcResponse } from '#shared/utilities/IpcResponse'
 import { StatusCodes } from 'http-status-codes'
 
-export default class DatabaseSelectChannel implements AbstractIpcChannel {
-  channelID = IpcEvent.Db.SelectFile
+const DatabaseSelectChannel: AbstractIpcChannel = {
+  channelID: IpcEvent.Db.SelectFile,
 
   async handleAsync(event: IpcMainInvokeEvent, defaultPath: string) {
     const dialogResult = await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender)!, {
@@ -22,3 +22,5 @@ export default class DatabaseSelectChannel implements AbstractIpcChannel {
     return new IpcResponse(StatusCodes.OK, dialogResult.filePaths[0]).toResult()
   }
 }
+
+export default DatabaseSelectChannel

@@ -6,8 +6,8 @@ import { AppStore } from '../../stores/app-store'
 import { AbstractIpcChannel } from '../../utilities/types/abstract-ipc-channel'
 import { verifyFileIntegrity } from '../../utilities/verify-file-integrity'
 
-export default class IntegrityCheckerChannel implements AbstractIpcChannel {
-  channelID = IpcEvent.Integrity.Initialize
+const IntegrityCheckerChannel: AbstractIpcChannel = {
+  channelID: IpcEvent.Integrity.Initialize,
 
   async handleAsync() {
     const integrityGenerator = verifyFileIntegrity()
@@ -25,3 +25,5 @@ export default class IntegrityCheckerChannel implements AbstractIpcChannel {
     })
   }
 }
+
+export default IntegrityCheckerChannel
