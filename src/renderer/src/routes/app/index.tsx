@@ -1,34 +1,72 @@
-import { useIntl } from 'react-intl'
 import { AppSequenceProvider } from '#renderer/contexts/app-sequence.ctx'
 import { createFileRoute } from '@tanstack/react-router'
+import { FormattedMessage } from 'react-intl'
+import { TabPanel } from '../-components/TabPanel'
+import * as Icon from 'phosphor-react'
+import { HomeTab } from './-components/tabs/Home.tab'
+import { SettingsTab } from './-components/tabs/Settings.tab'
+import { PayMethodsTab } from './-components/tabs/PayMethods.tab'
+import { ServiceAccountsTab } from './-components/tabs/ServiceAccounts.tab'
+import { z } from 'zod'
 
 export const Route = createFileRoute('/app/')({
+  validateSearch: (sq: Record<string, unknown>) => {
+    const sqSchema = z.object({
+      page: z.number().positive().optional // page number
+    })
+    return sqSchema.parse(sq)
+  },
   component: Component
 })
 
 function Component() {
-  const intl = useIntl()
-
   return (
-    <AppSequenceProvider>
-      sequence
-      {/* <TabPanel
-        label="Secuencía"
-        tabs={[
-          {
-            title: intl.formatMessage({ id: 'page.home.tab.verify.title' }),
-            body: null
-          },
-          {
-            title: intl.formatMessage({ id: 'page.home.tab.services.title' }),
-            body: <ServiceAccounts />
-          },
-          {
-            title: intl.formatMessage({ id: 'page.home.tab.payMethods.title' }),
-            body: <PayMethods />
-          }
-        ]}
-      /> */}
-    </AppSequenceProvider>
+    <main>
+      <AppSequenceProvider>
+        <TabPanel
+          initialTab={'0'}
+          tabs={[
+            {
+              title: (
+                <>
+                  <Icon.ListNumbers size={24} />
+                  <FormattedMessage id="page.app.tab.home.title" />
+                </>
+              ),
+              body: <HomeTab />
+            },
+            {
+              title: (
+                <>
+                  <Icon.IdentificationCard size={24} />
+                  <span className="truncate">
+                    <FormattedMessage id="page.app.tab.payMethods.title" />
+                  </span>
+                </>
+              ),
+              body: <PayMethodsTab />
+            },
+            {
+              title: (
+                <>
+                  <Icon.UserList size={24} />
+                  <FormattedMessage id="page.app.tab.services.title" />
+                </>
+              ),
+              body: <ServiceAccountsTab />
+            },
+            {
+              title: (
+                <>
+                  <Icon.GearSix size={24} />
+                  <FormattedMessage id="page.app.tab.settings.title" />
+                </>
+              ),
+              body: <SettingsTab />
+            }
+          ]}
+        />
+      </AppSequenceProvider>
+    </main>
   )
 }

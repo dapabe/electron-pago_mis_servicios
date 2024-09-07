@@ -11,7 +11,7 @@ import { FormattedMessage, useIntl } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
 import { ZodError } from 'zod'
 import * as Icon from 'phosphor-react'
-import { Button, InputIcon } from 'keep-react'
+import { Button, InputIcon, Spinner } from 'keep-react'
 import { getDefaultsForSchema } from 'zod-defaults'
 import { IDefaultValues } from '#renderer/common/types/form.props'
 
@@ -26,16 +26,18 @@ export const RegisterForm = ({ values }: IDefaultValues<IIpcIntegrityRegister>) 
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const err = await window.api.appRegister(getValues())
+      const res = await window.api.appRegister(getValues())
 
-      if (!(err.data instanceof ZodError)) stepPanel.goToStep(1)
+      if (res.data instanceof ZodError) return
+      else stepPanel.goToStep(1)
     }
   })
 
   const handleDbSelection = async () => {
     const res = await window.api.selectDatabase(getValues().databaseFilePath)
-    if (typeof res.data === 'string') setValue('databaseFilePath', res.data)
-    else setValue('databaseFilePath', formState.defaultValues?.databaseFilePath ?? '')
+    if (res.data instanceof ZodError)
+      setValue('databaseFilePath', formState.defaultValues?.databaseFilePath ?? '')
+    else setValue('databaseFilePath', res.data)
   }
 
   return (
@@ -106,11 +108,7 @@ export const RegisterForm = ({ values }: IDefaultValues<IIpcIntegrityRegister>) 
         disabled={formState.isSubmitting}
         className={twJoin('col-span-3 size-max p-2 ml-auto')}
       >
-        {formState.isSubmitting ? (
-          <Icon.Spinner size={32} className="mr-2" />
-        ) : (
-          <FormattedMessage id="page.unauthorized.register.submit" />
-        )}
+        {formState.isSubmitting ? <Spinner /> : <FormattedMessage id="page.auth.submit" />}
       </Button>
     </form>
   )

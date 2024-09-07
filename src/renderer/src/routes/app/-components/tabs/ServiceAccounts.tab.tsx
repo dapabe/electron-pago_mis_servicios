@@ -1,12 +1,12 @@
 import { FormattedMessage, useIntl } from 'react-intl'
 
-export const ServiceAccounts = () => {
+export const ServiceAccountsTab = () => {
   // const { data } = useUserDataStore()
   const intl = useIntl()
   return (
     <section className="space-y-2">
       <p>
-        <FormattedMessage id="page.home.tab.services.description" />
+        <FormattedMessage id="page.app.tab.services.description" />
       </p>
     </section>
   )

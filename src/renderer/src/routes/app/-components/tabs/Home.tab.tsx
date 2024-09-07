@@ -1,11 +1,10 @@
-import { FormattedMessage } from 'react-intl'
 import { useAppSequence } from '#renderer/hooks/useAppSequence.hook'
-import { VerificationTable } from './Verification.table'
-import { ChangeEvent, useMemo, useState } from 'react'
-import { ISupportedServices } from '#shared/constants/supported-services'
-import { twJoin } from 'tailwind-merge'
 import { IpcEvent } from '#shared/constants/ipc-events'
-import { useStepPanel } from '#renderer/hooks/useStepPanel.hook'
+import { ISupportedServices } from '#shared/constants/supported-services'
+import { ChangeEvent, useMemo, useState } from 'react'
+import { FormattedMessage } from 'react-intl'
+import { twJoin } from 'tailwind-merge'
+import { VerificationTable } from '../Verification.table'
 
 const createDefaultValues = <T extends object | undefined>(obj: T, defaultValue: boolean) => {
   const temp = {} as Record<ISupportedServices, boolean>
@@ -19,9 +18,8 @@ const createDefaultValues = <T extends object | undefined>(obj: T, defaultValue:
   return temp
 }
 
-export const VerificationPhase = () => {
+export const HomeTab = () => {
   const { hasSequenceStarted } = useAppSequence()
-  const { goToStep } = useStepPanel()
 
   const [valuesToBePaid, setToBePaid] = useState(createDefaultValues({}?.serviceFields, false))
   const [valuesToInvalidate, setInvalidation] = useState(
@@ -57,7 +55,7 @@ export const VerificationPhase = () => {
   return (
     <section className="space-y-2">
       <p>
-        <FormattedMessage id="page.home.tab.verify.description" />
+        <FormattedMessage id="page.app.tab.home.description" />
       </p>
       <fieldset>
         <legend>
@@ -66,7 +64,7 @@ export const VerificationPhase = () => {
             className={twJoin(!noSelectedServices && 'default', 'ml-auto')}
             disabled={hasSequenceStarted || !hasServices || noSelectedServices}
           >
-            <FormattedMessage id="page.home.tab.verify.init" />
+            <FormattedMessage id="page.app.tab.home.init" />
           </button>
         </legend>
         {hasServices ? (
@@ -79,10 +77,10 @@ export const VerificationPhase = () => {
           />
         ) : (
           <p>
-            <FormattedMessage id="page.home.tab.verify.no-services" />{' '}
-            <a onClick={() => goToStep(1)} className="underline cursor-pointer">
+            <FormattedMessage id="page.app.tab.home.no-services" />{' '}
+            <a onClick={() => void 0} className="underline cursor-pointer">
               {'['}
-              <FormattedMessage id="page.home.tab.services.title" />
+              <FormattedMessage id="page.app.tab.services.title" />
               {']'}
             </a>
             .

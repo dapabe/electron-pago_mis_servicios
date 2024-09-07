@@ -18,22 +18,15 @@ import { Route as HelpIndexImport } from './routes/help/index'
 import { Route as AuthIndexImport } from './routes/auth/index'
 import { Route as AppIndexImport } from './routes/app/index'
 import { Route as AuthLayoutImport } from './routes/auth/_layout'
-import { Route as AppLayoutImport } from './routes/app/_layout'
 
 // Create Virtual Routes
 
 const AuthImport = createFileRoute('/auth')()
-const AppImport = createFileRoute('/app')()
 
 // Create/Update Routes
 
 const AuthRoute = AuthImport.update({
   path: '/auth',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AppRoute = AppImport.update({
-  path: '/app',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -53,18 +46,13 @@ const AuthIndexRoute = AuthIndexImport.update({
 } as any)
 
 const AppIndexRoute = AppIndexImport.update({
-  path: '/',
-  getParentRoute: () => AppRoute,
+  path: '/app/',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const AuthLayoutRoute = AuthLayoutImport.update({
   id: '/_layout',
   getParentRoute: () => AuthRoute,
-} as any)
-
-const AppLayoutRoute = AppLayoutImport.update({
-  id: '/_layout',
-  getParentRoute: () => AppRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -77,20 +65,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppImport
-      parentRoute: typeof rootRoute
-    }
-    '/app/_layout': {
-      id: '/app/_layout'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppLayoutImport
-      parentRoute: typeof AppRoute
     }
     '/auth': {
       id: '/auth'
@@ -108,10 +82,10 @@ declare module '@tanstack/react-router' {
     }
     '/app/': {
       id: '/app/'
-      path: '/'
-      fullPath: '/app/'
+      path: '/app'
+      fullPath: '/app'
       preLoaderRoute: typeof AppIndexImport
-      parentRoute: typeof AppImport
+      parentRoute: typeof rootRoute
     }
     '/auth/': {
       id: '/auth/'
@@ -134,8 +108,8 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
-  AppRoute: AppRoute.addChildren({ AppIndexRoute }),
   AuthRoute: AuthRoute.addChildren({ AuthIndexRoute }),
+  AppIndexRoute,
   HelpIndexRoute,
 })
 
@@ -148,24 +122,13 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/app",
         "/auth",
+        "/app/",
         "/help/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
-    },
-    "/app": {
-      "filePath": "app",
-      "children": [
-        "/app/_layout",
-        "/app/"
-      ]
-    },
-    "/app/_layout": {
-      "filePath": "app/_layout.tsx",
-      "parent": "/app"
     },
     "/auth": {
       "filePath": "auth",
@@ -179,8 +142,7 @@ export const routeTree = rootRoute.addChildren({
       "parent": "/auth"
     },
     "/app/": {
-      "filePath": "app/index.tsx",
-      "parent": "/app"
+      "filePath": "app/index.tsx"
     },
     "/auth/": {
       "filePath": "auth/index.tsx",

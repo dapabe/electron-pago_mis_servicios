@@ -44,7 +44,7 @@ export const preloadApi = {
       .shape.databaseFilePath.removeDefault()
       .safeParse(defaultPath ?? '')
     if (!validated.success) {
-      return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error)
+      return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error).toResult()
     }
     return await ipcRenderer.invoke(IpcEvent.Db.SelectFile, defaultPath)
   },

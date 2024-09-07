@@ -26,9 +26,9 @@ function Component() {
   if (query.data.hasDB) {
     return (
       <main className="flex justify-center items-center p-2 h-full flex-col">
-        <section className="m-auto max-w-sm space-y-4 rounded-lg border p-8 shadow-md backdrop-blur-md bg-metal-100/50">
+        <section className="m-auto max-w-sm space-y-4 rounded-lg border p-8">
           <Label className="block cursor-default text-heading-6 text-center">
-            {intl.formatMessage({ id: `page.unauthorized.register.has-db` })}
+            {intl.formatMessage({ id: `page.auth.has-db` })}
           </Label>
           <LoginForm
             values={{
@@ -46,7 +46,7 @@ function Component() {
         <StepPanel
           steps={[
             {
-              title: intl.formatMessage({ id: `page.unauthorized.register.no-db` }),
+              title: intl.formatMessage({ id: `page.auth.no-db` }),
               body: (
                 <RegisterForm
                   values={{
@@ -58,7 +58,7 @@ function Component() {
               )
             },
             {
-              title: intl.formatMessage({ id: `page.unauthorized.register.has-db` }),
+              title: intl.formatMessage({ id: `page.auth.has-db` }),
               body: (
                 <LoginForm
                   values={{

@@ -7,12 +7,11 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { Button } from 'keep-react'
+import { Button, Spinner } from 'keep-react'
 import { useForm } from 'react-hook-form'
 import { FormattedMessage } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
 import { getDefaultsForSchema } from 'zod-defaults'
-import * as Icon from 'phosphor-react'
 import { IDefaultValues } from '#renderer/common/types/form.props'
 
 export const LoginForm = ({ values }: IDefaultValues<IIpcIntegrityLogin>) => {
@@ -56,11 +55,7 @@ export const LoginForm = ({ values }: IDefaultValues<IIpcIntegrityLogin>) => {
         disabled={formState.isSubmitting}
         className={twJoin('col-span-3 size-max p-2 ml-auto')}
       >
-        {formState.isSubmitting ? (
-          <Icon.Spinner size={32} className="mr-2" />
-        ) : (
-          <FormattedMessage id="page.unauthorized.register.submit" />
-        )}
+        {formState.isSubmitting ? <Spinner /> : <FormattedMessage id="page.auth.submit" />}
       </Button>
     </form>
   )
