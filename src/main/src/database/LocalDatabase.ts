@@ -1,6 +1,6 @@
 import { is } from '@electron-toolkit/utils'
 import { Sequelize, Transaction } from 'sequelize'
-import { app } from 'electron'
+import { app, ipcMain } from 'electron'
 import os from 'node:os'
 import crypto from 'node:crypto'
 import keytar from 'keytar'
@@ -83,6 +83,19 @@ export class LocalDatabase {
       }
     } catch (error) {
       console.log(error!['message'] as any)
+    }
+  }
+
+  static async registerIpcEvents() {
+    try {
+      const abstractChannels = await import('../events/for-database')
+      for (const channel of Object.values(abstractChannels)) {
+        if (channel.handleAsync) {
+          ipcMain.handle(channel.channelID, channel.handleAsync)
+        }
+      }
+    } catch (error) {
+      console.log({ error })
     }
   }
 

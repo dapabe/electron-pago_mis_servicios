@@ -1,12 +1,12 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { IpcResponse } from '#shared/utilities/IpcResponse'
 import { getReasonPhrase, StatusCodes } from 'http-status-codes'
-import { LocalDatabase } from '../../database/LocalDatabase'
-import { PaymentMethodModel } from '../../database/models/PaymentMethodModel'
-import { AbstractIpcChannel } from '../../utilities/types/abstract-ipc-channel'
+import { LocalDatabase } from '../../../database/LocalDatabase'
+import { PaymentMethodModel } from '../../../database/models/PaymentMethodModel'
+import { AbstractIpcChannel } from '../../../utilities/types/abstract-ipc-channel'
 
-export default class DbDeletePayMethodChannel implements AbstractIpcChannel {
-  channelID = IpcEvent.Db.CRUD.Delete.PayMethod
+const DbDeletePayMethodChannel: AbstractIpcChannel = {
+  channelID: IpcEvent.Db.CRUD.Delete.PayMethod,
 
   async handleAsync(_, ...ids: number[]) {
     return await LocalDatabase.withTransaction(async (t) => {
@@ -18,3 +18,5 @@ export default class DbDeletePayMethodChannel implements AbstractIpcChannel {
     })
   }
 }
+
+export default DbDeletePayMethodChannel
