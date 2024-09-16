@@ -1,11 +1,11 @@
 import { app, ipcMain } from 'electron'
 import { electronApp } from '@electron-toolkit/utils'
 import { MainWindow } from './src/utilities/MainWindow'
-import { RawJavascript } from './src/utilities/constants/raw-javascript'
 import { FlagConfigManager, IFlagConfig } from '#shared/schemas/flags.schema'
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { AppStore } from './src/stores/app-store'
 import { AbstractIpcChannel } from './src/utilities/types/abstract-ipc-channel'
+import { RawJavascript } from './src/utilities/constants/raw-javascript'
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

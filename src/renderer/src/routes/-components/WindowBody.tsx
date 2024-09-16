@@ -1,9 +1,14 @@
 import { PropsWithChildren, ReactNode } from 'react'
 import { IpcEvent } from '#shared/constants/ipc-events'
 import { useNavigate } from '@tanstack/react-router'
-import { Button, ButtonGroup, Card, CardContent, CardHeader, CardTitle } from 'keep-react'
-import * as Icon from 'phosphor-react'
 import { WindowStatus } from './WindowStatus'
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList
+} from '#renderer/shadcn/ui/navigation-menu'
+import { Button } from '#renderer/shadcn/ui/button'
+import * as Icon from 'lucide-react'
 
 type Props = PropsWithChildren<{ title?: ReactNode }>
 export const WindowBody = ({ children, title }: Props): JSX.Element => {
@@ -13,46 +18,37 @@ export const WindowBody = ({ children, title }: Props): JSX.Element => {
   const handleClose = () => window.electron.ipcRenderer.send(IpcEvent.App.CloseApp)
 
   return (
-    <Card className="h-screen max-w-full flex flex-col bg-metal-900">
-      <CardHeader className="draggable flex items-center">
-        <CardTitle className="text-lg ml-2 flex-1">{title}</CardTitle>
-        <ButtonGroup className="noDraggable">
-          <Button
-            variant="link"
-            shape="icon"
-            color="secondary"
-            className="hover:text-metal-100"
-            onClick={handleMinMax}
-          >
-            <Icon.Minus size={32} />
-          </Button>
-          <Button
-            variant="link"
-            shape="icon"
-            color="secondary"
-            className="hover:text-metal-100"
-            onClick={async () => await nav({ to: '/help' })}
-          >
-            <Icon.Question size={32} />
-          </Button>
-          <Button
-            variant="link"
-            shape="icon"
-            color="error"
-            className="hover:text-error-900"
-            onClick={handleClose}
-          >
-            <Icon.X size={32} />
-          </Button>
-        </ButtonGroup>
-      </CardHeader>
-
-      <CardContent className="flex-grow p-0 bg-metal-800 border-y border-y-metal-700">
-        {children}
-      </CardContent>
-      <footer className="draggable px-2 text-metal-500">
+    <div className="h-screen flex flex-col">
+      <header className="draggable flex flex-row p-0 items-center">
+        <h1 className="text-lg ml-2 flex-1 block text-primary">{title}</h1>
+        <NavigationMenu className="noDraggable">
+          <NavigationMenuList className="space-x-0">
+            <NavigationMenuItem>
+              <Button variant="ghost" className="px-3" onClick={handleMinMax}>
+                <Icon.Minus size={18} />
+              </Button>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Button
+                variant="ghost"
+                className="px-3"
+                onClick={async () => await nav({ to: '/help' })}
+              >
+                <Icon.CircleHelp size={18} />
+              </Button>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Button variant="ghost" className="px-3 hover:bg-destructive" onClick={handleClose}>
+                <Icon.X size={18} />
+              </Button>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </header>
+      <div className="flex-grow border-y border-accent">{children}</div>
+      <footer className="draggable pb-0">
         <WindowStatus />
       </footer>
-    </Card>
+    </div>
   )
 }

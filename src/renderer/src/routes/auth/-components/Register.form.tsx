@@ -1,5 +1,3 @@
-import { useStepPanel } from '#renderer/hooks/useStepPanel.hook'
-import { InputText } from '#renderer/routes/-components/form/InputText'
 import {
   IIpcIntegrityRegister,
   IpcIntegrityRegisterSchema
@@ -10,13 +8,14 @@ import { useForm } from 'react-hook-form'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { twJoin } from 'tailwind-merge'
 import { ZodError } from 'zod'
-import * as Icon from 'phosphor-react'
-import { Button, InputIcon, Spinner } from 'keep-react'
+import * as Icon from 'lucide-react'
 import { getDefaultsForSchema } from 'zod-defaults'
 import { IDefaultValues } from '#renderer/common/types/form.props'
+import { Input } from '#renderer/shadcn/ui/input'
+import { Button } from '#renderer/shadcn/ui/button'
 
 export const RegisterForm = ({ values }: IDefaultValues<IIpcIntegrityRegister>) => {
-  const stepPanel = useStepPanel()
+  // const stepPanel = useStepPanel()
   const intl = useIntl()
   const { register, handleSubmit, getValues, setValue, control, formState } =
     useForm<IIpcIntegrityRegister>({
@@ -29,7 +28,7 @@ export const RegisterForm = ({ values }: IDefaultValues<IIpcIntegrityRegister>) 
       const res = await window.api.appRegister(getValues())
 
       if (res.data instanceof ZodError) return
-      else stepPanel.goToStep(1)
+      // else stepPanel.goToStep(1)
     }
   })
 
@@ -46,19 +45,11 @@ export const RegisterForm = ({ values }: IDefaultValues<IIpcIntegrityRegister>) 
       onSubmit={handleSubmit(async () => await mutation.mutateAsync())}
     >
       <div className="col-span-full flex flex-col">
-        <InputText
-          control={control}
+        <Input
           name={'databaseFilePath'}
           type="text"
           // label={<FormattedMessage id="page.unauthorized.register.db-file-path" />}
-          icon={
-            <InputIcon
-              className="pointer-events-auto cursor-pointer text-metal-500 hover:text-primary-500"
-              onClick={handleDbSelection}
-            >
-              <Icon.FileSearch size={28} />
-            </InputIcon>
-          }
+
           placeholder={intl.formatMessage({ id: 'page.unauthorized.register.db-file-path' })}
         />
       </div>
@@ -66,11 +57,10 @@ export const RegisterForm = ({ values }: IDefaultValues<IIpcIntegrityRegister>) 
         <label htmlFor={register('password').name}>
           <FormattedMessage id="common.form.password" />
         </label>
-        <InputText
-          control={control}
+        <Input
           name="password"
           type="password"
-          isInvalid={Object.hasOwn(formState.errors, 'samePassword')}
+          aria-invalid={Object.hasOwn(formState.errors, 'samePassword')}
           className="text-ellipsis"
         />
         <span className="text-red-500">
@@ -81,11 +71,10 @@ export const RegisterForm = ({ values }: IDefaultValues<IIpcIntegrityRegister>) 
         <label htmlFor={register('repeatPassword').name}>
           <FormattedMessage id="common.form.password-repeat" />
         </label>
-        <InputText
-          control={control}
+        <Input
           name="repeatPassword"
           type="password"
-          isInvalid={Object.hasOwn(formState.errors, 'samePassword')}
+          aria-invalid={Object.hasOwn(formState.errors, 'samePassword')}
           className="text-ellipsis"
         />
         <span className="text-red-500">
@@ -108,7 +97,11 @@ export const RegisterForm = ({ values }: IDefaultValues<IIpcIntegrityRegister>) 
         disabled={formState.isSubmitting}
         className={twJoin('col-span-3 size-max p-2 ml-auto')}
       >
-        {formState.isSubmitting ? <Spinner /> : <FormattedMessage id="page.auth.submit" />}
+        {formState.isSubmitting ? (
+          <Icon.LoaderCircle />
+        ) : (
+          <FormattedMessage id="page.auth.submit" />
+        )}
       </Button>
     </form>
   )

@@ -1,14 +1,12 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Underline } from '../-components/Underline'
+import { Button } from '#renderer/shadcn/ui/button'
 import {
   Accordion,
-  AccordionContainer,
   AccordionContent,
-  AccordionIcon,
-  AccordionPanel,
-  AccordionTitle,
-  Button
-} from 'keep-react'
+  AccordionItem,
+  AccordionTrigger
+} from '#renderer/shadcn/ui/accordion'
 
 export const Route = createFileRoute('/help/')({
   component: Component
@@ -22,12 +20,12 @@ function Component() {
           Volver
         </Button>
       </div>
-      <Accordion className="h-full max-h-[100vh-20rem] p-2 space-y-1  overflow-y-scroll">
-        <AccordionPanel>
-          <AccordionContainer>
-            <AccordionTitle>¿Como funciona?</AccordionTitle>
-            <AccordionIcon />
-          </AccordionContainer>
+      <Accordion
+        type="single"
+        //  className="h-full max-h-[100vh-20rem] p-2 space-y-1 overflow-y-scroll"
+      >
+        <AccordionItem value="item-1">
+          <AccordionTrigger>¿Como funciona?</AccordionTrigger>
           <AccordionContent>
             <p>
               Al momento de registrar tu cuenta se te pedira un correo y contraseña unica, solo
@@ -39,24 +37,18 @@ function Component() {
               En caso que olvides tu contraseña se te enviara un mensaje al correo con esta misma.
             </p>
           </AccordionContent>
-        </AccordionPanel>
-        <AccordionPanel>
-          <AccordionContainer>
-            <AccordionTitle>¿Cuales son mis datos personales?</AccordionTitle>
-            <AccordionIcon />
-          </AccordionContainer>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>¿Cuales son mis datos personales?</AccordionTrigger>
           <AccordionContent>
             <p>
               Tus credenciales de inicio de sesión a los servicios que utilices, información de tus
               tarjetas de credito o debito y número de cuenta del servicio.
             </p>
           </AccordionContent>
-        </AccordionPanel>
-        <AccordionPanel>
-          <AccordionContainer>
-            <AccordionTitle>¿Para que se usa mi información?</AccordionTitle>
-            <AccordionIcon />
-          </AccordionContainer>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>¿Para que se usa mi información?</AccordionTrigger>
           <AccordionContent>
             <p>
               Hay dos modos en que opera esta aplicación y cada uno usa un metodo de pago a tu
@@ -72,7 +64,7 @@ function Component() {
               </li>
             </ul>
           </AccordionContent>
-        </AccordionPanel>
+        </AccordionItem>
       </Accordion>
     </main>
   )

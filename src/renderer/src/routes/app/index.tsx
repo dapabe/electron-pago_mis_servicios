@@ -1,12 +1,5 @@
 import { AppSequenceProvider } from '#renderer/contexts/app-sequence.ctx'
 import { createFileRoute } from '@tanstack/react-router'
-import { FormattedMessage } from 'react-intl'
-import { TabPanel } from '../-components/TabPanel'
-import * as Icon from 'phosphor-react'
-import { HomeTab } from './-components/tabs/Home.tab'
-import { SettingsTab } from './-components/tabs/Settings.tab'
-import { PayMethodsTab } from './-components/tabs/PayMethods.tab'
-import { ServiceAccountsTab } from './-components/tabs/ServiceAccounts.tab'
 import { z } from 'zod'
 
 export const Route = createFileRoute('/app/')({
@@ -23,7 +16,8 @@ function Component() {
   return (
     <main>
       <AppSequenceProvider>
-        <TabPanel
+        seq
+        {/* <TabPanel
           initialTab={'0'}
           tabs={[
             {
@@ -65,7 +59,7 @@ function Component() {
               body: <SettingsTab />
             }
           ]}
-        />
+        /> */}
       </AppSequenceProvider>
     </main>
   )

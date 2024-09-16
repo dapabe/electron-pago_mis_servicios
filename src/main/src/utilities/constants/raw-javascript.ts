@@ -1,5 +1,5 @@
 export const RawJavascript = {
-  ForceDarkMode: "window.document.documentElement.classList.add('dark')",
+  // ForceDarkMode: "window.document.documentElement.classList.add('dark')",
   PreventMouseNavigation: `
       document.addEventListener('mouseup', (event) => {
         if ([3, 4].includes(event.button)) {

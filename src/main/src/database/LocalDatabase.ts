@@ -99,32 +99,28 @@ export class LocalDatabase {
     }
   }
 
-  static async changePassword(newPassword: string) {
-    const masterKey = await LocalDatabase.getMasterKey()
+  static async changePassword(newPassword: string, key?: string) {
+    let masterKey = key ?? (await LocalDatabase.getMasterKey())
     if (!masterKey)
       return new IpcResponse(StatusCodes.INTERNAL_SERVER_ERROR, 'MASTER KEY NOT FOUND').toResult()
 
-    try {
-      /**
-       *  1.  Unlock the db using master key
-       *  2.  Change the password
-       *  3.  Lock the db using new user password
-       */
+    /**
+     *  1.  Unlock the db using master key
+     *  2.  Change the password
+     *  3.  Lock the db using new user password
+     */
+    return await LocalDatabase.withTransaction(async (t) => {
       await LocalDatabase.sqlite.query(`PRAGMA key = :masterKey`, {
-        replacements: { masterKey }
+        replacements: { masterKey },
+        transaction: t
       })
       await LocalDatabase.sqlite.query(`PRAGMA rekey = :newPassword`, {
-        replacements: { newPassword }
+        replacements: { newPassword },
+        transaction: t
       })
       LocalDatabase.#userPassword = newPassword
       return new IpcResponse(StatusCodes.OK, getReasonPhrase(StatusCodes.OK)).toResult()
-    } catch (error) {
-      console.log(error)
-      return new IpcResponse(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)
-      ).toResult()
-    }
+    })
   }
 
   /**

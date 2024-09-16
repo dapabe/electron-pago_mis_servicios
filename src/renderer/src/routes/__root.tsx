@@ -48,7 +48,7 @@ export const Route = createRootRouteWithContext<{
       data: { preferredLocale }
     } = await ctx.context.queryClient.fetchQuery({
       queryKey: [IpcEvent.Integrity.Initialize],
-      queryFn: window.api.integrityInitialize
+      queryFn: async () => await window.api.integrityInitialize()
     })
 
     /**

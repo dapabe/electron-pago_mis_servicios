@@ -18,6 +18,9 @@ import { Route as HelpIndexImport } from './routes/help/index'
 import { Route as AuthIndexImport } from './routes/auth/index'
 import { Route as AppIndexImport } from './routes/app/index'
 import { Route as AuthLayoutImport } from './routes/auth/_layout'
+import { Route as AuthRegisterRouteImport } from './routes/auth/register.route'
+import { Route as AuthLoginRouteImport } from './routes/auth/login.route'
+import { Route as AuthForgotRouteImport } from './routes/auth/forgot.route'
 
 // Create Virtual Routes
 
@@ -55,6 +58,21 @@ const AuthLayoutRoute = AuthLayoutImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const AuthRegisterRouteRoute = AuthRegisterRouteImport.update({
+  path: '/auth/register',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthLoginRouteRoute = AuthLoginRouteImport.update({
+  path: '/auth/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthForgotRouteRoute = AuthForgotRouteImport.update({
+  path: '/auth/forgot',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -64,6 +82,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/forgot': {
+      id: '/auth/forgot'
+      path: '/auth/forgot'
+      fullPath: '/auth/forgot'
+      preLoaderRoute: typeof AuthForgotRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
       parentRoute: typeof rootRoute
     }
     '/auth': {
@@ -108,6 +147,9 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
+  AuthForgotRouteRoute,
+  AuthLoginRouteRoute,
+  AuthRegisterRouteRoute,
   AuthRoute: AuthRoute.addChildren({ AuthIndexRoute }),
   AppIndexRoute,
   HelpIndexRoute,
@@ -122,6 +164,9 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/auth/forgot",
+        "/auth/login",
+        "/auth/register",
         "/auth",
         "/app/",
         "/help/"
@@ -129,6 +174,15 @@ export const routeTree = rootRoute.addChildren({
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/auth/forgot": {
+      "filePath": "auth/forgot.route.tsx"
+    },
+    "/auth/login": {
+      "filePath": "auth/login.route.tsx"
+    },
+    "/auth/register": {
+      "filePath": "auth/register.route.tsx"
     },
     "/auth": {
       "filePath": "auth",

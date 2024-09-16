@@ -37,6 +37,16 @@ export const preloadApi = {
     }
     return await ipcRenderer.invoke(IpcEvent.Db.Login, validated.data)
   },
+  passwordReset: async (
+    newPassword: unknown
+  ): Promise<IpcResponseResult<string | ZodError<IIpcIntegrityLogin>>> => {
+    const validated = IpcIntegrityLoginSchema.safeParse(newPassword)
+    if (!validated.success) {
+      return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error).toResult()
+    }
+
+    return await ipcRenderer.invoke(IpcEvent.Db.Password.Reset, validated.data.password)
+  },
   selectDatabase: async (
     defaultPath: unknown
   ): Promise<IpcResponseResult<string | ZodError<string>>> => {
