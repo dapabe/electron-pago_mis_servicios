@@ -6,7 +6,7 @@ export default resolveConfig({
   content: ['./src/renderer/**/*.{js,ts,jsx,tsx,html}'],
   theme: {
     container: {
-      center: 'true',
+      center: true,
       padding: '2rem',
       screens: {
         '2xl': '1400px'

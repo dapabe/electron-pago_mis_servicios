@@ -18,14 +18,23 @@ export const WindowBody = ({ children, title }: Props): JSX.Element => {
   const handleClose = () => window.electron.ipcRenderer.send(IpcEvent.App.CloseApp)
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-background">
       <header className="draggable flex flex-row p-0 items-center">
-        <h1 className="text-lg ml-2 flex-1 block text-primary">{title}</h1>
+        <h1 className="text-lg ml-2 flex-1 block">{title}</h1>
         <NavigationMenu className="noDraggable">
           <NavigationMenuList className="space-x-0">
             <NavigationMenuItem>
               <Button variant="ghost" className="px-3" onClick={handleMinMax}>
                 <Icon.Minus size={18} />
+              </Button>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Button
+                variant="ghost"
+                className="px-3"
+                onClick={async () => await nav({ to: '/testing' })}
+              >
+                <Icon.Code size={18} />
               </Button>
             </NavigationMenuItem>
             <NavigationMenuItem>
@@ -45,7 +54,7 @@ export const WindowBody = ({ children, title }: Props): JSX.Element => {
           </NavigationMenuList>
         </NavigationMenu>
       </header>
-      <div className="flex-grow border-y border-accent">{children}</div>
+      <div className="flex-grow border-y border-accent bg-secondary">{children}</div>
       <footer className="draggable pb-0">
         <WindowStatus />
       </footer>
