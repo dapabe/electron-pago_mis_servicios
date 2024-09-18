@@ -1,5 +1,5 @@
 import { is } from '@electron-toolkit/utils'
-import { Sequelize, Transaction } from 'sequelize'
+import { Error, Sequelize, Transaction } from 'sequelize'
 import { app, ipcMain } from 'electron'
 import os from 'node:os'
 import crypto from 'node:crypto'
@@ -68,6 +68,7 @@ export class LocalDatabase {
 
     await this.#loadModels()
     await LocalDatabase.sqlite.sync({ alter: is.dev })
+    await LocalDatabase.registerIpcEvents()
   }
 
   async #loadModels() {
@@ -93,6 +94,8 @@ export class LocalDatabase {
         if (channel.handleAsync) {
           ipcMain.handle(channel.channelID, channel.handleAsync)
         }
+
+        console.log(`Channel ${channel.channelID} registered for database.`)
       }
     } catch (error) {
       console.log({ error })
@@ -137,12 +140,8 @@ export class LocalDatabase {
       await t.commit()
       return result
     } catch (error) {
-      console.log({ error })
       await t.rollback()
-      return new IpcResponse(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)
-      ).toResult()
+      return new IpcResponse(StatusCodes.INTERNAL_SERVER_ERROR, (error as Error).message).toResult()
     }
   }
 }

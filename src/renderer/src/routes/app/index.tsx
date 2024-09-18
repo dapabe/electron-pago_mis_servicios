@@ -1,66 +1,22 @@
-import { AppSequenceProvider } from '#renderer/contexts/app-sequence.ctx'
-import { createFileRoute } from '@tanstack/react-router'
-import { z } from 'zod'
+import { IpcEvent } from '#shared/constants/ipc-events'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { StatusCodes } from 'http-status-codes'
+import { ZodError } from 'zod'
 
 export const Route = createFileRoute('/app/')({
-  validateSearch: (sq: Record<string, unknown>) => {
-    const sqSchema = z.object({
-      page: z.number().positive().optional().catch(1)
-    })
-    return sqSchema.parse(sq)
-  },
-  component: Component
-})
+  beforeLoad: async (ctx) => {
+    const isAuth = ctx.context.queryClient.getQueryData([IpcEvent.Db.isAuthenticated]) as boolean
+    if (isAuth) throw redirect({ to: '/app/home' })
 
-function Component() {
-  return (
-    <main>
-      <AppSequenceProvider>
-        seq
-        {/* <TabPanel
-          initialTab={'0'}
-          tabs={[
-            {
-              title: (
-                <>
-                  <Icon.ListNumbers size={24} />
-                  <FormattedMessage id="page.app.tab.home.title" />
-                </>
-              ),
-              body: <HomeTab />
-            },
-            {
-              title: (
-                <>
-                  <Icon.IdentificationCard size={24} />
-                  <span className="truncate">
-                    <FormattedMessage id="page.app.tab.payMethods.title" />
-                  </span>
-                </>
-              ),
-              body: <PayMethodsTab />
-            },
-            {
-              title: (
-                <>
-                  <Icon.UserList size={24} />
-                  <FormattedMessage id="page.app.tab.services.title" />
-                </>
-              ),
-              body: <ServiceAccountsTab />
-            },
-            {
-              title: (
-                <>
-                  <Icon.GearSix size={24} />
-                  <FormattedMessage id="page.app.tab.settings.title" />
-                </>
-              ),
-              body: <SettingsTab />
-            }
-          ]}
-        /> */}
-      </AppSequenceProvider>
-    </main>
-  )
-}
+    await ctx.context.queryClient.prefetchQuery({
+      queryKey: [IpcEvent.Db.CRUD.Read.ServiceData],
+      queryFn: async () => {
+        const { data, status } = await window.api.CRUD.ServiceData.read()
+        if (status === StatusCodes.INTERNAL_SERVER_ERROR || data instanceof ZodError) return []
+        return data.map((x) => x.serviceName)
+      }
+    })
+
+    throw redirect({ to: '/auth/login' })
+  }
+})

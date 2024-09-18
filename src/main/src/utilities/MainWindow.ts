@@ -112,6 +112,8 @@ export class MainWindow {
           channel.handleSyncOnce!(event, request)
         })
       }
+
+      console.log(`Channel ${channel.channelID} registered on App Init.`)
     }
   }
 }

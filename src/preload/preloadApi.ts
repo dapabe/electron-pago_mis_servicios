@@ -1,4 +1,5 @@
 import { IpcEvent } from '#shared/constants/ipc-events'
+import { ISupportedServices, SupportedServices } from '#shared/constants/supported-services'
 import { IPaymentMethodDTO, PaymentMethodDTO } from '#shared/schemas/dtos/PaymentMethod.dto.schema'
 import { IServiceDataDTO, ServiceDataDTO } from '#shared/schemas/dtos/ServiceData.dto.schema'
 import {
@@ -14,7 +15,12 @@ import { ipcRenderer } from 'electron'
 import { StatusCodes } from 'http-status-codes'
 import { ZodError } from 'zod'
 
-// Custom APIs for renderer
+/**
+ *  Custom APIs for renderer. \
+ *  Most input data are unknown, because the user can send any data \
+ *  but the renderer will validate it before sending it to the main process \
+ *  and this bridge will also validate the data before sending it to the main process.
+ */
 export const preloadApi = {
   integrityInitialize: async (): Promise<IpcResponseResult<IIpcIntegrityInitialize>> => {
     return await ipcRenderer.invoke(IpcEvent.Integrity.Initialize)
@@ -57,6 +63,15 @@ export const preloadApi = {
       return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error).toResult()
     }
     return await ipcRenderer.invoke(IpcEvent.Db.SelectFile, defaultPath)
+  },
+  startVerificationSequence: async (
+    servicesToCheck: unknown
+  ): Promise<IpcResponseResult<string | ZodError<ISupportedServices[]>>> => {
+    const validated = SupportedServices.array().safeParse(servicesToCheck)
+    if (!validated.success) {
+      return new IpcResponse(StatusCodes.BAD_REQUEST, validated.error).toResult()
+    }
+    return await ipcRenderer.invoke(IpcEvent.Sequence.Started, validated.data)
   },
   CRUD: {
     ServiceData: {

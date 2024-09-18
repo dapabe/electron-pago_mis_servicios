@@ -18,19 +18,29 @@ import { Route as HelpIndexImport } from './routes/help/index'
 import { Route as AuthIndexImport } from './routes/auth/index'
 import { Route as AppIndexImport } from './routes/app/index'
 import { Route as AuthLayoutImport } from './routes/auth/_layout'
+import { Route as AppMenuImport } from './routes/app/_menu'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register.route'
 import { Route as AuthLoginRouteImport } from './routes/auth/login.route'
 import { Route as AuthForgotRouteImport } from './routes/auth/forgot.route'
+import { Route as AppMenuServicesImport } from './routes/app/_menu.services'
+import { Route as AppMenuPayMethodsImport } from './routes/app/_menu.payMethods'
+import { Route as AppMenuHomeImport } from './routes/app/_menu.home'
 
 // Create Virtual Routes
 
 const AuthImport = createFileRoute('/auth')()
+const AppImport = createFileRoute('/app')()
 const TestingLazyImport = createFileRoute('/testing')()
 
 // Create/Update Routes
 
 const AuthRoute = AuthImport.update({
   path: '/auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AppRoute = AppImport.update({
+  path: '/app',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -55,13 +65,18 @@ const AuthIndexRoute = AuthIndexImport.update({
 } as any)
 
 const AppIndexRoute = AppIndexImport.update({
-  path: '/app/',
-  getParentRoute: () => rootRoute,
+  path: '/',
+  getParentRoute: () => AppRoute,
 } as any)
 
 const AuthLayoutRoute = AuthLayoutImport.update({
   id: '/_layout',
   getParentRoute: () => AuthRoute,
+} as any)
+
+const AppMenuRoute = AppMenuImport.update({
+  id: '/_menu',
+  getParentRoute: () => AppRoute,
 } as any)
 
 const AuthRegisterRouteRoute = AuthRegisterRouteImport.update({
@@ -77,6 +92,21 @@ const AuthLoginRouteRoute = AuthLoginRouteImport.update({
 const AuthForgotRouteRoute = AuthForgotRouteImport.update({
   path: '/auth/forgot',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AppMenuServicesRoute = AppMenuServicesImport.update({
+  path: '/services',
+  getParentRoute: () => AppMenuRoute,
+} as any)
+
+const AppMenuPayMethodsRoute = AppMenuPayMethodsImport.update({
+  path: '/payMethods',
+  getParentRoute: () => AppMenuRoute,
+} as any)
+
+const AppMenuHomeRoute = AppMenuHomeImport.update({
+  path: '/home',
+  getParentRoute: () => AppMenuRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -118,6 +148,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterRouteImport
       parentRoute: typeof rootRoute
     }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppImport
+      parentRoute: typeof rootRoute
+    }
+    '/app/_menu': {
+      id: '/app/_menu'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppMenuImport
+      parentRoute: typeof AppRoute
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -134,10 +178,10 @@ declare module '@tanstack/react-router' {
     }
     '/app/': {
       id: '/app/'
-      path: '/app'
-      fullPath: '/app'
+      path: '/'
+      fullPath: '/app/'
       preLoaderRoute: typeof AppIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AppImport
     }
     '/auth/': {
       id: '/auth/'
@@ -153,6 +197,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HelpIndexImport
       parentRoute: typeof rootRoute
     }
+    '/app/_menu/home': {
+      id: '/app/_menu/home'
+      path: '/home'
+      fullPath: '/app/home'
+      preLoaderRoute: typeof AppMenuHomeImport
+      parentRoute: typeof AppMenuImport
+    }
+    '/app/_menu/payMethods': {
+      id: '/app/_menu/payMethods'
+      path: '/payMethods'
+      fullPath: '/app/payMethods'
+      preLoaderRoute: typeof AppMenuPayMethodsImport
+      parentRoute: typeof AppMenuImport
+    }
+    '/app/_menu/services': {
+      id: '/app/_menu/services'
+      path: '/services'
+      fullPath: '/app/services'
+      preLoaderRoute: typeof AppMenuServicesImport
+      parentRoute: typeof AppMenuImport
+    }
   }
 }
 
@@ -164,8 +229,15 @@ export const routeTree = rootRoute.addChildren({
   AuthForgotRouteRoute,
   AuthLoginRouteRoute,
   AuthRegisterRouteRoute,
+  AppRoute: AppRoute.addChildren({
+    AppMenuRoute: AppMenuRoute.addChildren({
+      AppMenuHomeRoute,
+      AppMenuPayMethodsRoute,
+      AppMenuServicesRoute,
+    }),
+    AppIndexRoute,
+  }),
   AuthRoute: AuthRoute.addChildren({ AuthIndexRoute }),
-  AppIndexRoute,
   HelpIndexRoute,
 })
 
@@ -182,8 +254,8 @@ export const routeTree = rootRoute.addChildren({
         "/auth/forgot",
         "/auth/login",
         "/auth/register",
+        "/app",
         "/auth",
-        "/app/",
         "/help/"
       ]
     },
@@ -202,6 +274,22 @@ export const routeTree = rootRoute.addChildren({
     "/auth/register": {
       "filePath": "auth/register.route.tsx"
     },
+    "/app": {
+      "filePath": "app",
+      "children": [
+        "/app/_menu",
+        "/app/"
+      ]
+    },
+    "/app/_menu": {
+      "filePath": "app/_menu.tsx",
+      "parent": "/app",
+      "children": [
+        "/app/_menu/home",
+        "/app/_menu/payMethods",
+        "/app/_menu/services"
+      ]
+    },
     "/auth": {
       "filePath": "auth",
       "children": [
@@ -214,7 +302,8 @@ export const routeTree = rootRoute.addChildren({
       "parent": "/auth"
     },
     "/app/": {
-      "filePath": "app/index.tsx"
+      "filePath": "app/index.tsx",
+      "parent": "/app"
     },
     "/auth/": {
       "filePath": "auth/index.tsx",
@@ -222,6 +311,18 @@ export const routeTree = rootRoute.addChildren({
     },
     "/help/": {
       "filePath": "help/index.tsx"
+    },
+    "/app/_menu/home": {
+      "filePath": "app/_menu.home.tsx",
+      "parent": "/app/_menu"
+    },
+    "/app/_menu/payMethods": {
+      "filePath": "app/_menu.payMethods.tsx",
+      "parent": "/app/_menu"
+    },
+    "/app/_menu/services": {
+      "filePath": "app/_menu.services.tsx",
+      "parent": "/app/_menu"
     }
   }
 }
