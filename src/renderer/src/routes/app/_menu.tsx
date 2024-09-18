@@ -25,7 +25,7 @@ function Component() {
   return (
     <main>
       <AppSequenceProvider>
-        <NavigationMenu className="p-1">
+        <NavigationMenu>
           <NavigationMenuList className="bg-background rounded">
             <NavigationMenuItem>
               <Button
